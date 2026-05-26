@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-advanced-testing-dependencies"
-  title: "FastAPI Testing Dependencies"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "testing"
-  source_path: "public/fastapi/advanced/testing-dependencies.md"
-  original_path: "advanced/testing-dependencies.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/testing-dependencies.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "testing"
-- "dependencies"
-  content_hash: "6d26e7728428"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-advanced-testing-dependencies
+title: FastAPI Testing Dependencies
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: testing
+source_path: public/fastapi/advanced/testing-dependencies.md
+original_path: advanced/testing-dependencies.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/testing-dependencies.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- testing
+- dependencies
+content_hash: 6d26e7728428
+metadata_added_on: '2026-05-26'
+---
 
 # Testing Dependencies with Overrides { #testing-dependencies-with-overrides }
 

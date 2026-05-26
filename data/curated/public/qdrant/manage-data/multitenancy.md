@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-manage-data-multitenancy"
-  title: "Qdrant Multitenancy"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "manage-data"
-  source_path: "public/qdrant/manage-data/multitenancy.md"
-  original_url: "https://qdrant.tech/documentation/manage-data/multitenancy/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "multitenancy"
-- "tenant-isolation"
-  content_hash: "b8d22b54840b"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-manage-data-multitenancy
+title: Qdrant Multitenancy
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: manage-data
+source_path: public/qdrant/manage-data/multitenancy.md
+original_url: https://qdrant.tech/documentation/manage-data/multitenancy/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- multitenancy
+- tenant-isolation
+content_hash: b8d22b54840b
+metadata_added_on: '2026-05-26'
+---
 
 # Multitenancy# Configure Multitenancy
 

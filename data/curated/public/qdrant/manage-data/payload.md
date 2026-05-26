@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-manage-data-payload"
-  title: "Qdrant Payload"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "manage-data"
-  source_path: "public/qdrant/manage-data/payload.md"
-  original_url: "https://qdrant.tech/documentation/manage-data/payload/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "payload"
-- "metadata"
-  content_hash: "3edca4493bb1"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-manage-data-payload
+title: Qdrant Payload
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: manage-data
+source_path: public/qdrant/manage-data/payload.md
+original_url: https://qdrant.tech/documentation/manage-data/payload/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- payload
+- metadata
+content_hash: 3edca4493bb1
+metadata_added_on: '2026-05-26'
+---
 
 # Payload
 # Payload

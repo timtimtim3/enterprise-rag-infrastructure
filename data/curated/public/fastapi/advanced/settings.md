@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-advanced-settings"
-  title: "FastAPI Settings"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "advanced"
-  source_path: "public/fastapi/advanced/settings.md"
-  original_path: "advanced/settings.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/settings.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "settings"
-- "configuration"
-  content_hash: "407bd5ea5fd7"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-advanced-settings
+title: FastAPI Settings
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: advanced
+source_path: public/fastapi/advanced/settings.md
+original_path: advanced/settings.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/settings.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- settings
+- configuration
+content_hash: 407bd5ea5fd7
+metadata_added_on: '2026-05-26'
+---
 
 # Settings and Environment Variables { #settings-and-environment-variables }
 

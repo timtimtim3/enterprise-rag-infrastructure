@@ -1,22 +1,22 @@
 ---
-  doc_id: "qdrant-manage-data-overview"
-  title: "Qdrant Manage Data Overview"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "manage-data"
-  source_path: "public/qdrant/manage-data/overview.md"
-  original_url: "https://qdrant.tech/documentation/manage-data/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "manage-data"
-  content_hash: "ea6347991514"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-manage-data-overview
+title: Qdrant Manage Data Overview
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: manage-data
+source_path: public/qdrant/manage-data/overview.md
+original_url: https://qdrant.tech/documentation/manage-data/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- manage-data
+content_hash: ea6347991514
+metadata_added_on: '2026-05-26'
+---
 
 # Manage Data
 # Manage Data

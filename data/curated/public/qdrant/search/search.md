@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-search-search"
-  title: "Qdrant Search"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "search"
-  source_path: "public/qdrant/search/search.md"
-  original_url: "https://qdrant.tech/documentation/search/search/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "search"
-- "similarity-search"
-  content_hash: "83e59c98f45d"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-search-search
+title: Qdrant Search
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: search
+source_path: public/qdrant/search/search.md
+original_url: https://qdrant.tech/documentation/search/search/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- search
+- similarity-search
+content_hash: 83e59c98f45d
+metadata_added_on: '2026-05-26'
+---
 
 # Search
 # Similarity search

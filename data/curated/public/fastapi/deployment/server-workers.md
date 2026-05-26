@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-deployment-server-workers"
-  title: "FastAPI Server Workers"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "deployment"
-  source_path: "public/fastapi/deployment/server-workers.md"
-  original_path: "deployment/server-workers.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/server-workers.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "workers"
-- "scaling"
-  content_hash: "ebda6367c4df"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-deployment-server-workers
+title: FastAPI Server Workers
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: deployment
+source_path: public/fastapi/deployment/server-workers.md
+original_path: deployment/server-workers.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/server-workers.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- workers
+- scaling
+content_hash: ebda6367c4df
+metadata_added_on: '2026-05-26'
+---
 
 # Server Workers - Uvicorn with Workers { #server-workers-uvicorn-with-workers }
 

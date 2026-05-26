@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-deployment-concepts"
-  title: "FastAPI Deployment Concepts"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "deployment"
-  source_path: "public/fastapi/deployment/concepts.md"
-  original_path: "deployment/concepts.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/concepts.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "deployment"
-- "production"
-  content_hash: "5a110073f695"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-deployment-concepts
+title: FastAPI Deployment Concepts
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: deployment
+source_path: public/fastapi/deployment/concepts.md
+original_path: deployment/concepts.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/concepts.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- deployment
+- production
+content_hash: 5a110073f695
+metadata_added_on: '2026-05-26'
+---
 
 # Deployments Concepts { #deployments-concepts }
 

@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-concepts-async"
-  title: "FastAPI Async"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "concepts"
-  source_path: "public/fastapi/concepts/async.md"
-  original_path: "async.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/async.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "async"
-- "concurrency"
-  content_hash: "0619b77efb63"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-concepts-async
+title: FastAPI Async
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: concepts
+source_path: public/fastapi/concepts/async.md
+original_path: async.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/async.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- async
+- concurrency
+content_hash: 0619b77efb63
+metadata_added_on: '2026-05-26'
+---
 
 # Concurrency and async / await { #concurrency-and-async-await }
 

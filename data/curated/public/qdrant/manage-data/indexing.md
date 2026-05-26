@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-manage-data-indexing"
-  title: "Qdrant Indexing"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "manage-data"
-  source_path: "public/qdrant/manage-data/indexing.md"
-  original_url: "https://qdrant.tech/documentation/manage-data/indexing/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "indexing"
-- "performance"
-  content_hash: "5f828620fcae"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-manage-data-indexing
+title: Qdrant Indexing
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: manage-data
+source_path: public/qdrant/manage-data/indexing.md
+original_url: https://qdrant.tech/documentation/manage-data/indexing/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- indexing
+- performance
+content_hash: 5f828620fcae
+metadata_added_on: '2026-05-26'
+---
 
 # Indexing
 # Indexing

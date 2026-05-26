@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-search-hybrid-queries"
-  title: "Qdrant Hybrid Queries"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "search"
-  source_path: "public/qdrant/search/hybrid-queries.md"
-  original_url: "https://qdrant.tech/documentation/search/hybrid-queries/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "hybrid-search"
-- "rag"
-  content_hash: "ccd69ed88f13"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-search-hybrid-queries
+title: Qdrant Hybrid Queries
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: search
+source_path: public/qdrant/search/hybrid-queries.md
+original_url: https://qdrant.tech/documentation/search/hybrid-queries/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- hybrid-search
+- rag
+content_hash: ccd69ed88f13
+metadata_added_on: '2026-05-26'
+---
 
 # Hybrid Queries
 # Hybrid and Multi-Stage Queries

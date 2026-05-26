@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-search-filtering"
-  title: "Qdrant Filtering"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "search"
-  source_path: "public/qdrant/search/filtering.md"
-  original_url: "https://qdrant.tech/documentation/search/filtering/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "filtering"
-- "payload"
-  content_hash: "5b2fd852f1e4"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-search-filtering
+title: Qdrant Filtering
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: search
+source_path: public/qdrant/search/filtering.md
+original_url: https://qdrant.tech/documentation/search/filtering/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- filtering
+- payload
+content_hash: 5b2fd852f1e4
+metadata_added_on: '2026-05-26'
+---
 
 # Filtering
 # Filtering

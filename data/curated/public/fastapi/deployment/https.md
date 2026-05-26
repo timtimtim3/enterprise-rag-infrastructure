@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-deployment-https"
-  title: "FastAPI HTTPS"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "deployment"
-  source_path: "public/fastapi/deployment/https.md"
-  original_path: "deployment/https.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/https.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "https"
-- "security"
-  content_hash: "593cedf2954e"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-deployment-https
+title: FastAPI HTTPS
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: deployment
+source_path: public/fastapi/deployment/https.md
+original_path: deployment/https.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/https.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- https
+- security
+content_hash: 593cedf2954e
+metadata_added_on: '2026-05-26'
+---
 
 # About HTTPS { #about-https }
 

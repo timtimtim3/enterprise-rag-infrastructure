@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+
 from pathlib import Path
 from datetime import date
-import hashlib
-import shutil
-import textwrap
+from helpers import strip_existing_frontmatter, content_hash, frontmatter_from_metadata
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -43,47 +43,36 @@ DOCS_TO_CURATE = [
     },
 ]
 
-def strip_existing_frontmatter(text: str) -> str:
-    if text.startswith("---"):
-        parts = text.split("---", 2)
-        if len(parts) == 3:
-            return parts[2].lstrip()
-    return text
 
 def make_doc_id(rel_path: str) -> str:
     return "langchain-" + rel_path.replace("/", "-").replace(".mdx", "").replace(".md", "")
 
-def content_hash(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
 
-def yaml_list(items):
-    return "\n".join(f'  - "{item}"' for item in items)
-
-def build_frontmatter(item, body: str, target_rel_path: str) -> str:
+def build_frontmatter(item: dict, body: str, target_rel_path: str) -> str:
     rel = item["src"]
     title = Path(rel).stem.replace("-", " ").title()
 
-    return textwrap.dedent(f"""\
-    ---
-    doc_id: "{make_doc_id(rel)}"
-    title: "{title}"
-    source_type: "public"
-    vendor: "langchain"
-    doc_type: "vendor_documentation"
-    category: "{item["category"]}"
-    source_path: "public/langchain/{target_rel_path}"
-    original_path: "{rel}"
-    url: "https://github.com/langchain-ai/docs/blob/main/src/{rel}"
-    organization: "LangChain"
-    classification: "public"
-    visibility: "public"
-    status: "current"
-    tags:
-    {yaml_list(item["tags"])}
-    content_hash: "{content_hash(body)}"
-    metadata_added_on: "{date.today().isoformat()}"
-    ---
-    """).strip() + "\n\n"
+    metadata = {
+        "doc_id": make_doc_id(rel),
+        "title": title,
+        "source_type": "public",
+        "vendor": "langchain",
+        "doc_type": "vendor_documentation",
+        "category": item["category"],
+        "source_path": f"public/langchain/{target_rel_path}",
+        "original_path": rel,
+        "url": f"https://github.com/langchain-ai/docs/blob/main/src/{rel}",
+        "organization": "LangChain",
+        "classification": "public",
+        "visibility": "public",
+        "status": "current",
+        "tags": item["tags"],
+        "content_hash": content_hash(body),
+        "metadata_added_on": date.today().isoformat(),
+    }
+
+    return frontmatter_from_metadata(metadata)
+
 
 def main():
     CURATED_BASE.mkdir(parents=True, exist_ok=True)
@@ -117,5 +106,7 @@ def main():
         for path in missing:
             print(f" - {path}")
 
+
 if __name__ == "__main__":
     main()
+    

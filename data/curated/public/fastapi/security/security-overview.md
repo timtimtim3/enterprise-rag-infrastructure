@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-security-security-overview"
-  title: "FastAPI Security Overview"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "security"
-  source_path: "public/fastapi/security/security-overview.md"
-  original_path: "tutorial/security/index.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/tutorial/security/index.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "security"
-- "authentication"
-  content_hash: "6c316110d145"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-security-security-overview
+title: FastAPI Security Overview
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: security
+source_path: public/fastapi/security/security-overview.md
+original_path: tutorial/security/index.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/tutorial/security/index.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- security
+- authentication
+content_hash: 6c316110d145
+metadata_added_on: '2026-05-26'
+---
 
 # Security { #security }
 

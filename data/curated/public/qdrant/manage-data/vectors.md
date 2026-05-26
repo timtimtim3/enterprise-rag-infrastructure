@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-manage-data-vectors"
-  title: "Qdrant Vectors"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "manage-data"
-  source_path: "public/qdrant/manage-data/vectors.md"
-  original_url: "https://qdrant.tech/documentation/manage-data/vectors/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "vectors"
-- "embeddings"
-  content_hash: "86f8c6015626"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-manage-data-vectors
+title: Qdrant Vectors
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: manage-data
+source_path: public/qdrant/manage-data/vectors.md
+original_url: https://qdrant.tech/documentation/manage-data/vectors/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- vectors
+- embeddings
+content_hash: 86f8c6015626
+metadata_added_on: '2026-05-26'
+---
 
 # Vectors
 

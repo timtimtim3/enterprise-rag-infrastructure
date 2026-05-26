@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-advanced-middleware"
-  title: "FastAPI Middleware"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "advanced"
-  source_path: "public/fastapi/advanced/middleware.md"
-  original_path: "advanced/middleware.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/middleware.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "middleware"
-- "observability"
-  content_hash: "1da7e63c680a"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-advanced-middleware
+title: FastAPI Middleware
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: advanced
+source_path: public/fastapi/advanced/middleware.md
+original_path: advanced/middleware.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/middleware.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- middleware
+- observability
+content_hash: 1da7e63c680a
+metadata_added_on: '2026-05-26'
+---
 
 # Advanced Middleware { #advanced-middleware }
 

@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-inference-inference"
-  title: "Qdrant Inference"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "inference"
-  source_path: "public/qdrant/inference/inference.md"
-  original_url: "https://qdrant.tech/documentation/inference/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "inference"
-- "embeddings"
-  content_hash: "1e39cf309069"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-inference-inference
+title: Qdrant Inference
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: inference
+source_path: public/qdrant/inference/inference.md
+original_url: https://qdrant.tech/documentation/inference/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- inference
+- embeddings
+content_hash: 1e39cf309069
+metadata_added_on: '2026-05-26'
+---
 
 # Inference
 # Inference

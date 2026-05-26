@@ -1,22 +1,22 @@
 ---
-  doc_id: "qdrant-manage-data-collections"
-  title: "Qdrant Collections"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "manage-data"
-  source_path: "public/qdrant/manage-data/collections.md"
-  original_url: "https://qdrant.tech/documentation/manage-data/collections/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "collections"
-  content_hash: "a11e76a36853"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-manage-data-collections
+title: Qdrant Collections
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: manage-data
+source_path: public/qdrant/manage-data/collections.md
+original_url: https://qdrant.tech/documentation/manage-data/collections/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- collections
+content_hash: f23892d13047
+metadata_added_on: '2026-05-26'
+---
 
 # Collections
 # Collections
@@ -853,7 +853,7 @@ introduce huge overhead due to the rebuilding of the index.
 
 *Available as of v1.18.0*
 
-Named vectors can be added to or removed from an existing collection without having to recreate the collection.
+Named vectors can be added to or removed from an existing collection without having to recreate the collection. This is useful for [embedding model migration](/documentation/tutorials-operations/embedding-model-migration/index.md): you can add a new vector for the new model, re-embed points in the background, and then remove the old vector when you're ready. 
 
 <aside role="status">
 These are schema-level operations that add or remove vector definitions from a collection's schema. To add/remove vector values from specific points, use the <a href="/documentation/manage-data/points/#update-vectors">update</a> and <a href="/documentation/manage-data/points/#delete-vectors">delete</a> vectors operations.

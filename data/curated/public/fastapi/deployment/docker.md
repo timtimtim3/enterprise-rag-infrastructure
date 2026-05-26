@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-deployment-docker"
-  title: "FastAPI Docker Deployment"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "deployment"
-  source_path: "public/fastapi/deployment/docker.md"
-  original_path: "deployment/docker.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/docker.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "docker"
-- "deployment"
-  content_hash: "3b1d64193fb1"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-deployment-docker
+title: FastAPI Docker Deployment
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: deployment
+source_path: public/fastapi/deployment/docker.md
+original_path: deployment/docker.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/deployment/docker.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- docker
+- deployment
+content_hash: 3b1d64193fb1
+metadata_added_on: '2026-05-26'
+---
 
 # FastAPI in Containers - Docker { #fastapi-in-containers-docker }
 

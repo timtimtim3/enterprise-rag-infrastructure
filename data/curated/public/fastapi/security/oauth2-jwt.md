@@ -1,25 +1,25 @@
 ---
-  doc_id: "fastapi-security-oauth2-jwt"
-  title: "FastAPI OAuth2 JWT"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "security"
-  source_path: "public/fastapi/security/oauth2-jwt.md"
-  original_path: "tutorial/security/oauth2-jwt.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/tutorial/security/oauth2-jwt.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "oauth2"
-- "jwt"
-- "security"
-  content_hash: "e616c4cef96c"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-security-oauth2-jwt
+title: FastAPI OAuth2 JWT
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: security
+source_path: public/fastapi/security/oauth2-jwt.md
+original_path: tutorial/security/oauth2-jwt.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/tutorial/security/oauth2-jwt.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- oauth2
+- jwt
+- security
+content_hash: e616c4cef96c
+metadata_added_on: '2026-05-26'
+---
 
 # OAuth2 with Password (and hashing), Bearer with JWT tokens { #oauth2-with-password-and-hashing-bearer-with-jwt-tokens }
 

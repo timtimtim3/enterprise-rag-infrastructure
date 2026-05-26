@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-advanced-behind-a-proxy"
-  title: "FastAPI Behind a Proxy"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "advanced"
-  source_path: "public/fastapi/advanced/behind-a-proxy.md"
-  original_path: "advanced/behind-a-proxy.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/behind-a-proxy.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "proxy"
-- "deployment"
-  content_hash: "785f82331a34"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-advanced-behind-a-proxy
+title: FastAPI Behind a Proxy
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: advanced
+source_path: public/fastapi/advanced/behind-a-proxy.md
+original_path: advanced/behind-a-proxy.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/behind-a-proxy.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- proxy
+- deployment
+content_hash: 785f82331a34
+metadata_added_on: '2026-05-26'
+---
 
 # Behind a Proxy { #behind-a-proxy }
 

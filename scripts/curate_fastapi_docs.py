@@ -2,8 +2,8 @@
 
 from pathlib import Path
 from datetime import date
-import hashlib
-import textwrap
+from helpers import strip_existing_frontmatter, content_hash, frontmatter_from_metadata
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -105,48 +105,30 @@ FASTAPI_DOCS = [
 ]
 
 
-def strip_existing_frontmatter(text: str) -> str:
-    if text.startswith("---"):
-        parts = text.split("---", 2)
-        if len(parts) == 3:
-            return parts[2].lstrip()
-    return text
-
-
-def content_hash(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
-
-
 def make_doc_id(target: str) -> str:
     return "fastapi-" + target.replace("/", "-").replace(".md", "")
 
 
-def yaml_list(items: list[str]) -> str:
-    return "\n".join(f'  - "{item}"' for item in items)
-
-
 def build_frontmatter(item: dict, body: str) -> str:
-    return textwrap.dedent(f"""\
-    ---
-    doc_id: "{make_doc_id(item["target"])}"
-    title: "{item["title"]}"
-    source_type: "public"
-    vendor: "fastapi"
-    doc_type: "vendor_documentation"
-    category: "{item["category"]}"
-    source_path: "public/fastapi/{item["target"]}"
-    original_path: "{item["src"]}"
-    url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/{item["src"]}"
-    organization: "FastAPI"
-    classification: "public"
-    visibility: "public"
-    status: "current"
-    tags:
-    {yaml_list(item["tags"])}
-    content_hash: "{content_hash(body)}"
-    metadata_added_on: "{date.today().isoformat()}"
-    ---
-    """).strip() + "\n\n"
+    metadata = {
+        "doc_id": make_doc_id(item["target"]),
+        "title": item["title"],
+        "source_type": "public",
+        "vendor": "fastapi",
+        "doc_type": "vendor_documentation",
+        "category": item["category"],
+        "source_path": f'public/fastapi/{item["target"]}',
+        "original_path": item["src"],
+        "url": f'https://github.com/fastapi/fastapi/blob/master/docs/en/docs/{item["src"]}',
+        "organization": "FastAPI",
+        "classification": "public",
+        "visibility": "public",
+        "status": "current",
+        "tags": item["tags"],
+        "content_hash": content_hash(body),
+        "metadata_added_on": date.today().isoformat(),
+    }
+    return frontmatter_from_metadata(metadata)
 
 
 def main() -> None:
@@ -181,3 +163,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    

@@ -1,24 +1,24 @@
 ---
-  doc_id: "fastapi-advanced-events"
-  title: "FastAPI Events"
-  source_type: "public"
-  vendor: "fastapi"
-  doc_type: "vendor_documentation"
-  category: "advanced"
-  source_path: "public/fastapi/advanced/events.md"
-  original_path: "advanced/events.md"
-  url: "https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/events.md"
-  organization: "FastAPI"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "fastapi"
-- "events"
-- "lifespan"
-  content_hash: "e345c237b0d7"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: fastapi-advanced-events
+title: FastAPI Events
+source_type: public
+vendor: fastapi
+doc_type: vendor_documentation
+category: advanced
+source_path: public/fastapi/advanced/events.md
+original_path: advanced/events.md
+url: https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/events.md
+organization: FastAPI
+classification: public
+visibility: public
+status: current
+tags:
+- fastapi
+- events
+- lifespan
+content_hash: e345c237b0d7
+metadata_added_on: '2026-05-26'
+---
 
 # Lifespan Events { #lifespan-events }
 

@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-search-search-relevance"
-  title: "Qdrant Search Relevance"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "search"
-  source_path: "public/qdrant/search/search-relevance.md"
-  original_url: "https://qdrant.tech/documentation/search/search-relevance/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "search-relevance"
-- "ranking"
-  content_hash: "6772c7dde865"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-search-search-relevance
+title: Qdrant Search Relevance
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: search
+source_path: public/qdrant/search/search-relevance.md
+original_url: https://qdrant.tech/documentation/search/search-relevance/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- search-relevance
+- ranking
+content_hash: 6772c7dde865
+metadata_added_on: '2026-05-26'
+---
 
 # Search Relevance
 # Search Relevance

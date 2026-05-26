@@ -1,23 +1,23 @@
 ---
-  doc_id: "qdrant-search-low-latency-search"
-  title: "Qdrant Low Latency Search"
-  source_type: "public"
-  vendor: "qdrant"
-  doc_type: "vendor_documentation"
-  category: "search"
-  source_path: "public/qdrant/search/low-latency-search.md"
-  original_url: "https://qdrant.tech/documentation/search/low-latency-search/index.md"
-  organization: "Qdrant"
-  classification: "public"
-  visibility: "public"
-  status: "current"
-  tags:
-    - "qdrant"
-- "latency"
-- "performance"
-  content_hash: "b32f79cc8fb0"
-  metadata_added_on: "2026-05-26"
-  ---
+doc_id: qdrant-search-low-latency-search
+title: Qdrant Low Latency Search
+source_type: public
+vendor: qdrant
+doc_type: vendor_documentation
+category: search
+source_path: public/qdrant/search/low-latency-search.md
+original_url: https://qdrant.tech/documentation/search/low-latency-search/index.md
+organization: Qdrant
+classification: public
+visibility: public
+status: current
+tags:
+- qdrant
+- latency
+- performance
+content_hash: b32f79cc8fb0
+metadata_added_on: '2026-05-26'
+---
 
 # Low-Latency Search
 # Tips for Low-Latency Search with Qdrant
