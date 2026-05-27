@@ -6,13 +6,11 @@
 #   → embeds chunks
 #   → stores chunks in Qdrant
 #   → stores ingestion state separately
-import os
 import re
 import uuid
 import json
 import datetime
 from pathlib import Path
-from dotenv import load_dotenv
 from typing import Tuple, Dict, List
 
 import frontmatter
@@ -20,19 +18,17 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
-from helpers import content_hash, EmbeddingService
-
-
-load_dotenv()
-
-
-EXTENSIONS = {".md", ".mdx"}
-DATA_DIR_PATH = Path("data/curated/")
-EMBEDDING_MODEL = 'BAAI/bge-small-en-v1.5'
-COLLECTION_NAME = "northstar_knowledge_chunks"
-QDRANT_URL = os.getenv("QDRANT_URL")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-INGESTION_STATE_PATH = Path("data/processed/ingestion_state.json")
+from scripts.helpers import content_hash
+from app.embeddings.service import EmbeddingService
+from app.core.config import (
+    DOC_EXTENSIONS,
+    DATA_DIR_PATH,
+    COLLECTION_NAME,
+    EMBEDDING_MODEL,
+    QDRANT_URL,
+    QDRANT_API_KEY,
+    INGESTION_STATE_PATH
+)
 
 
 def load_doc(path: Path) -> Tuple[Dict, str]:
@@ -53,7 +49,7 @@ def get_qdrant_uuid(chunk_id: str) -> str:
 
 
 def main() -> None:
-    files = [path for path in DATA_DIR_PATH.rglob("*") if path.is_file() and path.suffix in EXTENSIONS]
+    files = [path for path in DATA_DIR_PATH.rglob("*") if path.is_file() and path.suffix in DOC_EXTENSIONS]
     metadata, docs = [], []
     norm_docs_hashes = []
     for path in files:

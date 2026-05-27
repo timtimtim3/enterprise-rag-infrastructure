@@ -1,16 +1,14 @@
-import os
-from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from helpers import EmbeddingService
+
+from app.embeddings.service import EmbeddingService
+from app.core.config import (
+    COLLECTION_NAME,
+    EMBEDDING_MODEL,
+    QDRANT_URL,
+    QDRANT_API_KEY
+)
 
 
-load_dotenv()
-
-
-EMBEDDING_MODEL = 'BAAI/bge-small-en-v1.5'
-COLLECTION_NAME = "northstar_knowledge_chunks"
-QDRANT_URL = os.getenv("QDRANT_URL")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 QUERY = "How does Northstar deploy LangGraph services to ECS?"
 
 

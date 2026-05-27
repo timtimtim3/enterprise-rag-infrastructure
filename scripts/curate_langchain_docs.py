@@ -2,13 +2,13 @@
 
 from pathlib import Path
 from datetime import date
-from helpers import strip_existing_frontmatter, content_hash, frontmatter_from_metadata
+
+from scripts.helpers import strip_existing_frontmatter, content_hash, frontmatter_from_metadata
+from app.core.config import BASE_DIR
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-RAW_BASE = PROJECT_ROOT / "data/raw/public/langchain/docs/src"
-CURATED_BASE = PROJECT_ROOT / "data/curated/public/langchain"
+RAW_BASE = BASE_DIR / "data/raw/public/langchain/docs/src"
+CURATED_BASE = BASE_DIR / "data/curated/public/langchain"
 
 DOCS_TO_CURATE = [
     {

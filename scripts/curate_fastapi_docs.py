@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 from datetime import date
-from helpers import strip_existing_frontmatter, content_hash, frontmatter_from_metadata
+
+from scripts.helpers import strip_existing_frontmatter, content_hash, frontmatter_from_metadata
+from app.core.config import BASE_DIR
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-RAW_BASE = PROJECT_ROOT / "data/raw/public/fastapi/docs/en/docs"
-CURATED_BASE = PROJECT_ROOT / "data/curated/public/fastapi"
+RAW_BASE = BASE_DIR / "data/raw/public/fastapi/docs/en/docs"
+CURATED_BASE = BASE_DIR / "data/curated/public/fastapi"
 
 FASTAPI_DOCS = [
     {
