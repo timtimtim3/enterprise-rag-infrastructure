@@ -19,3 +19,8 @@ COLLECTION_NAME = "northstar_knowledge_chunks"
 
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
+# Retrieval settings
+INITIAL_TOP_K = 20
+FINAL_TOP_K = 8
+MIN_CHUNK_CHARS = 80
