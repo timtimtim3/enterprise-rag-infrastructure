@@ -1,5 +1,15 @@
 import yaml
 import hashlib
+from sentence_transformers import SentenceTransformer
+from typing import List
+
+
+class EmbeddingService:
+    def __init__(self, model_name: str):
+        self.model = SentenceTransformer(model_name)
+
+    def embed(self, chunk_texts: List[str]) -> List[List[float]]:
+        return self.model.encode(chunk_texts, normalize_embeddings=True, batch_size=32)
 
 
 def strip_existing_frontmatter(text: str) -> str:
