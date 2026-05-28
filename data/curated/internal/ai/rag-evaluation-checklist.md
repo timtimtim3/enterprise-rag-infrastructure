@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-rag-evaluation-checklist"
 title: "RAG Evaluation Checklist"
+source_type: internal
 doc_type: "checklist"
 status: "current"
 authority: "authoritative"

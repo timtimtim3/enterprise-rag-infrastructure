@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-adrs-adr-017-migrate-pinecone-to-qdrant"
 title: "ADR-017 — Migration from Pinecone to Qdrant"
+source_type: internal
 doc_type: "adr"
 status: "current"
 authority: "decision_record"

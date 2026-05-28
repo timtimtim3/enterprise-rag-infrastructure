@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-operations-monitoring-requirements"
 title: "Monitoring Requirements"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

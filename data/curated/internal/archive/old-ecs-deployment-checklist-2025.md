@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-archive-old-ecs-deployment-checklist"
 title: "Old ECS Deployment Checklist (2025)"
+source_type: internal
 doc_type: "archived_checklist"
 status: "archived"
 authority: "historical"

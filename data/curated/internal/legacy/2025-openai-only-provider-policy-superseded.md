@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-legacy-openai-only-policy"
 title: "OpenAI-Only Provider Policy"
+source_type: internal
 doc_type: "legacy_policy"
 status: "superseded"
 authority: "historical"

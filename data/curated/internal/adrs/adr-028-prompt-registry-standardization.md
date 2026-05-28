@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-adrs-adr-028-prompt-registry-standardization"
 title: "ADR-028 — Prompt Registry Standardization"
+source_type: internal
 doc_type: "adr"
 status: "current"
 authority: "decision_record"

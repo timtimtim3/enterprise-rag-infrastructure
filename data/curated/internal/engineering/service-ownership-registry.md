@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-service-ownership-registry"
 title: "Service Ownership Registry"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-api-development-standards"
 title: "Northstar Solutions — API Development Standards"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

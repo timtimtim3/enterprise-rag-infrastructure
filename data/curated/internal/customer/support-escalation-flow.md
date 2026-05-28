@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-support-escalation-flow"
 title: "Support Escalation Flow"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

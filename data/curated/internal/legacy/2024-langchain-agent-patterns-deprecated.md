@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-legacy-langchain-agent-patterns"
 title: "LangChain Agent Workflow Patterns"
+source_type: internal
 doc_type: "legacy_standard"
 status: "deprecated"
 authority: "historical"

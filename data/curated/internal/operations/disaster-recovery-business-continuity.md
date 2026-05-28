@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-operations-disaster-recovery-business-continuity"
 title: "Disaster Recovery & Business Continuity Plan"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

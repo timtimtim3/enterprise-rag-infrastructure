@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-operations-production-outage-sop"
 title: "Production Outage SOP"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

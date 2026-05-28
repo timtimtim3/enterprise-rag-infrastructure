@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-ecs-deployment-procedure"
 title: "ECS Deployment Procedure"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

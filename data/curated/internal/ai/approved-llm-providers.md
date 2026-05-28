@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-approved-llm-providers"
 title: "Approved LLM Providers"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

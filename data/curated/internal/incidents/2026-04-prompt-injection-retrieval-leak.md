@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-incidents-2026-04-prompt-injection-retrieval-leak"
 title: "Incident Report — Prompt Injection Retrieval Leak"
+source_type: internal
 doc_type: "incident_report"
 status: "current"
 authority: "historical_record"

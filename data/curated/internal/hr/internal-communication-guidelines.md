@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-hr-internal-communication-guidelines"
 title: "Internal Communication Guidelines"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-docker-deployment-checklist"
 title: "Docker Deployment Checklist"
+source_type: internal
 doc_type: "checklist"
 status: "current"
 authority: "authoritative"

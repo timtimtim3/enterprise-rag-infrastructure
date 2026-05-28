@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-enterprise-deployment-standards"
 title: "Enterprise Deployment Standards"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

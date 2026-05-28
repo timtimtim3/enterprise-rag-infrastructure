@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-customer-onboarding-process"
 title: "Customer Onboarding Process"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

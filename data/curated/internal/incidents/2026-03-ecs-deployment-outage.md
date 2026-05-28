@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-incidents-2026-03-ecs-deployment-outage"
 title: "Incident Report — March ECS Deployment Outage"
+source_type: internal
 doc_type: "incident_report"
 status: "current"
 authority: "historical_record"

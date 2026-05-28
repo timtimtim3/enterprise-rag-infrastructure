@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-logging-tracing-policy"
 title: "Logging & Tracing Policy"
+source_type: internal
 doc_type: "policy"
 status: "current"
 authority: "authoritative"

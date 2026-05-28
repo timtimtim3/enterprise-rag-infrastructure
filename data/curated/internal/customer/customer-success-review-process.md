@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-customer-success-review-process"
 title: "Customer Success Review Process"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-ai-governance-policy"
 title: "AI Governance Policy"
+source_type: internal
 doc_type: "policy"
 status: "current"
 authority: "authoritative"

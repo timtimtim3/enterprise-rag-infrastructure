@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-adr-template"
 title: "ADR Template"
+source_type: internal
 doc_type: "adr"
 status: "current"
 authority: "decision_record"

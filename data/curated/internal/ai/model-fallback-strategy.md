@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-model-fallback-strategy"
 title: "Model Fallback Strategy"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-legacy-pinecone-vector-store-standard"
 title: "2024 Pinecone Vector Store Standard"
+source_type: internal
 doc_type: "legacy_policy"
 status: "deprecated"
 authority: "historical"

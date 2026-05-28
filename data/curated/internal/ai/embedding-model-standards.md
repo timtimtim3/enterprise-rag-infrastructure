@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-embedding-model-standards"
 title: "Embedding Model Standards"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

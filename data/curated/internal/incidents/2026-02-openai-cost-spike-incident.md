@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-incidents-2026-02-openai-cost-spike-incident"
 title: "Incident Report — OpenAI Cost Spike"
+source_type: internal
 doc_type: "incident_report"
 status: "current"
 authority: "historical_record"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-operations-on-call-handbook"
 title: "On-Call Handbook"
+source_type: internal
 doc_type: "handbook"
 status: "current"
 authority: "reference"

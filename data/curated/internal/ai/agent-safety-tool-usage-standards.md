@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-agent-safety-tool-usage-standards"
 title: "Agent Safety & Tool Usage Standards"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-hr-access-request-process"
 title: "Access Request Process"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

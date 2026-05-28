@@ -15,18 +15,16 @@ from typing import Tuple, Dict, List
 
 import frontmatter
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
-from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
+from qdrant_client.models import PointStruct
 
 from scripts.helpers import content_hash
 from app.models.models import EmbeddingService
+from app.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, init_qdrant, update_qdrant_points_metadata
 from app.core.config import (
     DOC_EXTENSIONS,
     DATA_DIR_PATH,
     COLLECTION_NAME,
     EMBEDDING_MODEL,
-    QDRANT_URL,
-    QDRANT_API_KEY,
     INGESTION_STATE_PATH
 )
 
@@ -49,16 +47,58 @@ def get_qdrant_uuid(chunk_id: str) -> str:
 
 
 def main() -> None:
+    qdrant_client = init_qdrant()
+
+    # Read ingestion state
+    INGESTION_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with open(INGESTION_STATE_PATH, 'r') as file:
+            ingestion_state = json.load(file)
+    except FileNotFoundError as e:
+        ingestion_state = {}
+    pending_ingestion_state = ingestion_state.copy() # For skipping next time the already embedded docs, only embed on doc content change or model change
+    now = datetime.datetime.now(tz=datetime.timezone.utc).isoformat()
+
+    # Decide which docs to ingest
     files = [path for path in DATA_DIR_PATH.rglob("*") if path.is_file() and path.suffix in DOC_EXTENSIONS]
     metadata, docs = [], []
-    norm_docs_hashes = []
+    norm_docs_hashes, meta_hashes = [], []
     for path in files:
         meta, doc = load_doc(path)
         norm_doc = normalize_markdown(doc)
         norm_content_hash = content_hash(norm_doc)
+        meta_str = json.dumps(
+            meta,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        meta_hash = content_hash(meta_str)
+
+        # Check for doc changes and metadata changes in ingestion_state
+        doc_id = meta["doc_id"]
+        if doc_id in ingestion_state:
+            # Doc was ingested before
+            state = ingestion_state[doc_id]
+
+            if norm_content_hash != state["normalized_content_hash"]:
+                # Content changed, requires deleting (then re-embedding and re-storing)
+                delete_qdrant_points_by_doc_id(qdrant_client, doc_id)
+            elif "meta_hash" not in state or meta_hash != state["meta_hash"]:
+                # Requires meta update only
+                update_qdrant_points_metadata(qdrant_client, meta, doc_id)
+                pending_ingestion_state[doc_id]["meta_hash"] = meta_hash
+                pending_ingestion_state[doc_id]["last_metadata_updated_at"] = now
+                continue
+            else:
+                # No update required
+                continue
+
+        # We will embed these and store these
         metadata.append(meta)
         docs.append(norm_doc)
         norm_docs_hashes.append(norm_content_hash)
+        meta_hashes.append(meta_hash)
 
     markdown_splitter = MarkdownHeaderTextSplitter(
         headers_to_split_on=[
@@ -75,9 +115,6 @@ def main() -> None:
 
     all_chunks: List[Dict] = [] # For storing actual objects in vectorstore like Qdrant
     chunk_texts: List[str] = [] # For embedding all at once (batched)
-    pending_ingestion_state = {} # For skipping next time the already embedded docs, only embed on doc content change or model change
-    now = datetime.datetime.now(tz=datetime.timezone.utc).isoformat()
-
     for doc_index, doc in enumerate(docs):
         chunks = markdown_splitter.split_text(doc)
         chunks = recursive_splitter.split_documents(chunks)
@@ -114,51 +151,48 @@ def main() -> None:
             "source_path": doc_meta.get("source_path"),
             "source_content_hash": doc_meta.get("content_hash"),
             "normalized_content_hash": norm_docs_hashes[doc_index],
+            "meta_hash": meta_hashes[doc_index],
             "last_ingested_at": now,
+            "last_metadata_updated_at": now,
             "chunk_count": len(chunks),
             "chunk_hashes": [chunk["payload"]["chunk_hash"] for chunk in doc_chunks],
             "embedding_model": EMBEDDING_MODEL,
             "collection_name": COLLECTION_NAME,
             "status": "indexed",
         }
-		
-    # Embed chunks
-    embedding_svc = EmbeddingService(EMBEDDING_MODEL)
-    chunk_embeddings = embedding_svc.embed(chunk_texts)
-    for chunk_obj, embedding in zip(all_chunks, chunk_embeddings):
-        chunk_obj["vector"] = embedding
-    EMBEDDING_DIM = len(chunk_embeddings[0])
+	
+    if len(chunk_texts) > 0:
+        # Embed chunks
+        embedding_svc = EmbeddingService(EMBEDDING_MODEL)
+        chunk_embeddings = embedding_svc.embed(chunk_texts)
+        for chunk_obj, embedding in zip(all_chunks, chunk_embeddings):
+            chunk_obj["vector"] = embedding
+        EMBEDDING_DIM = len(chunk_embeddings[0])
+        # We need to call this again here in case this is the first time running this script
+        # and we don't have the collection initialized yet
+        qdrant_client = init_qdrant(EMBEDDING_DIM)
 
-    # Store each chunk_obj (and its embedding) in Qdrant
-    qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+        # Store each chunk_obj (and its embedding) in Qdrant
+        points = [
+            PointStruct(
+                id=chunk["id"], 
+                vector=chunk["vector"],
+                payload=chunk["payload"]
+            )
+            for chunk in all_chunks
+        ]      
 
-    if not qdrant_client.collection_exists(COLLECTION_NAME):
-        qdrant_client.create_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=VectorParams(size=EMBEDDING_DIM, distance=Distance.COSINE),
-        )
-
-    points = [
-        PointStruct(
-            id=chunk["id"], 
-            vector=chunk["vector"],
-            payload=chunk["payload"]
-        )
-        for chunk in all_chunks
-    ]      
-
-    BATCH_SIZE = 64
-    for i in range(0, len(points), BATCH_SIZE):
-        batch = points[i:i + BATCH_SIZE]
-        qdrant_client.upsert(
-            collection_name=COLLECTION_NAME,
-            points=batch,
-            wait=True,
-        )
-        print(f"Uploaded batch {i // BATCH_SIZE + 1}")
+        BATCH_SIZE = 64
+        for i in range(0, len(points), BATCH_SIZE):
+            batch = points[i:i + BATCH_SIZE]
+            qdrant_client.upsert(
+                collection_name=COLLECTION_NAME,
+                points=batch,
+                wait=True,
+            )
+            print(f"Uploaded batch {i // BATCH_SIZE + 1}")
 
     # Once sucessfully stored, write the ingestion state, for now keep local simple store file, later write to postgresql db service
-    INGESTION_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
     INGESTION_STATE_PATH.write_text(
         json.dumps(pending_ingestion_state, indent=2),
         encoding="utf-8"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-hr-pto-policy"
 title: "PTO Policy"
+source_type: internal
 doc_type: "policy"
 status: "current"
 authority: "authoritative"

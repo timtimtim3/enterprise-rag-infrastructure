@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-redis-caching-guidelines"
 title: "Redis Caching Guidelines"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

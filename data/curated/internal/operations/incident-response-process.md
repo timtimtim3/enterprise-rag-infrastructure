@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-operations-incident-response-process"
 title: "Incident Response Process"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

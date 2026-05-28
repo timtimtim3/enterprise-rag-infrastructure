@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-adrs-adr-024-hybrid-retrieval-standardization"
 title: "ADR-024 — Hybrid Retrieval Standardization"
+source_type: internal
 doc_type: "adr"
 status: "current"
 authority: "decision_record"

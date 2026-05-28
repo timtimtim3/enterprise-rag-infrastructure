@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-hr-remote-work-policy"
 title: "Remote Work Policy"
+source_type: internal
 doc_type: "policy"
 status: "current"
 authority: "authoritative"

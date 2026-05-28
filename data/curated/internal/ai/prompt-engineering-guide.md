@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-prompt-engineering-guide"
 title: "Prompt Engineering Guide"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-incidents-2026-01-qdrant-latency-regression"
 title: "Incident Report — Qdrant Latency Regression"
+source_type: internal
 doc_type: "incident_report"
 status: "current"
 authority: "historical_record"

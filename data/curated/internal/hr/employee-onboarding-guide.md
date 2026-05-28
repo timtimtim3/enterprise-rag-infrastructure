@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-hr-employee-onboarding-guide"
 title: "Employee Onboarding Guide"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"

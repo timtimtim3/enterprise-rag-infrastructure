@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-sla-guidelines"
 title: "SLA Guidelines"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

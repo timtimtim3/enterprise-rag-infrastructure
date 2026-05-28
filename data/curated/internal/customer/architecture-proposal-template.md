@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-architecture-proposal-template"
 title: "Architecture Proposal Template"
+source_type: internal
 doc_type: "template"
 status: "current"
 authority: "reference_template"

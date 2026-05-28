@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-ai-evaluation-standards"
 title: "AI Evaluation Standards"
+source_type: internal
 doc_type: "standard"
 status: "current"
 authority: "authoritative"

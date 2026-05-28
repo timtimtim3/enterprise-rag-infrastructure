@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-customer-customer-data-classification-policy"
 title: "Customer Data Classification Policy"
+source_type: internal
 doc_type: "policy"
 status: "current"
 authority: "authoritative"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-operations-rollback-procedures"
 title: "Rollback Procedures"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

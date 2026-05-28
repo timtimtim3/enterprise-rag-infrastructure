@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-adrs-adr-021-langchain-vs-langgraph-evaluation"
 title: "ADR-021 — LangChain vs LangGraph Evaluation"
+source_type: internal
 doc_type: "adr"
 status: "current"
 authority: "decision_record"

@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-fastapi-deployment-sop"
 title: "FastAPI Deployment SOP"
+source_type: internal
 doc_type: "procedure"
 status: "current"
 authority: "authoritative"

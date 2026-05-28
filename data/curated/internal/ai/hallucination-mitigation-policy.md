@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-ai-hallucination-mitigation-policy"
 title: "Hallucination Mitigation Policy"
+source_type: internal
 doc_type: "policy"
 status: "current"
 authority: "authoritative"

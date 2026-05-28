@@ -1,6 +1,7 @@
 ---
 doc_id: "northstar-engineering-langgraph-workflow-patterns"
 title: "LangGraph Workflow Patterns"
+source_type: internal
 doc_type: "knowledge_doc"
 status: "current"
 authority: "reference"
