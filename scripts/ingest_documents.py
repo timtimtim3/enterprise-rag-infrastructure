@@ -19,7 +19,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
 from scripts.helpers import content_hash
-from app.embeddings.service import EmbeddingService
+from app.models.models import EmbeddingService
 from app.core.config import (
     DOC_EXTENSIONS,
     DATA_DIR_PATH,
