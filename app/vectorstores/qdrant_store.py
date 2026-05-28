@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, FieldCondition, Filter, FilterSelector, MatchValue, VectorParams, PayloadSchemaType
@@ -79,3 +79,31 @@ def delete_qdrant_points_by_doc_id(
             )
         ),
     )
+
+
+def get_all_qdrant_points_by_doc_id(qdrant_client, doc_id: str, collection_name: str = COLLECTION_NAME, limit: int = 100) -> List:
+    all_doc_chunks = []
+    offset = None
+
+    while True:
+        points, offset = qdrant_client.scroll(
+            collection_name=COLLECTION_NAME,
+            scroll_filter=Filter(
+                must=[
+                    FieldCondition(
+                        key="doc_id",
+                        match=MatchValue(value=doc_id),
+                    )
+                ]
+            ),
+            limit=limit,
+            offset=offset,
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        all_doc_chunks.extend(points)
+
+        if offset is None:
+            break
+    return all_doc_chunks

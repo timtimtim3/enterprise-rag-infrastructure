@@ -15,8 +15,14 @@ vendor: {context_dict.get("vendor")}
 status: {context_dict.get("status")}
 authority: {context_dict.get("authority")}
 category: {context_dict.get("category")}
-chunk_index: {context_dict.get("chunk_index")}
 sections: {" > ".join(section_strings)}
+chunk_index: {context_dict.get("chunk_index")}
+{context_dict.get("text")}
+""".strip()
 
+
+def format_context_dict_for_llm_doc_chunks(context_dict: dict):
+    return f"""
+chunk_index: {context_dict.get("chunk_index")}
 {context_dict.get("text")}
 """.strip()
