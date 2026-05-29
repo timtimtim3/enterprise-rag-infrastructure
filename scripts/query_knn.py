@@ -1,3 +1,4 @@
+from app.llm.client import LLM
 from app.models.models import EmbeddingService, Reranker
 from app.rag.retriever import Retriever
 from app.rag.answer_service import AnswerService
@@ -6,6 +7,7 @@ from app.core.config import (
     COLLECTION_NAME,
     EMBEDDING_MODEL,
     RERANKER_MODEL,
+    USING_LLM,
 )
 from app.vectorstores.qdrant_store import init_qdrant
 
@@ -18,7 +20,8 @@ def main() -> None:
     qdrant_client = init_qdrant()
     reranker = Reranker(RERANKER_MODEL)
     retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
-    answer_svc = AnswerService(retriever)
+    llm = LLM(USING_LLM)
+    answer_svc = AnswerService(retriever, llm)
 
     # query_embedding = embedding_svc.embed([QUERY])[0]
     # print(query_embedding)
