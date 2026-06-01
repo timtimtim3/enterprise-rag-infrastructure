@@ -13,12 +13,12 @@ from app.core.config import (
     EXPAND_WINDOW_AFTER,
     KEEP_ENTIRE_DOC_CHUNK_THRESH
 )
-from app.vectorstores.qdrant_store import get_all_qdrant_points_by_doc_id
+from app.rag.vectorstores.qdrant_store import get_all_qdrant_points_by_doc_id
 
 if TYPE_CHECKING:
     from qdrant_client import QdrantClient
-    from app.models.models import EmbeddingService, Reranker
-
+    from app.rag.embeddings import EmbeddingService
+    from app.rag.reranking import Reranker
 
 class Retriever:
     def __init__(

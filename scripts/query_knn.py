@@ -1,5 +1,6 @@
 from app.llm.client import LLM
-from app.models.models import EmbeddingService, Reranker
+from app.rag.embeddings import EmbeddingService
+from app.rag.reranking import Reranker
 from app.rag.retriever import Retriever
 from app.rag.answer_service import AnswerService
 from app.rag.helpers import format_context_dict_for_llm
@@ -9,7 +10,7 @@ from app.core.config import (
     RERANKER_MODEL,
     USING_LLM,
 )
-from app.vectorstores.qdrant_store import init_qdrant
+from app.rag.vectorstores.qdrant_store import init_qdrant
 
 
 QUERY = "How does Northstar deploy LangGraph services to ECS?"

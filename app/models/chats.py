@@ -1,18 +1,17 @@
 from __future__ import annotations
 
-from sqlalchemy import Integer, String, ForeignKey, DateTime, Float
+from sqlalchemy import Integer, String, ForeignKey, Float
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from sqlalchemy import func
-from datetime import datetime
 from typing import TYPE_CHECKING
 from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 
 from app.api.db import Base
+from app.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:
-    from app.api.models.users import User
+    from app.models.users import User
     
 
 class MessageRole(str, Enum):
@@ -21,12 +20,11 @@ class MessageRole(str, Enum):
     SYSTEM = "system"
 
 
-class Chat(Base):
+class Chat(TimestampMixin, Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     chat_id: Mapped[str] = mapped_column(String, unique=True, index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     title: Mapped[str] = mapped_column(String, nullable=True)
 
     user: Mapped["User"] = relationship("User", back_populates="chats")
@@ -35,12 +33,11 @@ class Chat(Base):
     messages: Mapped[list["Message"]] = relationship("Message", back_populates="chat")
 
 
-class Message(Base):
+class Message(TimestampMixin, Base):
     __tablename__ = "messages"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     message_id: Mapped[str] = mapped_column(String, unique=True, index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     role: Mapped[MessageRole] = mapped_column(SQLEnum(MessageRole, name="message_role"), nullable=False)
     content: Mapped[str] = mapped_column(String)
 
@@ -50,7 +47,7 @@ class Message(Base):
     message_sources: Mapped[list["MessageSource"]] = relationship("MessageSource", back_populates="message")
 
 
-class MessageSource(Base):
+class MessageSource(TimestampMixin, Base):
     __tablename__ = "message_sources"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)

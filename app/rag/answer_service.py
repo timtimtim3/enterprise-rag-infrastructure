@@ -56,9 +56,9 @@ class AnswerService:
             "model": resp_obj.model,
             "finish_reason": resp_obj.choices[0].finish_reason,
             "usage": {
-                "completion_tokens": resp_obj.completion_tokens,
-                "prompt_tokens": resp_obj.prompt_tokens,
-                "total_tokens": resp_obj.total_tokens
+                "completion_tokens": resp_obj.usage.completion_tokens,
+                "prompt_tokens": resp_obj.usage.prompt_tokens,
+                "total_tokens": resp_obj.usage.total_tokens
             },
             "sources": sources,
         }

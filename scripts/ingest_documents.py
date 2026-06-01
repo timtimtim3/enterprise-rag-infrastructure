@@ -18,8 +18,8 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 from qdrant_client.models import PointStruct
 
 from scripts.helpers import content_hash
-from app.models.models import EmbeddingService
-from app.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, init_qdrant, update_qdrant_points_metadata
+from app.rag.embeddings import EmbeddingService
+from app.rag.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, init_qdrant, update_qdrant_points_metadata
 from app.core.config import (
     DOC_EXTENSIONS,
     DATA_DIR_PATH,

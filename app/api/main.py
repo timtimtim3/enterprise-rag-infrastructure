@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-import app.api.models
+import app.models
 from app.api.db import Base, engine
 from app.api.routes.chats import router as chat_router
 from app.api.routes.chats import router as health_router
 
 from app.llm.client import LLM
-from app.models.models import EmbeddingService, Reranker
+from app.rag.embeddings import EmbeddingService
+from app.rag.reranking import Reranker
 from app.rag.retriever import Retriever
 from app.rag.answer_service import AnswerService
 from app.core.config import (
@@ -17,7 +18,7 @@ from app.core.config import (
     RERANKER_MODEL,
     USING_LLM,
 )
-from app.vectorstores.qdrant_store import init_qdrant
+from app.rag.vectorstores.qdrant_store import init_qdrant
 
 
 @asynccontextmanager

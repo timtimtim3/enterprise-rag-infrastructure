@@ -10,7 +10,7 @@ router = APIRouter(prefix="/chats", tags=["chats"])
 @router.post("/chats", response_model=AskResponse)
 async def chats(request: Request, ask_request: AskRequest) -> AskResponse:
     """
-    Creates a new chat in db, sends query to RAG llm, add query + response to db, returns answer
+    Creates a new chat in db, add query to db, sends query to RAG llm, add response to db, return answer
     """
     try:
         answer = await run_in_threadpool(request.app.state.answer_svc.answer_question, ask_request.query)
