@@ -5,6 +5,7 @@ alembic==1.18.4
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0
+asyncpg==0.31.0
 attrs==26.1.0
 certifi==2026.5.20
 charset-normalizer==3.4.7
@@ -71,6 +72,8 @@ packaging==26.2
 portalocker==3.2.0
 propcache==0.5.2
 protobuf==7.35.0
+psycopg==3.3.4
+psycopg-binary==3.3.4
 pydantic==2.13.4
 pydantic_core==2.46.4
 Pygments==2.20.0
@@ -107,6 +110,7 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.7.0
 uuid_utils==0.16.0
+uvicorn==0.48.0
 xxhash==3.7.0
 yarl==1.24.2
 zipp==4.1.0

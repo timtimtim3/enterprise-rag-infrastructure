@@ -7,6 +7,7 @@ from sqlalchemy import func
 from datetime import datetime
 from typing import TYPE_CHECKING
 from enum import Enum
+from sqlalchemy import Enum as SQLEnum
 
 from app.api.db import Base
 
@@ -40,7 +41,7 @@ class Message(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     message_id: Mapped[str] = mapped_column(String, unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    role: Mapped[str] = mapped_column(MessageRole)
+    role: Mapped[MessageRole] = mapped_column(SQLEnum(MessageRole, name="message_role"), nullable=False)
     content: Mapped[str] = mapped_column(String)
 
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")
