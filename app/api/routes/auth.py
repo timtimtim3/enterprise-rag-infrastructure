@@ -1,20 +1,71 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
-from app.crud.auth import create_user
+from app.api.db import get_db
+from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse
+from app.crud.auth import create_user, get_user_by_email, get_user_by_username
+from app.core.security import hash_password, verify_password
+from app.core.config import DUMMY_PASSWORD
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 router = APIRouter(prefix="auth", tags=["auth"])
 
 
 
-@router.post("sing_up")
-async def sign_up(username: str, email: str, password: str):
-    try:
-        create_user()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="")
+@router.post("/singup", response_model=RegisterResponse, status_code=201)
+async def sing_up(register_request: RegisterRequest, db: AsyncSession = Depends(get_db)) -> RegisterResponse:
+    hashed_password = hash_password(register_request.password)
+
+    existing_user = await get_user_by_email(
+        db,
+        register_request.email,
+    )
+    if existing_user:
+        raise HTTPException(
+            status_code=409,
+            detail="Could not register with details",
+        )
+
+    existing_user = await get_user_by_username(
+        db,
+        register_request.username,
+    )
+    if existing_user:
+        raise HTTPException(
+            status_code=409,
+            detail="Could not register with details",
+        )
+
+    user = await create_user(db, register_request.username, register_request.email, hashed_password)
+    return RegisterResponse(
+        user_id=user.user_id,
+        username=user.username,
+        email=user.email,
+    )
 
 
-@router.post("sing_in")
-async def sign_in():
-    pass
+@router.post("/signin", response_model=LoginResponse, status_code=200)
+async def sign_in(login_request: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
+    existing_user = await get_user_by_username(
+        db,
+        login_request.username,
+    )
+
+    if not existing_user:
+        verify_password(login_request.password, DUMMY_PASSWORD)
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password",
+        )
+
+    verified = verify_password(login_request.password, existing_user.password_hash)
+    if not verified:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password",
+        )
+    
+    return LoginResponse(
+        user_id=existing_user.user_id,
+        username=existing_user.username
+    )

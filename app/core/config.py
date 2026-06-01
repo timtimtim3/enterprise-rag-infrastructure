@@ -41,3 +41,6 @@ USING_LLM = LOCAL_LLM if USE_LOCAL_LLM else CLOUD_LLM
 # DB
 DATABASE_URL = os.getenv("DATABASE_URL", "default")
 ALEMBIC_DATABASE_URL = os.getenv("ALEMBIC_DATABASE_URL", "default")
+
+# Security
+DUMMY_PASSWORD = os.getenv("DUMMY_PASSWORD")

@@ -6,6 +6,7 @@ import app.models
 from app.api.db import Base, engine
 from app.api.routes.chats import router as chat_router
 from app.api.routes.chats import router as health_router
+from app.api.routes.chats import router as auth_router
 
 from app.llm.client import LLM
 from app.rag.embeddings import EmbeddingService
@@ -57,6 +58,7 @@ app.add_middleware(
 )
 
 app.include_router(chat_router)
+app.include_router(auth_router)
 app.include_router(health_router)
 
 
