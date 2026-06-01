@@ -1,19 +1,34 @@
-# # app/api/dependencies/auth.py
+from __future__ import annotations
 
-# from fastapi import Depends
-# from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Cookie, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
-# from app.api.db import get_db
-# from app.crud.users import get_user
+from app.api.db import get_db
+from app.crud.auth import get_session_by_id, delete_session
+
+if TYPE_CHECKING:
+    from app.models import User
 
 
-# async def get_current_user(
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     # later:
-#     # read session cookie
-#     # validate token
-#     # lookup user
+async def get_current_user(
+    session_id: str | None = Cookie(default=None),
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    if not session_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
-#     user = ...
-#     return user
+    session = await get_session_by_id(
+        db,
+        session_id,
+    )
+
+    if not session:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    if session.expires_at < datetime.now(timezone.utc):
+        await delete_session(db, session)
+        raise HTTPException(status_code=401, detail="Session expired")
+
+    return session.user

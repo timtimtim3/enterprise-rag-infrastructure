@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, Response
 
 from app.api.db import get_db
 from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse
-from app.crud.auth import create_user, get_user_by_email, get_user_by_username
+from app.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
 from app.core.security import hash_password, verify_password
-from app.core.config import DUMMY_PASSWORD
+from app.core.config import DUMMY_PASSWORD, SESSION_EXPIRE_SECONDS
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -45,7 +47,7 @@ async def sing_up(register_request: RegisterRequest, db: AsyncSession = Depends(
 
 
 @router.post("/signin", response_model=LoginResponse, status_code=200)
-async def sign_in(login_request: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
+async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
     existing_user = await get_user_by_username(
         db,
         login_request.username,
@@ -64,6 +66,17 @@ async def sign_in(login_request: LoginRequest, db: AsyncSession = Depends(get_db
             status_code=401,
             detail="Invalid username or password",
         )
+    
+    session_id = str(uuid.uuid4())
+    create_session(db, session_id, existing_user.id)
+    response.set_cookie(
+        key="session_id",
+        value=session_id,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=SESSION_EXPIRE_SECONDS,
+    )
     
     return LoginResponse(
         user_id=existing_user.user_id,

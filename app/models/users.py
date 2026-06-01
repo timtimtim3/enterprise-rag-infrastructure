@@ -10,6 +10,7 @@ from app.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.chats import Chat
+    from app.models.sessions import Session
 
 
 class User(TimestampMixin, Base):
@@ -22,3 +23,4 @@ class User(TimestampMixin, Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     chats: Mapped[list["Chat"]] = relationship("Chat", back_populates="user")
+    sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user", cascade="all, delete-orphan",)
