@@ -37,3 +37,6 @@ USE_LOCAL_LLM = os.getenv("USE_LOCAL_LLM")
 LOCAL_LLM = "ollama/qwen3:0.6b"
 CLOUD_LLM = "openai/gpt-4.1-mini"
 USING_LLM = LOCAL_LLM if USE_LOCAL_LLM else CLOUD_LLM
+
+# DB
+DATABASE_URL = os.getenv("DATABASE_URL", "default")

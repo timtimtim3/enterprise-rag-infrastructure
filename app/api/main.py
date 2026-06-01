@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-# from app.db import Base, engine
-# from app.models import models
+import app.api.models
+from app.api.db import Base, engine
 from app.api.routes.chats import router as chat_router
 from app.api.routes.chats import router as health_router
 
@@ -22,9 +22,8 @@ from app.vectorstores.qdrant_store import init_qdrant
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # DB conn for future:
-    # async with engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.create_all)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
     embedding_svc = EmbeddingService(EMBEDDING_MODEL)
     qdrant_client = init_qdrant()
