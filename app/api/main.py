@@ -4,8 +4,8 @@ from contextlib import asynccontextmanager
 
 # from app.db import Base, engine
 # from app.models import models
-from app.api.routes.rag import router as rag_router
-from app.api.routes.rag import router as health_router
+from app.api.routes.chats import router as chat_router
+from app.api.routes.chats import router as health_router
 
 from app.llm.client import LLM
 from app.models.models import EmbeddingService, Reranker
@@ -56,7 +56,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(rag_router)
+app.include_router(chat_router)
 app.include_router(health_router)
 
 
