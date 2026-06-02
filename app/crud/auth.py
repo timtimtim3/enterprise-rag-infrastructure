@@ -20,21 +20,21 @@ async def get_user_by_email(db: AsyncSession, email: str) -> User:
     result = await db.execute(
         select(User).where(User.email == email)
     )
-    return result.scalars.first()
+    return result.scalars().first()
 
 
 async def get_user_by_username(db: AsyncSession, username: str) -> User:
     result = await db.execute(
         select(User).where(User.username == username)
     )
-    return result.scalars.first()
+    return result.scalars().first()
 
 
 async def get_session_by_id(db: AsyncSession, session_id: str) -> Session | None:
     result = await db.execute(
         select(Session).options(selectinload(Session.user)).where(Session.session_id == session_id)
     )
-    return result.scalars.first()
+    return result.scalars().first()
 
 
 async def create_session(db: AsyncSession, session_id: str, user_fk: int) -> Session:

@@ -68,7 +68,7 @@ async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSess
         )
     
     session_id = str(uuid.uuid4())
-    create_session(db, session_id, existing_user.id)
+    await create_session(db, session_id, existing_user.id)
     response.set_cookie(
         key="session_id",
         value=session_id,
