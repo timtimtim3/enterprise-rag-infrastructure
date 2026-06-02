@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 1efed4867040
+Revision ID: ae21d50cbaa0
 Revises: 
-Create Date: 2026-06-02 08:37:13.644477
+Create Date: 2026-06-02 11:20:24.709901
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '1efed4867040'
+revision: str = 'ae21d50cbaa0'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -37,44 +37,56 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
     op.create_table('chats',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('chat_id', sa.String(), nullable=False),
-    sa.Column('title', sa.String(), nullable=True),
+    sa.Column('chat_id', sa.String(length=36), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('user_fk', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['user_fk'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['user_fk'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_chats_chat_id'), 'chats', ['chat_id'], unique=True)
     op.create_index(op.f('ix_chats_id'), 'chats', ['id'], unique=False)
+    op.create_table('sessions',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('session_id', sa.String(length=36), nullable=False),
+    sa.Column('user_fk', sa.Integer(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['user_fk'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_sessions_id'), 'sessions', ['id'], unique=False)
+    op.create_index(op.f('ix_sessions_session_id'), 'sessions', ['session_id'], unique=True)
     op.create_table('messages',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('message_id', sa.String(), nullable=False),
+    sa.Column('message_id', sa.String(length=36), nullable=False),
     sa.Column('role', sa.Enum('USER', 'ASSISTANT', 'SYSTEM', name='message_role'), nullable=False),
-    sa.Column('content', sa.String(), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
     sa.Column('chat_fk', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['chat_fk'], ['chats.id'], ),
+    sa.ForeignKeyConstraint(['chat_fk'], ['chats.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_messages_id'), 'messages', ['id'], unique=False)
     op.create_index(op.f('ix_messages_message_id'), 'messages', ['message_id'], unique=True)
     op.create_table('message_sources',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('doc_id', sa.String(), nullable=False),
+    sa.Column('doc_id', sa.String(length=255), nullable=False),
     sa.Column('source_index', sa.Integer(), nullable=False),
     sa.Column('chunk_indices', postgresql.ARRAY(sa.Integer()), nullable=False),
-    sa.Column('title', sa.String(), nullable=False),
-    sa.Column('source_path', sa.String(), nullable=False),
-    sa.Column('source_type', sa.String(), nullable=False),
-    sa.Column('doc_type', sa.String(), nullable=False),
-    sa.Column('score', sa.Float(), nullable=False),
-    sa.Column('reranker_score', sa.Float(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('source_path', sa.String(length=1024), nullable=False),
+    sa.Column('source_type', sa.String(length=255), nullable=False),
+    sa.Column('doc_type', sa.String(length=255), nullable=False),
+    sa.Column('score', sa.Float(), nullable=True),
+    sa.Column('reranker_score', sa.Float(), nullable=True),
     sa.Column('message_fk', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['message_fk'], ['messages.id'], ),
+    sa.ForeignKeyConstraint(['message_fk'], ['messages.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_message_sources_id'), 'message_sources', ['id'], unique=False)
@@ -89,6 +101,9 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_messages_message_id'), table_name='messages')
     op.drop_index(op.f('ix_messages_id'), table_name='messages')
     op.drop_table('messages')
+    op.drop_index(op.f('ix_sessions_session_id'), table_name='sessions')
+    op.drop_index(op.f('ix_sessions_id'), table_name='sessions')
+    op.drop_table('sessions')
     op.drop_index(op.f('ix_chats_id'), table_name='chats')
     op.drop_index(op.f('ix_chats_chat_id'), table_name='chats')
     op.drop_table('chats')

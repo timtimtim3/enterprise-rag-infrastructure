@@ -33,7 +33,9 @@ class AnswerService:
                         "title": context_dict["title"],
                         "source_path": context_dict["source_path"],
                         "doc_id": doc_id,
-                        "chunk_indices": [context_dict["chunk_index"]]
+                        "chunk_indices": [context_dict["chunk_index"]],
+                        "source_type": context_dict["source_type"],
+                        "doc_type": context_dict["doc_type"],
                     }
                 )
 

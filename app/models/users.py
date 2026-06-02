@@ -22,5 +22,5 @@ class User(TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    chats: Mapped[list["Chat"]] = relationship("Chat", back_populates="user")
-    sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user", cascade="all, delete-orphan",)
+    chats: Mapped[list["Chat"]] = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
+    sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user", cascade="all, delete-orphan")
