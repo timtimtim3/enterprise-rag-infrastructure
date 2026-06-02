@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 
-from app.api.db import get_db
+from app.db.session import get_db
 from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse
 from app.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
 from app.core.security import hash_password, verify_password

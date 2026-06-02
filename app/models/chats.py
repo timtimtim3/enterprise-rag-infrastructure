@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 
-from app.api.db import Base
+from app.db.base import Base
 from app.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:

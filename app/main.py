@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 import app.models
-from app.api.db import Base, engine
+from app.db.base import Base, engine
 from app.api.routes.chats import router as chat_router
-from app.api.routes.chats import router as health_router
-from app.api.routes.chats import router as auth_router
+from app.api.routes.health import router as health_router
+from app.api.routes.auth import router as auth_router
 
 from app.llm.client import LLM
 from app.rag.embeddings import EmbeddingService

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from app.api.db import get_db
+from app.db.session import get_db
 from app.crud.auth import get_session_by_id, delete_session
 
 if TYPE_CHECKING:

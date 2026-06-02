@@ -5,7 +5,7 @@ from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import TYPE_CHECKING
 
-from app.api.db import Base
+from app.db.base import Base
 from app.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:
