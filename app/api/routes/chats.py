@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/chats", tags=["chats"])
 
 
-@router.post("/chats", response_model=AskResponse)
+@router.post("/chats", response_model=AskResponse, status_code=201)
 async def chats(
     request: Request,
     ask_request: AskRequest,
@@ -37,7 +37,7 @@ async def chats(
         )
 
 
-@router.post("/chats/{chat_id}/messages", response_model=AskResponse)
+@router.post("/chats/{chat_id}/messages", response_model=AskResponse, status_code=201)
 async def add_message(
     request: Request,
     ask_request: AskRequest,
