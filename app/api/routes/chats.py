@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from app.api.dependencies.auth import get_current_user, get_db
 from app.api.schemas.chats import AskRequest, AskResponse, ChatInfo, ListChatsResponse, ListMessageSourcesResponse, ListMessagesResponse, MessageInfo, MessageSourceInfo
-from app.crud.chats import create_chat, db_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
+from app.crud.chats import create_chat as crud_create_chat, delete_chat as crud_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
 from app.services.chat_service import answer_chat_message, AnswerGenerationError
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ async def create_chat(
     """
     Creates a new chat in db, add query to db, sends query to RAG llm, add response to db, return answer
     """
-    chat = await create_chat(db, title=ask_request.query, user=user)
+    chat = await crud_create_chat(db, title=ask_request.query, user=user)
 
     try:
         return await answer_chat_message(db, request.app.state.answer_svc, chat, ask_request.query)
@@ -113,4 +113,4 @@ async def delete_chat(chat_id: str, user: User = Depends(get_current_user), db: 
     if chat is None:
         raise HTTPException(status_code=404, detail="Chat not found")
     
-    await db_delete_chat(db, chat)
+    await crud_delete_chat(db, chat)

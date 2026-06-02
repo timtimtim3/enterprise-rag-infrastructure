@@ -81,7 +81,7 @@ async def get_message_sources(db: AsyncSession, message: Message) -> list[Messag
     return result.scalars().all()
 
 
-async def db_delete_chat(db: AsyncSession, chat: Chat) -> bool:
+async def delete_chat(db: AsyncSession, chat: Chat) -> bool:
     if chat is None:
         return False
     
