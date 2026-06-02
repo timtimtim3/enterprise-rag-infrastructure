@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from app.models.chats import Chat, Message, MessageSource
 
@@ -43,7 +43,7 @@ async def create_message_source(
     return message_source
 
 
-async def get_chat_by_user_chat_id(db: AsyncSession, user: User, chat_id: str) -> Chat:
+async def get_user_chat(db: AsyncSession, user: User, chat_id: str) -> Optional[Chat]:
     result = await db.execute(
         select(Chat).where(Chat.user_fk == user.id, Chat.chat_id == chat_id)
     )
