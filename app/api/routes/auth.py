@@ -10,7 +10,7 @@ from app.core.config import DUMMY_PASSWORD, SESSION_EXPIRE_SECONDS
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-router = APIRouter(prefix="auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 

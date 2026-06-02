@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 import app.models
-from app.db.base import Base, engine
+from app.db.base import Base
+from app.db.session import engine
 from app.api.routes.chats import router as chat_router
 from app.api.routes.health import router as health_router
 from app.api.routes.auth import router as auth_router
