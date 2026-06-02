@@ -20,21 +20,21 @@ async def get_user_by_email(db: AsyncSession, email: str) -> User:
     result = await db.execute(
         select(User).where(User.email == email)
     )
-    return result.scalars().first()
+    return result.scalar_one_or_none()
 
 
 async def get_user_by_username(db: AsyncSession, username: str) -> User:
     result = await db.execute(
         select(User).where(User.username == username)
     )
-    return result.scalars().first()
+    return result.scalar_one_or_none()
 
 
 async def get_session_by_id(db: AsyncSession, session_id: str) -> Session | None:
     result = await db.execute(
         select(Session).options(selectinload(Session.user)).where(Session.session_id == session_id)
     )
-    return result.scalars().first()
+    return result.scalar_one_or_none()
 
 
 async def create_session(db: AsyncSession, session_id: str, user_fk: int) -> Session:
@@ -58,7 +58,7 @@ async def delete_session_by_id(db: AsyncSession, session_id: str) -> bool:
     result = await db.execute(
         select(Session).where(Session.session_id == session_id)
     )
-    session = result.scalars().first()
+    session = result.scalar_one_or_none()
 
     if session is None:
         return False
