@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/chats", tags=["chats"])
 
 
-@router.post("/chats", response_model=AskResponse, status_code=201)
+@router.post("", response_model=AskResponse, status_code=201)
 async def create_chat(
     request: Request,
     ask_request: AskRequest,
@@ -37,7 +37,7 @@ async def create_chat(
         )
 
 
-@router.post("/chats/{chat_id}/messages", response_model=AskResponse, status_code=201)
+@router.post("/{chat_id}/messages", response_model=AskResponse, status_code=201)
 async def add_message(
     request: Request,
     ask_request: AskRequest,
@@ -62,7 +62,7 @@ async def add_message(
         )
 
 
-@router.get("/chats", response_model=ListChatsResponse)
+@router.get("", response_model=ListChatsResponse)
 async def list_chats(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> ListChatsResponse:
     chats = await get_user_chats(db, user)
     return ListChatsResponse(
@@ -70,7 +70,7 @@ async def list_chats(user: User = Depends(get_current_user), db: AsyncSession = 
     )
 
 
-@router.get("/chats/{chat_id}/messages", response_model=ListMessagesResponse)
+@router.get("/{chat_id}/messages", response_model=ListMessagesResponse)
 async def list_messages(
     chat_id: str,
     user: User = Depends(get_current_user),
@@ -86,7 +86,7 @@ async def list_messages(
     )
 
 
-@router.get("/chats/{chat_id}/messages/{message_id}/sources", response_model=ListMessageSourcesResponse)
+@router.get("/{chat_id}/messages/{message_id}/sources", response_model=ListMessageSourcesResponse)
 async def list_message_sources(
     chat_id: str,
     message_id: str,
@@ -107,7 +107,7 @@ async def list_message_sources(
     )
 
 
-@router.delete("/chats/{chat_id}", status_code=204)
+@router.delete("/{chat_id}", status_code=204)
 async def delete_chat(chat_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> None:
     chat = await get_user_chat(db, user, chat_id)
     if chat is None:
