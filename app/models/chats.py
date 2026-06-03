@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import uuid
-from sqlalchemy import Integer, String, ForeignKey, Float, Text
+from sqlalchemy import Boolean, Integer, String, ForeignKey, Float, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import Enum as SQLEnum
 
 from app.db.base import Base
 from app.models.timestamp import TimestampMixin
 from app.enums.message_role import MessageRole
+from app.enums.llm_route import LLMRoute
 
 if TYPE_CHECKING:
     from app.models.users import User
@@ -35,6 +36,18 @@ class Message(TimestampMixin, Base):
     message_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False, default=lambda: str(uuid.uuid4()))
     role: Mapped[MessageRole] = mapped_column(SQLEnum(MessageRole, name="message_role"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Assistant-only fields
+    model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    route: Mapped[Optional[LLMRoute]] = mapped_column(SQLEnum(LLMRoute, name="llm_route"), nullable=True) # route: "direct" | "rag" | "clarify" | "tool"
+    finish_reason: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    prompt_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    completion_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    total_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+    # Rag-only fields
+    retrieval_embedding_model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    retrieval_reranking_model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")
     chat_fk: Mapped[int] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)

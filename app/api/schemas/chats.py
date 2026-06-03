@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 
+from app.enums.llm_route import LLMRoute
 from app.enums.message_role import MessageRole
 
 
@@ -14,7 +15,7 @@ class Usage(BaseModel):
     total_tokens: int
 
 
-class Source(BaseModel):
+class SourceBase(BaseModel):
     doc_id: str
     source_index: int
     title: str
@@ -22,6 +23,14 @@ class Source(BaseModel):
     source_type: str
     doc_type: str
     chunk_indices: List[int]
+
+
+class SourceCreate(SourceBase):
+    pass
+
+
+class SourceInfo(SourceBase):
+    pass
 
 
 class AskResponse(BaseModel):
@@ -32,7 +41,7 @@ class AskResponse(BaseModel):
     model: Optional[str]
     finish_reason: Optional[str]
     usage: Usage
-    sources: List[Source]
+    sources: List[SourceInfo]
 
 
 class ChatInfo(BaseModel):
@@ -42,12 +51,31 @@ class ChatInfo(BaseModel):
     title: Optional[str]
 
 
-class MessageInfo(BaseModel):
+class MessageBase(BaseModel):
+    role: MessageRole
+    content: str
+
+    # Assistant-only fields
+    model: Optional[str] = None
+    route: Optional[LLMRoute] = None
+    finish_reason: Optional[str] = None
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
+    total_tokens: Optional[int] = None
+
+    # Rag-only fields
+    retrieval_embedding_model: Optional[str] = None
+    retrieval_reranking_model: Optional[str] = None
+
+
+class MessageCreate(MessageBase):
+    pass
+
+
+class MessageInfo(MessageBase):
     model_config = ConfigDict(from_attributes=True)
 
     message_id: str
-    role: MessageRole
-    content: str
 
 
 class MessageSourceInfo(BaseModel):

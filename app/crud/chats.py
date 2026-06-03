@@ -9,8 +9,7 @@ from app.models.chats import Chat, Message, MessageSource
 
 if TYPE_CHECKING:
     from app.models.users import User
-    from app.enums.message_role import MessageRole
-    from app.api.schemas.chats import Source
+    from app.api.schemas.chats import SourceCreate, MessageCreate
 
 
 async def create_chat(db: AsyncSession, title: str, user: User) -> Chat:
@@ -21,8 +20,11 @@ async def create_chat(db: AsyncSession, title: str, user: User) -> Chat:
     return chat
 
 
-async def create_message(db: AsyncSession, role: MessageRole, content: str, chat: Chat) -> Message:
-    message = Message(role=role, content=content, chat=chat)
+async def create_message(db: AsyncSession, chat: Chat, message_create: MessageCreate) -> Message:
+    message = Message(
+        chat=chat,
+        **message_create.model_dump(),
+    )
     db.add(message)
     chat.updated_at = datetime.now(timezone.utc)
     await db.commit()
@@ -34,7 +36,7 @@ async def create_message(db: AsyncSession, role: MessageRole, content: str, chat
 async def create_message_source(
     db: AsyncSession,
     message: Message,
-    source: Source,
+    source: SourceCreate,
 ) -> MessageSource:
     message_source = MessageSource(
         message=message,

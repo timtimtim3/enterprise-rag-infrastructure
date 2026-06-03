@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from app.enums.llm_route import LLMRoute
 from app.rag.helpers import format_context_dict_for_llm, format_context_dict_for_llm_doc_chunks
 from app.llm.prompts import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
 
@@ -56,6 +57,7 @@ class AnswerService:
         resp_dict = {
             "answer": answer_text,
             "model": resp_obj.model,
+            "route": LLMRoute.RAG,
             "finish_reason": resp_obj.choices[0].finish_reason,
             "usage": {
                 "completion_tokens": resp_obj.usage.completion_tokens,

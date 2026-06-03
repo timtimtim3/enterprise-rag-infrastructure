@@ -1,10 +1,10 @@
-from app.api.schemas.chats import AskResponse, Source, Usage
+from app.api.schemas.chats import AskResponse, SourceInfo, Usage
 
 
-def sources_from_answer(source_dicts: list[dict]) -> list[Source]:
+def sources_from_answer(source_dicts: list[dict]) -> list[SourceInfo]:
     sources = []
     for source_dict in source_dicts:
-        source = Source(
+        source = SourceInfo(
             doc_id=source_dict["doc_id"],
             source_index=source_dict["source_index"],
             chunk_indices=source_dict["chunk_indices"],
@@ -22,7 +22,7 @@ def construct_ask_response(
     query_message_id: str,
     answer_message_id: str,
     answer: dict,
-    sources: list[Source],
+    sources: list[SourceInfo],
 ) -> AskResponse:
     return AskResponse(
         chat_id=chat_id,
