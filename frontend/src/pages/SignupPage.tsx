@@ -2,12 +2,10 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { authApi } from "../api/auth";
-import { useAuth } from "../contexts/AuthContext";
 import { ApiError } from "../api/client";
 
 export function SignupPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,9 +17,8 @@ export function SignupPage() {
     setError(null);
     setLoading(true);
     try {
-      const response = await authApi.signUp({ username, email, password });
-      login(response);
-      navigate("/chats");
+      await authApi.signUp({ username, email, password });
+      navigate("/login");
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
