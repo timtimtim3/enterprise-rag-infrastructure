@@ -4,7 +4,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import type { MessageInfo } from "../../types/api";
 import { SourcesButton } from "../Sources/SourcesButton";
-import { User, Sparkles } from "lucide-react";
+import { User, Sparkles, Cpu } from "lucide-react";
 
 interface MessageItemProps {
   message: MessageInfo;
@@ -72,8 +72,18 @@ export function MessageItem({ message, chatId }: MessageItemProps) {
             </ReactMarkdown>
           </div>
 
-          {!isPending && chatId && message.route === "rag" && (
-            <SourcesButton chatId={chatId} messageId={message.message_id} />
+          {!isPending && (message.model || message.route === "rag") && (
+            <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+              {message.route === "rag" && chatId && (
+                <SourcesButton chatId={chatId} messageId={message.message_id} />
+              )}
+              {message.model && (
+                <span className="flex items-center gap-1 text-2xs text-text-muted">
+                  <Cpu size={10} />
+                  {message.model}
+                </span>
+              )}
+            </div>
           )}
         </div>
       </div>
