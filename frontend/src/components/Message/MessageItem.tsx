@@ -72,7 +72,7 @@ export function MessageItem({ message, chatId }: MessageItemProps) {
             </ReactMarkdown>
           </div>
 
-          {!isPending && chatId && (
+          {!isPending && chatId && message.route === "rag" && (
             <SourcesButton chatId={chatId} messageId={message.message_id} />
           )}
         </div>
