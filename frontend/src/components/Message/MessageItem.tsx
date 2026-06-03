@@ -2,17 +2,20 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import type { MessageInfo, Source } from "../../types/api";
-import { SourcesList } from "../Sources/SourcesList";
+import type { MessageInfo } from "../../types/api";
+import { SourcesButton } from "../Sources/SourcesButton";
 import { User, Sparkles } from "lucide-react";
 
 interface MessageItemProps {
   message: MessageInfo;
-  sources?: Source[];
+  chatId?: string;
 }
 
-export function MessageItem({ message, sources }: MessageItemProps) {
+const PENDING_ID_PREFIX = "pending-";
+
+export function MessageItem({ message, chatId }: MessageItemProps) {
   const isUser = message.role === "user";
+  const isPending = message.message_id.startsWith(PENDING_ID_PREFIX);
 
   if (isUser) {
     return (
@@ -68,8 +71,9 @@ export function MessageItem({ message, sources }: MessageItemProps) {
               {message.content}
             </ReactMarkdown>
           </div>
-          {sources && sources.length > 0 && (
-            <SourcesList sources={sources} />
+
+          {!isPending && chatId && (
+            <SourcesButton chatId={chatId} messageId={message.message_id} />
           )}
         </div>
       </div>

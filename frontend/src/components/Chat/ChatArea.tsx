@@ -1,17 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import type { MessageInfo, Source, AskResponse } from "../../types/api";
-import { useChatMessages, useCreateChat, useAddMessage } from "../../hooks/useChats";
+import { useQueryClient } from "@tanstack/react-query";
+import type { MessageInfo, AskResponse } from "../../types/api";
+import { useChatMessages, useCreateChat, useAddMessage, chatKeys } from "../../hooks/useChats";
 import { MessageItem } from "../Message/MessageItem";
 import { TypingIndicator } from "../Message/TypingIndicator";
 import { ChatInput } from "./ChatInput";
 import { Sparkles } from "lucide-react";
-
-interface PendingMessage {
-  userContent: string;
-  answerMessageId?: string;
-  sources?: Source[];
-}
 
 interface ChatAreaProps {
   chatId: string | null;
@@ -19,8 +14,9 @@ interface ChatAreaProps {
 
 export function ChatArea({ chatId }: ChatAreaProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [pending, setPending] = useState<PendingMessage | null>(null);
+  const [pendingUserContent, setPendingUserContent] = useState<string | null>(null);
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
 
   const { data: messagesData, isLoading: messagesLoading } =
@@ -31,25 +27,34 @@ export function ChatArea({ chatId }: ChatAreaProps) {
 
   const messages = messagesData?.messages ?? [];
 
-  const sourcesMap = useRef<Map<string, Source[]>>(new Map());
+  const seedSourcesCache = useCallback(
+    (response: AskResponse, resolvedChatId: string) => {
+      if (response.sources?.length) {
+        queryClient.setQueryData(
+          chatKeys.sources(resolvedChatId, response.answer_message_id),
+          { message_sources: response.sources }
+        );
+      }
+    },
+    [queryClient]
+  );
 
   const handleResponse = useCallback(
     (response: AskResponse, newChatId?: string) => {
-      if (response.sources?.length) {
-        sourcesMap.current.set(response.answer_message_id, response.sources);
-      }
+      const resolvedChatId = newChatId ?? chatId ?? "";
+      seedSourcesCache(response, resolvedChatId);
       setPendingAnswer(null);
-      setPending(null);
+      setPendingUserContent(null);
       if (newChatId) {
         navigate(`/chats/${newChatId}`, { replace: true });
       }
     },
-    [navigate]
+    [chatId, navigate, seedSourcesCache]
   );
 
   const handleSend = useCallback(
     async (query: string) => {
-      setPending({ userContent: query });
+      setPendingUserContent(query);
       setPendingAnswer("");
 
       try {
@@ -65,7 +70,7 @@ export function ChatArea({ chatId }: ChatAreaProps) {
           handleResponse(response);
         }
       } catch {
-        setPending(null);
+        setPendingUserContent(null);
         setPendingAnswer(null);
       }
     },
@@ -77,11 +82,10 @@ export function ChatArea({ chatId }: ChatAreaProps) {
     if (el) {
       el.scrollTop = el.scrollHeight;
     }
-  }, [messages, pending, pendingAnswer]);
+  }, [messages, pendingUserContent, pendingAnswer]);
 
   const isLoading = createChat.isPending || addMessage.isPending;
-
-  const isEmpty = !chatId && !pending;
+  const isEmpty = !chatId && !pendingUserContent;
 
   if (isEmpty) {
     return (
@@ -104,10 +108,7 @@ export function ChatArea({ chatId }: ChatAreaProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 py-6"
-      >
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto flex flex-col gap-6">
           {messagesLoading && chatId && (
             <div className="flex justify-start">
@@ -122,22 +123,22 @@ export function ChatArea({ chatId }: ChatAreaProps) {
 
           {messages.map((msg: MessageInfo) => {
             if (msg.role === "system") return null;
-            const sources =
-              msg.role === "assistant"
-                ? sourcesMap.current.get(msg.message_id)
-                : undefined;
             return (
-              <MessageItem key={msg.message_id} message={msg} sources={sources} />
+              <MessageItem
+                key={msg.message_id}
+                message={msg}
+                chatId={chatId ?? undefined}
+              />
             );
           })}
 
-          {pending && (
+          {pendingUserContent && (
             <>
               <MessageItem
                 message={{
                   message_id: "pending-user",
                   role: "user",
-                  content: pending.userContent,
+                  content: pendingUserContent,
                 }}
               />
               {pendingAnswer !== null ? (

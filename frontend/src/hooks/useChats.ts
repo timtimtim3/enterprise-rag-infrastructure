@@ -29,12 +29,13 @@ export function useChatMessages(chatId: string | null) {
 
 export function useMessageSources(
   chatId: string | null,
-  messageId: string | null
+  messageId: string | null,
+  fetchEnabled = true
 ) {
   return useQuery({
     queryKey: chatKeys.sources(chatId ?? "", messageId ?? ""),
     queryFn: () => chatsApi.listMessageSources(chatId!, messageId!),
-    enabled: !!chatId && !!messageId,
+    enabled: fetchEnabled && !!chatId && !!messageId,
     staleTime: Infinity,
   });
 }
