@@ -14,5 +14,5 @@ export const authApi = {
     api.post<LoginResponse>("/auth/signin", data),
 
   signUp: (data: RegisterRequest) =>
-    api.post<RegisterResponse>("/auth/singup", data),
+    api.post<RegisterResponse>("/auth/signup", data),
 };

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, BookOpen } from "lucide-react";
 import { SourceCard } from "./SourceCard";
-import type { MessageSourceInfo, Source } from "../../types/api";
+import type { MessageSourceInfo, SourceInfo } from "../../types/api";
 
 type SourcesListProps = {
-  sources: (MessageSourceInfo | Source)[];
+  sources: (MessageSourceInfo | SourceInfo)[];
 };
 
 export function SourcesList({ sources }: SourcesListProps) {

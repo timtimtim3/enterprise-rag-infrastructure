@@ -1,8 +1,8 @@
-import type { MessageSourceInfo, Source } from "../../types/api";
+import type { MessageSourceInfo, SourceInfo } from "../../types/api";
 import { FileText, Globe, Database, File } from "lucide-react";
 
 type SourceCardProps = {
-  source: MessageSourceInfo | Source;
+  source: MessageSourceInfo | SourceInfo;
   index: number;
 };
 

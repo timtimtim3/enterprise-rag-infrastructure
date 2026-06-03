@@ -20,8 +20,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 
-@router.post("/singup", response_model=RegisterResponse, status_code=201)
-async def sing_up(register_request: RegisterRequest, db: AsyncSession = Depends(get_db)) -> RegisterResponse:
+@router.post("/signup", response_model=RegisterResponse, status_code=201)
+async def sign_up(register_request: RegisterRequest, db: AsyncSession = Depends(get_db)) -> RegisterResponse:
     hashed_password = hash_password(register_request.password)
 
     existing_user = await get_user_by_email(

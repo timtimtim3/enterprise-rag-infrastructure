@@ -1,97 +1,16 @@
-export interface AskRequest {
-  query: string;
-}
+import type { components } from "@/api/generated/schema";
 
-export interface Usage {
-  completion_tokens: number;
-  prompt_tokens: number;
-  total_tokens: number;
-}
-
-export interface Source {
-  doc_id: string;
-  source_index: number;
-  title: string;
-  source_path: string;
-  source_type: string;
-  doc_type: string;
-  chunk_indices: number[];
-}
-
-export interface AskResponse {
-  chat_id: string;
-  query_message_id: string;
-  answer_message_id: string;
-  answer: string;
-  model: string | null;
-  finish_reason: string | null;
-  usage: Usage;
-  sources: Source[];
-}
-
-export interface ChatInfo {
-  chat_id: string;
-  title: string | null;
-}
-
-export type MessageRole = "user" | "assistant" | "system";
-
-export interface MessageInfo {
-  message_id: string;
-  role: MessageRole;
-  content: string;
-}
-
-export interface MessageSourceInfo {
-  doc_id: string;
-  source_index: number;
-  chunk_indices: number[];
-  title: string;
-  source_path: string;
-  source_type: string;
-  doc_type: string;
-  score?: number | null;
-  reranker_score?: number | null;
-}
-
-export interface ListChatsResponse {
-  chats: ChatInfo[];
-}
-
-export interface ListMessagesResponse {
-  messages: MessageInfo[];
-}
-
-export interface ListMessageSourcesResponse {
-  message_sources: MessageSourceInfo[];
-}
-
-export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-}
-
-export interface RegisterResponse {
-  user_id: string;
-  username: string;
-}
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user_id: string;
-  username: string;
-}
-
-export interface UserInfo {
-  user_id: string;
-  username: string;
-}
-
-export interface ApiError {
-  detail: string | { loc: (string | number)[]; msg: string; type: string }[];
-}
+export type AskRequest = components["schemas"]["AskRequest"];
+export type AskResponse = components["schemas"]["AskResponse"];
+export type ChatInfo = components["schemas"]["ChatInfo"];
+export type MessageInfo = components["schemas"]["MessageInfo"];
+export type SourceInfo = components["schemas"]["SourceInfo"];
+export type MessageSourceInfo = components["schemas"]["MessageSourceInfo"];
+export type ListChatsResponse = components["schemas"]["ListChatsResponse"];
+export type ListMessagesResponse = components["schemas"]["ListMessagesResponse"];
+export type ListMessageSourcesResponse = components["schemas"]["ListMessageSourcesResponse"];
+export type LoginRequest = components["schemas"]["LoginRequest"];
+export type LoginResponse = components["schemas"]["LoginResponse"];
+export type RegisterRequest = components["schemas"]["RegisterRequest"];
+export type RegisterResponse = components["schemas"]["RegisterResponse"];
+export type UserInfo = components["schemas"]["UserInfo"];
