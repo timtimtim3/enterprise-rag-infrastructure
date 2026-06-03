@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { authApi } from "../api/auth";
 import { useAuth } from "../contexts/AuthContext";
-import { ApiClientError } from "../api/client";
+import { ApiError } from "../api/client";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export function LoginPage() {
       login(response);
       navigate("/chats");
     } catch (err) {
-      if (err instanceof ApiClientError) {
+      if (err instanceof ApiError) {
         setError(err.message);
       } else {
         setError("Something went wrong. Please try again.");

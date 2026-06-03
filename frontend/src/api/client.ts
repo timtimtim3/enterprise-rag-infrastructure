@@ -1,52 +1,46 @@
-export class ApiClientError extends Error {
+import createClient from "openapi-fetch";
+import type { paths } from "./generated/schema";
+
+export const apiClient = createClient<paths>({
+  baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000",
+  credentials: "include",
+});
+
+export class ApiError extends Error {
   constructor(
-    public status: number,
     message: string,
+    public status?: number,
     public body?: unknown
   ) {
     super(message);
-    this.name = "ApiClientError";
+    this.name = "ApiError";
   }
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const response = await fetch(path, {
-    ...options,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
+function getErrorMessage(error: unknown): string {
+  if (
+    error &&
+    typeof error === "object" &&
+    "detail" in error
+  ) {
+    const detail = error.detail;
 
-  if (response.status === 204) {
-    return undefined as T;
+    if (typeof detail === "string") {
+      return detail;
+    }
+
+    if (Array.isArray(detail)) {
+      return detail.map((item) => item.msg).join(", ");
+    }
   }
 
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const message =
-      typeof data?.detail === "string"
-        ? data.detail
-        : `Request failed with status ${response.status}`;
-    throw new ApiClientError(response.status, message, data);
-  }
-
-  return data as T;
+  return "Request failed";
 }
 
-export const api = {
-  get: <T>(path: string) => request<T>(path, { method: "GET" }),
-
-  post: <T>(path: string, body?: unknown) =>
-    request<T>(path, {
-      method: "POST",
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    }),
-
-  delete: <T = void>(path: string) => request<T>(path, { method: "DELETE" }),
-};
+export function throwApiError(error: unknown): never {
+  throw new ApiError(
+    getErrorMessage(error),
+    undefined,
+    error
+  );
+}

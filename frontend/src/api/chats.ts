@@ -1,27 +1,107 @@
-import { api } from "./client";
+import { apiClient, throwApiError } from "./client";
 import type {
   AskRequest,
-  AskResponse,
-  ListChatsResponse,
-  ListMessageSourcesResponse,
-  ListMessagesResponse,
 } from "../types/api";
 
 export const chatsApi = {
-  list: () => api.get<ListChatsResponse>("/chats"),
+  async list() {
+    const { data, error } = await apiClient.GET("/chats");
 
-  create: (data: AskRequest) => api.post<AskResponse>("/chats", data),
+    if (error) {
+      throwApiError(error);
+    }
+    
+    return data;
+  },
 
-  delete: (chatId: string) => api.delete(`/chats/${chatId}`),
+  async create(data: AskRequest) {
+    const { data: response, error } = await apiClient.POST(
+      "/chats",
+      {
+        body: data,
+      }
+    );
 
-  listMessages: (chatId: string) =>
-    api.get<ListMessagesResponse>(`/chats/${chatId}/messages`),
+    if (error) {
+      throwApiError(error);
+    }
 
-  addMessage: (chatId: string, data: AskRequest) =>
-    api.post<AskResponse>(`/chats/${chatId}/messages`, data),
+    return response;
+  },
 
-  listMessageSources: (chatId: string, messageId: string) =>
-    api.get<ListMessageSourcesResponse>(
-      `/chats/${chatId}/messages/${messageId}/sources`
-    ),
+  async delete(chatId: string) {
+    const { error } = await apiClient.DELETE(
+      "/chats/{chat_id}",
+      {
+        params: {
+          path: {
+            chat_id: chatId,
+          },
+        },
+      }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+  },
+
+  async listMessages(chatId: string) {
+    const { data, error } = await apiClient.GET(
+      "/chats/{chat_id}/messages",
+      {
+        params: {
+          path: {
+            chat_id: chatId,
+          },
+        },
+      }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+    
+    return data;
+  },
+
+  async addMessage(chatId: string, data: AskRequest) {
+    const { data: response, error } = await apiClient.POST(
+      "/chats/{chat_id}/messages",
+      {
+        params: {
+          path: {
+            chat_id: chatId,
+          },
+        },
+        body: data,
+      }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+
+    return response;
+  },
+
+  async listMessageSources(chatId: string, messageId: string) {
+    const { data, error } = await apiClient.GET(
+      "/chats/{chat_id}/messages/{message_id}/sources",
+      {
+        params: {
+          path: {
+            chat_id: chatId,
+            message_id: messageId,
+          },
+        },
+      }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+
+    return data;
+  },
 };

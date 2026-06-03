@@ -1,18 +1,47 @@
-import { api } from "./client";
+import { apiClient, throwApiError } from "./client";
 import type {
   LoginRequest,
-  LoginResponse,
   RegisterRequest,
-  RegisterResponse,
-  UserInfo,
 } from "../types/api";
 
 export const authApi = {
-  me: () => api.get<UserInfo>("/auth/me"),
+  async me() {
+    const { data, error } = await apiClient.GET("/auth/me");
 
-  signIn: (data: LoginRequest) =>
-    api.post<LoginResponse>("/auth/signin", data),
+    if (error) {
+      throwApiError(error);
+    }
 
-  signUp: (data: RegisterRequest) =>
-    api.post<RegisterResponse>("/auth/signup", data),
+    return data;
+  },
+
+  async signIn(data: LoginRequest) {
+    const { data: response, error } = await apiClient.POST(
+      "/auth/signin",
+      {
+        body: data,
+      }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+
+    return response;
+  },
+
+  async signUp(data: RegisterRequest) {
+    const { data: response, error } = await apiClient.POST(
+      "/auth/signup",
+      {
+        body: data,
+      }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+    
+    return response;
+  },
 };
