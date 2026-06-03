@@ -1,13 +1,19 @@
+from __future__ import annotations
+
 import uuid
-
 from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING
 
+from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
-from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse
+from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserInfo
 from app.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
 from app.core.security import hash_password, verify_password
 from app.core.config import DUMMY_PASSWORD, SESSION_EXPIRE_SECONDS
-from sqlalchemy.ext.asyncio import AsyncSession
+
+if TYPE_CHECKING:
+    from app.models.users import User
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -46,7 +52,7 @@ async def sing_up(register_request: RegisterRequest, db: AsyncSession = Depends(
     )
 
 
-@router.post("/signin", response_model=LoginResponse, status_code=200)
+@router.post("/signin", response_model=LoginResponse)
 async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
     existing_user = await get_user_by_username(
         db,
@@ -82,3 +88,8 @@ async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSess
         user_id=existing_user.user_id,
         username=existing_user.username
     )
+
+
+@router.get("/me", response_model=UserInfo)
+async def get_me(user: User = Depends(get_current_user)) -> UserInfo:
+    return UserInfo.model_validate(user)

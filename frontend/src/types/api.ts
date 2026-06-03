@@ -87,6 +87,11 @@ export interface LoginResponse {
   username: string;
 }
 
+export interface UserInfo {
+  user_id: string;
+  username: string;
+}
+
 export interface ApiError {
   detail: string | { loc: (string | number)[]; msg: string; type: string }[];
 }

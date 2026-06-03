@@ -13,6 +13,9 @@ export default defineConfig({
       "/chats": {
         target: "http://localhost:8000",
         changeOrigin: true,
+        bypass(req) {
+          if (req.headers.accept?.includes("text/html")) return "/index.html";
+        },
       },
       "/health": {
         target: "http://localhost:8000",
