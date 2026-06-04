@@ -67,3 +67,25 @@ class AnswerService:
             "sources": sources,
         }
         return resp_dict
+    
+    
+    async def answer_direct(self):
+        pass
+
+    async def answer_with_rag(self):
+        pass
+
+    async def answer_comparison(self):
+        pass
+
+    async def return_search_results(self):
+        pass
+
+    async def ask_clarifying_question(self):
+        pass
+
+    async def draft_tool_action(self):
+        pass
+
+    async def execute_tool_action(self):
+        pass
