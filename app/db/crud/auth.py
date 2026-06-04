@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta, timezone
 
-from app.models.users import User 
-from app.models.sessions import Session
+from app.db.models.users import User 
+from app.db.models.sessions import Session
 from app.core.config import SESSION_EXPIRE_SECONDS
 
 

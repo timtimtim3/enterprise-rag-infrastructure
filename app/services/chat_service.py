@@ -4,14 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.concurrency import run_in_threadpool
 from typing import TYPE_CHECKING
 
-from app.api.schemas.chats import AskResponse, MessageCreate
+from app.api.schemas.chats import AskResponse
 from app.api.schemas.mappers import construct_ask_response, sources_from_answer
-from app.crud.chats import create_message, create_message_source
-from app.enums.message_role import MessageRole
+from app.db.crud.chats import create_message, create_message_source
+from app.domain.enums.message_role import MessageRole
+from app.domain.chats import MessageCreateData
 
 if TYPE_CHECKING:
-    from app.models.chats import Chat
-    from app.rag.answer_service import AnswerService
+    from app.db.models.chats import Chat
+    from app.services.answer_service import AnswerService
 
 
 class AnswerGenerationError(Exception):
@@ -27,7 +28,7 @@ async def answer_chat_message(
     """
     Add query to db, sends query to RAG llm, add response to db, then sources, return answer
     """
-    message_create = MessageCreate(
+    message_create = MessageCreateData(
         role=MessageRole.USER,
         content=query,
     )
@@ -38,7 +39,7 @@ async def answer_chat_message(
     except Exception as e:
         raise AnswerGenerationError("Failed to generate answer") from e
 
-    message_create = MessageCreate(
+    message_create = MessageCreateData(
         role=MessageRole.ASSISTANT,
         content=answer["answer"],
         model=answer["model"],

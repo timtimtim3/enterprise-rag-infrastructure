@@ -2,7 +2,7 @@ from app.llm.client import LLM
 from app.rag.embeddings import EmbeddingService
 from app.rag.reranking import Reranker
 from app.rag.retriever import Retriever
-from app.rag.answer_service import AnswerService
+from app.services.answer_service import AnswerService
 from app.rag.helpers import format_context_dict_for_llm
 from app.core.config import (
     COLLECTION_NAME,

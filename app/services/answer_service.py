@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from app.enums.llm_route import LLMRoute
+from app.domain.enums.llm_route import LLMRoute
 from app.rag.helpers import format_context_dict_for_llm, format_context_dict_for_llm_doc_chunks
-from app.llm.prompts import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
+from app.prompts.rag import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
 
 if TYPE_CHECKING:
     from app.rag.retriever import Retriever

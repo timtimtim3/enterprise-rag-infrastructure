@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 from datetime import datetime
 
 from app.db.base import Base
-from app.models.timestamp import TimestampMixin
+from app.db.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:
-    from app.models.chats import User
+    from app.db.models.chats import User
 
 
 class Session(TimestampMixin, Base):

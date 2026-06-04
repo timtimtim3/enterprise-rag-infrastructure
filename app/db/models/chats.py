@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy import Enum as SQLEnum
 
 from app.db.base import Base
-from app.models.timestamp import TimestampMixin
-from app.enums.message_role import MessageRole
-from app.enums.llm_route import LLMRoute
+from app.db.models.timestamp import TimestampMixin
+from app.domain.enums.message_role import MessageRole
+from app.domain.enums.llm_route import LLMRoute
 
 if TYPE_CHECKING:
-    from app.models.users import User
+    from app.db.models.users import User
     
 
 class Chat(TimestampMixin, Base):

@@ -6,10 +6,10 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from app.db.session import get_db
-from app.crud.auth import get_session_by_id, delete_session
+from app.db.crud.auth import get_session_by_id, delete_session
 
 if TYPE_CHECKING:
-    from app.models import User
+    from app.db.models import User
 
 
 async def get_current_user(

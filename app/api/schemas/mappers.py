@@ -1,4 +1,4 @@
-from app.api.schemas.chats import AskResponse, SourceInfo, Usage
+from app.api.schemas.chats import AskResponse, SourceInfo, UsageInfo
 
 
 def sources_from_answer(source_dicts: list[dict]) -> list[SourceInfo]:
@@ -31,7 +31,7 @@ def construct_ask_response(
         answer=answer["answer"],
         model=answer["model"],
         finish_reason=answer["finish_reason"],
-        usage=Usage(
+        usage=UsageInfo(
             completion_tokens=answer["usage"]["completion_tokens"],
             prompt_tokens=answer["usage"]["prompt_tokens"],
             total_tokens=answer["usage"]["total_tokens"],

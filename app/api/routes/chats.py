@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 
 from app.api.dependencies.auth import get_current_user, get_db
 from app.api.schemas.chats import AskRequest, AskResponse, ChatInfo, ListChatsResponse, ListMessageSourcesResponse, ListMessagesResponse, MessageInfo, MessageSourceInfo
-from app.crud.chats import create_chat as crud_create_chat, delete_chat as crud_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
+from app.db.crud.chats import create_chat as crud_create_chat, delete_chat as crud_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
 from app.services.chat_service import answer_chat_message, AnswerGenerationError
 
 if TYPE_CHECKING:
-    from app.models.users import User
+    from app.db.models.users import User
 
 
 router = APIRouter(prefix="/chats", tags=["chats"])

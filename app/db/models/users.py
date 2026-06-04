@@ -6,11 +6,11 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import TYPE_CHECKING
 
 from app.db.base import Base
-from app.models.timestamp import TimestampMixin
+from app.db.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:
-    from app.models.chats import Chat
-    from app.models.sessions import Session
+    from app.db.models.chats import Chat
+    from app.db.models.sessions import Session
 
 
 class User(TimestampMixin, Base):

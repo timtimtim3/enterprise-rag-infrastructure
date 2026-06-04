@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-import app.models
+import app.db.models
 from app.db.base import Base
 from app.db.session import engine
 from app.api.routes.chats import router as chat_router
@@ -13,7 +13,7 @@ from app.llm.client import LLM
 from app.rag.embeddings import EmbeddingService
 from app.rag.reranking import Reranker
 from app.rag.retriever import Retriever
-from app.rag.answer_service import AnswerService
+from app.services.answer_service import AnswerService
 from app.core.config import (
     COLLECTION_NAME,
     EMBEDDING_MODEL,

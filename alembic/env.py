@@ -7,7 +7,7 @@ from alembic import context
 
 from app.core.config import ALEMBIC_DATABASE_URL
 from app.db.base import Base
-import app.models
+import app.db.models
 
 
 # this is the Alembic Config object, which provides

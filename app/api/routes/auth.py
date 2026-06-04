@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING
 from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserInfo
-from app.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
+from app.db.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
 from app.core.security import hash_password, verify_password
 from app.core.config import DUMMY_PASSWORD, SESSION_EXPIRE_SECONDS
 
 if TYPE_CHECKING:
-    from app.models.users import User
+    from app.db.models.users import User
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])

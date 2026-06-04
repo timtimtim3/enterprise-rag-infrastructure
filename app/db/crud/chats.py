@@ -5,11 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TYPE_CHECKING, Optional
 
-from app.models.chats import Chat, Message, MessageSource
+from app.db.models.chats import Chat, Message, MessageSource
 
 if TYPE_CHECKING:
-    from app.models.users import User
-    from app.api.schemas.chats import SourceCreate, MessageCreate
+    from app.db.models.users import User
+    from app.domain.chats import SourceCreateData, MessageCreateData
 
 
 async def create_chat(db: AsyncSession, title: str, user: User) -> Chat:
@@ -20,7 +20,7 @@ async def create_chat(db: AsyncSession, title: str, user: User) -> Chat:
     return chat
 
 
-async def create_message(db: AsyncSession, chat: Chat, message_create: MessageCreate) -> Message:
+async def create_message(db: AsyncSession, chat: Chat, message_create: MessageCreateData) -> Message:
     message = Message(
         chat=chat,
         **message_create.model_dump(),
@@ -36,7 +36,7 @@ async def create_message(db: AsyncSession, chat: Chat, message_create: MessageCr
 async def create_message_source(
     db: AsyncSession,
     message: Message,
-    source: SourceCreate,
+    source: SourceCreateData,
 ) -> MessageSource:
     message_source = MessageSource(
         message=message,
