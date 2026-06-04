@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from textwrap import dedent
+from typing import TYPE_CHECKING, Optional
 
-from app.domain.enums.llm_route import LLMRoute
+from app.api.schemas.chats import SourceInfo
+from app.domain.enums.llm_route import LLMRoute, ResponseMode, RetrievalScope, ToolAction
+from app.domain.routing import RoutePlan
+from app.prompts.helpers import format_message_dict, format_retrieved_context_message
 from app.rag.helpers import format_context_dict_for_llm, format_context_dict_for_llm_doc_chunks
-from app.prompts.rag import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
+from app.prompts.assistant.rag import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
+from app.prompts import ANSWER_SYSTEM_PROMPTS_BY_MODE, RAG_SYSTEM_PROMPTS_BY_SCOPE
 
 if TYPE_CHECKING:
     from app.rag.retriever import Retriever
@@ -16,7 +21,38 @@ class AnswerService:
         self.retriever = retriever
         self.llm = llm
 
-    def answer_question(self, query: str):
+    def build_messages(
+        self,
+        *,
+        system_prompt: str, # current task-specific prompt, decided by query router, depends on query
+        user_query: str,
+        app_context_messages: list[str] | None = None, # e.g. RAG results, query_router reason for asking clarification, etc.
+        history_messages: list[dict] | None = None, # user, assistant messages in recent conversation
+    ) -> list[dict]:
+        messages = [format_message_dict(system_prompt, "system")]
+        for ctx in app_context_messages or []:
+            messages.append(format_message_dict(ctx, "system"))
+
+        messages.extend(history_messages or [])
+
+        messages.append(format_message_dict(user_query, "user"))
+
+        return messages
+    
+    def build_resp_obj(self, llm_resp, sources: Optional[list[SourceInfo]] = None):
+        return {
+            "answer": llm_resp.choices[0].message.content,
+            "model": llm_resp.model,
+            "finish_reason": llm_resp.choices[0].finish_reason,
+            "usage": {
+                "completion_tokens": llm_resp.usage.completion_tokens,
+                "prompt_tokens": llm_resp.usage.prompt_tokens,
+                "total_tokens": llm_resp.usage.total_tokens
+            },
+            "sources": sources or [],
+        }
+    
+    def retrieve_and_format(self, query: str):
         context_dicts = self.retriever.retrieve_context(query)
         formatted_sources = []
         last_doc_id = None
@@ -48,6 +84,10 @@ class AnswerService:
                 sources[source_index - 1]["chunk_indices"].append(context_dict["chunk_index"])
 
         formatted_context = "\n\n".join(formatted_sources)
+        return format_retrieved_context_message(formatted_context), sources
+
+    def answer_question(self, query: str):
+        formatted_context, sources = self.retrieve_and_format(query)
 
         # Create messages
         messages = [RAG_SYSTEM_MESSAGE, format_rag_user_query_message(query, formatted_context)]
@@ -68,24 +108,43 @@ class AnswerService:
         }
         return resp_dict
     
-    
-    async def answer_direct(self):
-        pass
+    async def answer(
+        self,
+        query: str,
+        retrieval_scope: RetrievalScope,
+        response_mode: ResponseMode,
+        reason: str,
+    ):
+        # Get system prompt
+        if response_mode == ResponseMode.RAG_ANSWER:
+            system_prompt = RAG_SYSTEM_PROMPTS_BY_SCOPE[retrieval_scope]
+        else:
+            system_prompt = ANSWER_SYSTEM_PROMPTS_BY_MODE[response_mode]
+        
+        # Do retrieval
+        app_context_messages, sources = [], []
+        if retrieval_scope != RetrievalScope.NONE:
+            formatted_context, sources = self.retrieve_and_format(query)
+            app_context_messages.append(formatted_context)
 
-    async def answer_with_rag(self):
-        pass
+        if response_mode == ResponseMode.ASK_CLARIFYING_QUESTION:
+            # Append reason for query_router choosing to ask for clarification first
+            app_context_messages.append(
+                dedent(
+                    f"""
+                    Reason for asking for clarification first:
 
-    async def answer_comparison(self):
-        pass
+                    {reason}
+                    """
+                ).strip()
+            )
 
-    async def return_search_results(self):
-        pass
-
-    async def ask_clarifying_question(self):
-        pass
-
-    async def draft_tool_action(self):
-        pass
-
-    async def execute_tool_action(self):
-        pass
+        # Build messages for llm
+        messages = self.build_messages(
+            system_prompt=system_prompt,
+            user_query=query,
+            app_context_messages=app_context_messages,
+            history_messages=[],
+        )
+        llm_resp = self.llm.get_response(messages) # Get response
+        return self.build_resp_obj(llm_resp=llm_resp, sources=sources)

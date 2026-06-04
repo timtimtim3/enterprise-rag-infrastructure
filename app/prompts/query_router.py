@@ -1,6 +1,3 @@
-from app.prompts.helpers import format_message_dict
-
-
 ROUTER_SYSTEM_PROMPT="""
 You are a routing and planning classifier for an enterprise AI assistant.
 
@@ -18,7 +15,7 @@ intent:
 - action: user wants something created, changed, sent, scheduled, executed, or modified
 - clarify: user request is too ambiguous to safely proceed
 
-retrieval_scope:
+retrieval_scope (retrieval can be used with intent: [answer, search, compare, action]):
 - none: no retrieval needed
 - internal: needs company/project/private documents
 - public: needs indexed public/vendor documentation
@@ -79,4 +76,3 @@ Return this exact JSON shape:
   }
 }
 """
-ROUTER_SYSTEM_MESSAGE = format_message_dict(ROUTER_SYSTEM_PROMPT, "system")

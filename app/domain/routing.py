@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from domain.enums.llm_route import IntentRoute, RetrievalScope, ToolAction, ResponseMode
+from app.domain.enums.llm_route import IntentRoute, RetrievalScope, ToolAction, ResponseMode
 
 
 class SearchHints(BaseModel):
