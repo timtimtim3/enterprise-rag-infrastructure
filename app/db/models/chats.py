@@ -36,7 +36,8 @@ class Message(TimestampMixin, Base):
     message_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False, default=lambda: str(uuid.uuid4()))
     role: Mapped[MessageRole] = mapped_column(SQLEnum(MessageRole, name="message_role"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-
+    content_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    
     # Assistant-only fields
     model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     finish_reason: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

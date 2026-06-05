@@ -23,6 +23,7 @@ class SourceCreateData(SourceBase):
 class MessageBase(BaseModel):
     role: MessageRole
     content: str
+    content_tokens: Optional[int]
 
     # Assistant-only fields
     model: Optional[str] = None

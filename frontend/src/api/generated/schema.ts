@@ -244,6 +244,8 @@ export interface components {
             role: components["schemas"]["MessageRole"];
             /** Content */
             content: string;
+            /** Content Tokens */
+            content_tokens: number | null;
             /** Model */
             model?: string | null;
             /** Finish Reason */

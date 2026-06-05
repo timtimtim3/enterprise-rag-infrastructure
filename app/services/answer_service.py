@@ -10,6 +10,7 @@ from app.prompts.helpers import format_message_dict, format_retrieved_context_me
 from app.rag.helpers import format_context_dict_for_llm, format_context_dict_for_llm_doc_chunks
 from app.prompts.assistant.rag import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
 from app.prompts import ANSWER_SYSTEM_PROMPTS_BY_MODE, RAG_SYSTEM_PROMPTS_BY_SCOPE
+from app.services.helpers import build_messages
 
 if TYPE_CHECKING:
     from app.rag.retriever import Retriever
@@ -20,24 +21,6 @@ class AnswerService:
     def __init__(self, retriever: Retriever, llm: LLM):
         self.retriever = retriever
         self.llm = llm
-
-    def build_messages(
-        self,
-        *,
-        system_prompt: str, # current task-specific prompt, decided by query router, depends on query
-        user_query: str,
-        app_context_messages: list[str] | None = None, # e.g. RAG results, query_router reason for asking clarification, etc.
-        history_messages: list[dict] | None = None, # user, assistant messages in recent conversation
-    ) -> list[dict]:
-        messages = [format_message_dict(system_prompt, "system")]
-        for ctx in app_context_messages or []:
-            messages.append(format_message_dict(ctx, "system"))
-
-        messages.extend(history_messages or [])
-
-        messages.append(format_message_dict(user_query, "user"))
-
-        return messages
     
     def build_resp_obj(self, llm_resp, sources: Optional[list[SourceInfo]] = None):
         return {
@@ -114,6 +97,7 @@ class AnswerService:
         retrieval_scope: RetrievalScope,
         response_mode: ResponseMode,
         reason: str,
+        history_messages: Optional[list[dict]] = None,
     ):
         # Get system prompt
         if response_mode == ResponseMode.RAG_ANSWER:
@@ -140,11 +124,11 @@ class AnswerService:
             )
 
         # Build messages for llm
-        messages = self.build_messages(
+        messages = build_messages(
             system_prompt=system_prompt,
             user_query=query,
             app_context_messages=app_context_messages,
-            history_messages=[],
+            history_messages=history_messages,
         )
         llm_resp = await self.llm.get_response(messages) # Get response
         return self.build_resp_obj(llm_resp=llm_resp, sources=sources)
