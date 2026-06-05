@@ -29,7 +29,13 @@ async def create_chat(
     chat = await crud_create_chat(db, title=ask_request.query, user=user)
 
     try:
-        return await answer_chat_message(db, request.app.state.answer_svc, chat, ask_request.query)
+        return await answer_chat_message(
+            db=db,
+            query_router=request.app.state.query_router,
+            answer_svc=request.app.state.answer_svc,
+            chat=chat,
+            query=ask_request.query,
+        )
     except AnswerGenerationError:
         raise HTTPException(
             status_code=500,
@@ -54,7 +60,13 @@ async def add_message(
         raise HTTPException(status_code=404, detail="Chat not found")
 
     try:
-        return await answer_chat_message(db, request.app.state.answer_svc, chat, ask_request.query)
+        return await answer_chat_message(
+            db=db,
+            query_router=request.app.state.query_router,
+            answer_svc=request.app.state.answer_svc,
+            chat=chat,
+            query=ask_request.query,
+        )
     except AnswerGenerationError:
         raise HTTPException(
             status_code=500,

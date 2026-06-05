@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from app.domain.routing import RoutePlan
 from app.prompts.helpers import format_message_dict
-from app.prompts.query_router import ROUTER_SYSTEM_MESSAGE
+from app.prompts.query_router import ROUTER_SYSTEM_PROMPT
 
 if TYPE_CHECKING:
     from app.llm.client import LLM
@@ -14,7 +14,7 @@ class QueryRouter:
     def __init__(self, llm: LLM):
         self.llm = llm
 
-    async def route_query(self, query: str):
+    async def route_query(self, query: str) -> RoutePlan:
         """
         Decides:
         intent = desired final outcome
@@ -25,7 +25,7 @@ class QueryRouter:
                 
         # Create messages
         messages = [
-            ROUTER_SYSTEM_MESSAGE,
+            format_message_dict(content=ROUTER_SYSTEM_PROMPT, role="system"),
             format_message_dict(
                 content=(
                     "Classify the following user message. "

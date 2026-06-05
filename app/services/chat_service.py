@@ -13,6 +13,7 @@ from app.domain.chats import MessageCreateData
 if TYPE_CHECKING:
     from app.db.models.chats import Chat
     from app.services.answer_service import AnswerService
+    from app.services.query_router import QueryRouter
 
 
 class AnswerGenerationError(Exception):
@@ -21,6 +22,7 @@ class AnswerGenerationError(Exception):
 
 async def answer_chat_message(
     db: AsyncSession,
+    query_router: QueryRouter,
     answer_svc: AnswerService,
     chat: Chat,
     query: str,
@@ -35,7 +37,17 @@ async def answer_chat_message(
     query_message = await create_message(db, chat=chat, message_create=message_create)
 
     try:
-        answer = await answer_svc.answer_question(query)
+        route_plan = await query_router.route_query(query)
+    except Exception as e:
+        raise AnswerGenerationError("Failed to generate answer") from e
+
+    try:
+        answer = await answer_svc.answer(
+            query=query,
+            retrieval_scope=route_plan.retrieval_scope,
+            response_mode=route_plan.response_mode,
+            reason=route_plan.reason,
+        )
     except Exception as e:
         raise AnswerGenerationError("Failed to generate answer") from e
 
@@ -43,7 +55,6 @@ async def answer_chat_message(
         role=MessageRole.ASSISTANT,
         content=answer["answer"],
         model=answer["model"],
-        route=answer["route"],
         finish_reason=answer["finish_reason"],
         prompt_tokens=answer["usage"]["prompt_tokens"],
         completion_tokens=answer["usage"]["completion_tokens"],

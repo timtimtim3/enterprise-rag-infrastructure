@@ -21,6 +21,7 @@ from app.core.config import (
     USING_LLM,
 )
 from app.rag.vectorstores.qdrant_store import init_qdrant
+from app.services.query_router import QueryRouter
 
 
 @asynccontextmanager
@@ -33,7 +34,10 @@ async def lifespan(app: FastAPI):
     reranker = Reranker(RERANKER_MODEL)
     retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
     llm = LLM(USING_LLM)
+
+    query_router = QueryRouter(llm)
     answer_svc = AnswerService(retriever, llm)
+    app.state.query_router = query_router
     app.state.answer_svc = answer_svc
 
     yield
