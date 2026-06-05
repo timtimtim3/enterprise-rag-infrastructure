@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import List, Optional, TYPE_CHECKING, Set
-from qdrant_client import models
 
 from app.core.config import (
     COLLECTION_NAME, 
@@ -16,16 +15,17 @@ from app.core.config import (
 from app.rag.vectorstores.qdrant_store import get_all_qdrant_points_by_doc_id
 
 if TYPE_CHECKING:
-    from qdrant_client import QdrantClient
+    from qdrant_client import AsyncQdrantClient
     from app.rag.embeddings import EmbeddingService
     from app.rag.reranking import Reranker
+
 
 class Retriever:
     def __init__(
         self, 
         embedding_svc: EmbeddingService,
         reranker: Reranker,
-        qdrant_client: QdrantClient,
+        qdrant_client: AsyncQdrantClient,
         collection_name: str = COLLECTION_NAME,
         initial_top_k: int = INITIAL_TOP_K,
         min_required: int = MIN_REQUIRED,
@@ -49,7 +49,7 @@ class Retriever:
         self.expand_window_after = expand_window_after
         self.keep_entire_doc_chunk_thresh = keep_entire_doc_chunk_thresh
 
-    def retrieve_context(
+    async def retrieve_context(
         self,
         query: str,
         initial_top_k: Optional[int] = None,
@@ -68,8 +68,9 @@ class Retriever:
         if relative_threshold is None:
             relative_threshold = self.relative_threshold   
 
-        query_embedding = self.embedding_svc.embed([query])[0]
-        resp = self.qdrant_client.query_points(collection_name=self.collection_name, query=query_embedding, limit=initial_top_k)
+        query_embeddings = await self.embedding_svc.embed([query])
+        query_embedding = query_embeddings[0]
+        resp = await self.qdrant_client.query_points(collection_name=self.collection_name, query=query_embedding, limit=initial_top_k)
         points = resp.points
 
         context_dicts = [self._to_context_dict(point) for point in points]
@@ -77,7 +78,7 @@ class Retriever:
             return context_dicts
 
         # Rerank
-        context_dicts = self.rerank_context_dicts(query, context_dicts)
+        context_dicts = await self.rerank_context_dicts(query, context_dicts)
 
         # Cutoff / filter
         to_keep = None
@@ -106,7 +107,7 @@ class Retriever:
 
             for context_dict in to_keep:
                 doc_id = context_dict["doc_id"]
-                all_doc_chunks = get_all_qdrant_points_by_doc_id(self.qdrant_client, doc_id)
+                all_doc_chunks = await get_all_qdrant_points_by_doc_id(self.qdrant_client, doc_id)
                 doc_chunk_count = len(all_doc_chunks)
 
                 if context_dict["source_type"] == "internal" and doc_chunk_count <= self.keep_entire_doc_chunk_thresh:
@@ -162,9 +163,9 @@ class Retriever:
             return big_lst
         return to_keep
     
-    def rerank_context_dicts(self, query: str, context_dicts: List[dict]) -> List[dict]:
+    async def rerank_context_dicts(self, query: str, context_dicts: List[dict]) -> List[dict]:
         batch_input = [[query, context_dict['text']] for context_dict in context_dicts]
-        scores = self.reranker.rerank_scores(batch_input)
+        scores = await self.reranker.rerank_scores(batch_input)
         for i, score in enumerate(scores):
             context_dicts[i]["reranker_score"] = float(score)
         sorted_context_dicts = sorted(context_dicts, key=lambda x: x["reranker_score"], reverse=True)

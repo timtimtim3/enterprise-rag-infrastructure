@@ -12,7 +12,7 @@ import json
 import datetime
 from pathlib import Path
 from typing import Tuple, Dict, List
-
+import asyncio
 import frontmatter
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 from qdrant_client.models import PointStruct
@@ -46,8 +46,8 @@ def get_qdrant_uuid(chunk_id: str) -> str:
     return str(uuid.uuid5(uuid.NAMESPACE_URL, chunk_id))
 
 
-def main() -> None:
-    qdrant_client = init_qdrant()
+async def main() -> None:
+    qdrant_client = await init_qdrant()
 
     # Read ingestion state
     INGESTION_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -83,10 +83,10 @@ def main() -> None:
 
             if norm_content_hash != state["normalized_content_hash"]:
                 # Content changed, requires deleting (then re-embedding and re-storing)
-                delete_qdrant_points_by_doc_id(qdrant_client, doc_id)
+                await delete_qdrant_points_by_doc_id(qdrant_client, doc_id)
             elif "meta_hash" not in state or meta_hash != state["meta_hash"]:
                 # Requires meta update only
-                update_qdrant_points_metadata(qdrant_client, meta, doc_id)
+                await update_qdrant_points_metadata(qdrant_client, meta, doc_id)
                 pending_ingestion_state[doc_id]["meta_hash"] = meta_hash
                 pending_ingestion_state[doc_id]["last_metadata_updated_at"] = now
                 continue
@@ -164,13 +164,13 @@ def main() -> None:
     if len(chunk_texts) > 0:
         # Embed chunks
         embedding_svc = EmbeddingService(EMBEDDING_MODEL)
-        chunk_embeddings = embedding_svc.embed(chunk_texts)
+        chunk_embeddings = await embedding_svc.embed(chunk_texts)
         for chunk_obj, embedding in zip(all_chunks, chunk_embeddings):
             chunk_obj["vector"] = embedding
         EMBEDDING_DIM = len(chunk_embeddings[0])
         # We need to call this again here in case this is the first time running this script
         # and we don't have the collection initialized yet
-        qdrant_client = init_qdrant(EMBEDDING_DIM)
+        qdrant_client = await init_qdrant(EMBEDDING_DIM)
 
         # Store each chunk_obj (and its embedding) in Qdrant
         points = [
@@ -185,7 +185,7 @@ def main() -> None:
         BATCH_SIZE = 64
         for i in range(0, len(points), BATCH_SIZE):
             batch = points[i:i + BATCH_SIZE]
-            qdrant_client.upsert(
+            await qdrant_client.upsert(
                 collection_name=COLLECTION_NAME,
                 points=batch,
                 wait=True,
@@ -200,4 +200,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

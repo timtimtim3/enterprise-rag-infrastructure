@@ -1,5 +1,6 @@
 from typing import List
 from sentence_transformers import SentenceTransformer
+from fastapi.concurrency import run_in_threadpool
 
 
 class EmbeddingService:
@@ -7,6 +8,6 @@ class EmbeddingService:
         self.model = SentenceTransformer(model_name)
         self.model_name = model_name
 
-    def embed(self, chunk_texts: List[str]) -> List[List[float]]:
-        return self.model.encode(chunk_texts, normalize_embeddings=True, batch_size=32)
+    async def embed(self, chunk_texts: List[str]) -> List[List[float]]:
+        return await run_in_threadpool(self.model.encode, chunk_texts, normalize_embeddings=True, batch_size=32)
     

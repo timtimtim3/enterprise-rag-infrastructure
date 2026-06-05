@@ -1,3 +1,5 @@
+import asyncio
+
 from app.llm.client import LLM
 from app.rag.embeddings import EmbeddingService
 from app.rag.reranking import Reranker
@@ -16,9 +18,9 @@ from app.rag.vectorstores.qdrant_store import init_qdrant
 QUERY = "How does Northstar deploy LangGraph services to ECS?"
 
 
-def main() -> None:
+async def main() -> None:
     embedding_svc = EmbeddingService(EMBEDDING_MODEL)
-    qdrant_client = init_qdrant()
+    qdrant_client = await init_qdrant()
     reranker = Reranker(RERANKER_MODEL)
     retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
     llm = LLM(USING_LLM)
@@ -38,9 +40,9 @@ def main() -> None:
     # for i, context_dict in enumerate(context_dicts):
     #     print(format_context_dict_for_llm(context_dict, i))
 
-    answer = answer_svc.answer_question(QUERY)
+    answer = await answer_svc.answer_question(QUERY)
     print(answer)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

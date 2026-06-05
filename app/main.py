@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
     embedding_svc = EmbeddingService(EMBEDDING_MODEL)
-    qdrant_client = init_qdrant()
+    qdrant_client = await init_qdrant()
     reranker = Reranker(RERANKER_MODEL)
     retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
     llm = LLM(USING_LLM)

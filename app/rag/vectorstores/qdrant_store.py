@@ -1,13 +1,13 @@
 from typing import List, Optional
 
-from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, FieldCondition, Filter, FilterSelector, MatchValue, VectorParams, PayloadSchemaType
+from qdrant_client import AsyncQdrantClient
 
 from app.core.config import COLLECTION_NAME, QDRANT_API_KEY, QDRANT_URL
 
 
-def ensure_payload_index(
-    qdrant_client,
+async def ensure_payload_index(
+    qdrant_client: AsyncQdrantClient,
     collection_name: str,
     collection_info,
     field_name: str,
@@ -16,36 +16,41 @@ def ensure_payload_index(
     if field_name in collection_info.payload_schema:
         return
 
-    qdrant_client.create_payload_index(
+    await qdrant_client.create_payload_index(
         collection_name=collection_name,
         field_name=field_name,
         field_schema=field_schema,
     )
 
 
-def init_qdrant(embedding_dim: Optional[int] = None):
-    qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+async def init_qdrant(embedding_dim: Optional[int] = None) -> AsyncQdrantClient:
+    qdrant_client = AsyncQdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
-    if not qdrant_client.collection_exists(COLLECTION_NAME):
+    if not await qdrant_client.collection_exists(COLLECTION_NAME):
         if embedding_dim is None:
             raise ValueError(
                 "embedding_dim must be provided when creating a new Qdrant collection"
             )
-        qdrant_client.create_collection(
+        await qdrant_client.create_collection(
             collection_name=COLLECTION_NAME,
             vectors_config=VectorParams(size=embedding_dim, distance=Distance.COSINE),
         )
 
-    collection_info = qdrant_client.get_collection(COLLECTION_NAME)
+    collection_info = await qdrant_client.get_collection(COLLECTION_NAME)
     
-    ensure_payload_index(qdrant_client, COLLECTION_NAME, collection_info, "doc_id", PayloadSchemaType.KEYWORD)
-    ensure_payload_index(qdrant_client, COLLECTION_NAME, collection_info, "chunk_index", PayloadSchemaType.INTEGER)
+    await ensure_payload_index(qdrant_client, COLLECTION_NAME, collection_info, "doc_id", PayloadSchemaType.KEYWORD)
+    await ensure_payload_index(qdrant_client, COLLECTION_NAME, collection_info, "chunk_index", PayloadSchemaType.INTEGER)
     return qdrant_client
 
 
-def update_qdrant_points_metadata(qdrant_client, new_doc_metadata_fields: dict, doc_id: str, collection_name: str = COLLECTION_NAME):
+async def update_qdrant_points_metadata(
+    qdrant_client: AsyncQdrantClient,
+    new_doc_metadata_fields: dict,
+    doc_id: str,
+    collection_name: str = COLLECTION_NAME
+) -> None:
     # This merges the existing payload with this one, overriding fields with the same key, and adding new ones (this doesn't handle removal of fiellds)
-    qdrant_client.set_payload(
+    await qdrant_client.set_payload(
         collection_name=collection_name,
         payload=new_doc_metadata_fields,
         points=FilterSelector(
@@ -61,12 +66,12 @@ def update_qdrant_points_metadata(qdrant_client, new_doc_metadata_fields: dict, 
     )
 
 
-def delete_qdrant_points_by_doc_id(
-    qdrant_client,
+async def delete_qdrant_points_by_doc_id(
+    qdrant_client: AsyncQdrantClient,
     doc_id: str,
     collection_name: str = COLLECTION_NAME,
 ) -> None:
-    qdrant_client.delete(
+    await qdrant_client.delete(
         collection_name=collection_name,
         points_selector=FilterSelector(
             filter=Filter(
@@ -81,12 +86,17 @@ def delete_qdrant_points_by_doc_id(
     )
 
 
-def get_all_qdrant_points_by_doc_id(qdrant_client, doc_id: str, collection_name: str = COLLECTION_NAME, limit: int = 100) -> List:
+async def get_all_qdrant_points_by_doc_id(
+    qdrant_client: AsyncQdrantClient,
+    doc_id: str,
+    collection_name: str = COLLECTION_NAME,
+    limit: int = 100
+) -> List:
     all_doc_chunks = []
     offset = None
 
     while True:
-        points, offset = qdrant_client.scroll(
+        points, offset = await qdrant_client.scroll(
             collection_name=COLLECTION_NAME,
             scroll_filter=Filter(
                 must=[

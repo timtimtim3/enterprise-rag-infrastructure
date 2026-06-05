@@ -35,7 +35,7 @@ async def answer_chat_message(
     query_message = await create_message(db, chat=chat, message_create=message_create)
 
     try:
-        answer = await run_in_threadpool(answer_svc.answer_question, query)
+        answer = await answer_svc.answer_question(query)
     except Exception as e:
         raise AnswerGenerationError("Failed to generate answer") from e
 

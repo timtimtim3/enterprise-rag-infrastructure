@@ -14,7 +14,7 @@ class QueryRouter:
     def __init__(self, llm: LLM):
         self.llm = llm
 
-    def route_query(self, query: str):
+    async def route_query(self, query: str):
         """
         Decides:
         intent = desired final outcome
@@ -37,7 +37,7 @@ class QueryRouter:
         ]
 
         # Get LLM response
-        resp_obj = self.llm.get_response(messages, temperature=0)
+        resp_obj = await self.llm.get_response(messages, temperature=0)
         answer_text = resp_obj.choices[0].message.content
         route_plan = RoutePlan.model_validate_json(answer_text)
         return route_plan

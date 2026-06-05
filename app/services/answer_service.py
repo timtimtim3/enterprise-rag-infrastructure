@@ -52,8 +52,8 @@ class AnswerService:
             "sources": sources or [],
         }
     
-    def retrieve_and_format(self, query: str):
-        context_dicts = self.retriever.retrieve_context(query)
+    async def retrieve_and_format(self, query: str):
+        context_dicts = await self.retriever.retrieve_context(query)
         formatted_sources = []
         last_doc_id = None
         source_index = 0
@@ -86,12 +86,12 @@ class AnswerService:
         formatted_context = "\n\n".join(formatted_sources)
         return format_retrieved_context_message(formatted_context), sources
 
-    def answer_question(self, query: str):
-        formatted_context, sources = self.retrieve_and_format(query)
+    async def answer_question(self, query: str):
+        formatted_context, sources = await self.retrieve_and_format(query)
 
         # Create messages
         messages = [RAG_SYSTEM_MESSAGE, format_rag_user_query_message(query, formatted_context)]
-        resp_obj = self.llm.get_response(messages)
+        resp_obj = await self.llm.get_response(messages)
         answer_text = resp_obj.choices[0].message.content
 
         resp_dict = {
@@ -124,7 +124,7 @@ class AnswerService:
         # Do retrieval
         app_context_messages, sources = [], []
         if retrieval_scope != RetrievalScope.NONE:
-            formatted_context, sources = self.retrieve_and_format(query)
+            formatted_context, sources = await self.retrieve_and_format(query)
             app_context_messages.append(formatted_context)
 
         if response_mode == ResponseMode.ASK_CLARIFYING_QUESTION:
@@ -146,5 +146,5 @@ class AnswerService:
             app_context_messages=app_context_messages,
             history_messages=[],
         )
-        llm_resp = self.llm.get_response(messages) # Get response
+        llm_resp = await self.llm.get_response(messages) # Get response
         return self.build_resp_obj(llm_resp=llm_resp, sources=sources)

@@ -1,5 +1,6 @@
 from typing import List
 from sentence_transformers import CrossEncoder
+from fastapi.concurrency import run_in_threadpool
 
 
 class Reranker:
@@ -7,8 +8,8 @@ class Reranker:
         self.model = CrossEncoder(model_name)
         self.model_name = model_name
 
-    def rerank_scores(self, query_passage_pairs: List[List[str]]) -> List[float]:
-        return self.model.predict(query_passage_pairs)
+    async def rerank_scores(self, query_passage_pairs: List[List[str]]) -> List[float]:
+        return await run_in_threadpool(self.model.predict, query_passage_pairs)
     
     def prepare_input(self, query: str, passages: List[str]):
         return [[query, passage] for passage in passages]
