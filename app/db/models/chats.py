@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from sqlalchemy import Boolean, Integer, String, ForeignKey, Float, Text
+from sqlalchemy import JSON, Integer, String, ForeignKey, Float, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import TYPE_CHECKING, Optional
@@ -10,7 +10,7 @@ from sqlalchemy import Enum as SQLEnum
 from app.db.base import Base
 from app.db.models.timestamp import TimestampMixin
 from app.domain.enums.message_role import MessageRole
-from app.domain.enums.llm_route import LLMRoute
+from app.domain.enums.llm_route import IntentRoute, RetrievalScope, ToolAction, ResponseMode
 
 if TYPE_CHECKING:
     from app.db.models.users import User
@@ -39,12 +39,20 @@ class Message(TimestampMixin, Base):
 
     # Assistant-only fields
     model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    route: Mapped[Optional[LLMRoute]] = mapped_column(SQLEnum(LLMRoute, name="llm_route"), nullable=True) # route: "direct" | "rag" | "clarify" | "tool"
     finish_reason: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     prompt_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     completion_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     total_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
+    route_intent: Mapped[Optional[IntentRoute]] = mapped_column(SQLEnum(IntentRoute, name="route_intent"), nullable=True)
+    route_retrieval_scope: Mapped[Optional[RetrievalScope]] = mapped_column(SQLEnum(RetrievalScope, name="route_retrieval_scope"), 
+                                                                            nullable=True)
+    route_tool_action: Mapped[Optional[ToolAction]] = mapped_column(SQLEnum(ToolAction, name="route_tool_action"), nullable=True)
+    route_response_mode: Mapped[Optional[ResponseMode]] = mapped_column(SQLEnum(ResponseMode, name="route_response_mode"), 
+                                                                        nullable=True)
+    route_confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    route_plan: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    
     # Rag-only fields
     retrieval_embedding_model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     retrieval_reranking_model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

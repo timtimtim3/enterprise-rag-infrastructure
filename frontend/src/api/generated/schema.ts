@@ -90,8 +90,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Sing Up */
-        post: operations["sing_up_auth_singup_post"];
+        /** Sign Up */
+        post: operations["sign_up_auth_signup_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -189,7 +189,7 @@ export interface components {
             model: string | null;
             /** Finish Reason */
             finish_reason: string | null;
-            usage: components["schemas"]["Usage"];
+            usage: components["schemas"]["UsageInfo"];
             /** Sources */
             sources: components["schemas"]["SourceInfo"][];
         };
@@ -206,10 +206,10 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
-         * LLMRoute
+         * IntentRoute
          * @enum {string}
          */
-        LLMRoute: "direct" | "rag" | "clarify" | "tool";
+        IntentRoute: "answer" | "search" | "compare" | "action" | "clarify";
         /** ListChatsResponse */
         ListChatsResponse: {
             /** Chats */
@@ -246,7 +246,6 @@ export interface components {
             content: string;
             /** Model */
             model?: string | null;
-            route?: components["schemas"]["LLMRoute"] | null;
             /** Finish Reason */
             finish_reason?: string | null;
             /** Prompt Tokens */
@@ -255,6 +254,16 @@ export interface components {
             completion_tokens?: number | null;
             /** Total Tokens */
             total_tokens?: number | null;
+            route_intent?: components["schemas"]["IntentRoute"] | null;
+            route_retrieval_scope?: components["schemas"]["RetrievalScope"] | null;
+            route_tool_action?: components["schemas"]["ToolAction"] | null;
+            route_response_mode?: components["schemas"]["ResponseMode"] | null;
+            /** Route Confidence */
+            route_confidence?: number | null;
+            /** Route Plan */
+            route_plan?: {
+                [key: string]: unknown;
+            } | null;
             /** Retrieval Embedding Model */
             retrieval_embedding_model?: string | null;
             /** Retrieval Reranking Model */
@@ -307,6 +316,16 @@ export interface components {
             /** Username */
             username: string;
         };
+        /**
+         * ResponseMode
+         * @enum {string}
+         */
+        ResponseMode: "direct_answer" | "rag_answer" | "search_results" | "comparison" | "tool_with_context" | "tool_only" | "ask_clarifying_question";
+        /**
+         * RetrievalScope
+         * @enum {string}
+         */
+        RetrievalScope: "none" | "internal" | "public" | "mixed";
         /** SourceInfo */
         SourceInfo: {
             /** Doc Id */
@@ -324,8 +343,13 @@ export interface components {
             /** Chunk Indices */
             chunk_indices: number[];
         };
-        /** Usage */
-        Usage: {
+        /**
+         * ToolAction
+         * @enum {string}
+         */
+        ToolAction: "none" | "create_ticket" | "send_email" | "schedule_event" | "upload_document" | "run_job" | "call_api" | "modify_database" | "other";
+        /** UsageInfo */
+        UsageInfo: {
             /** Completion Tokens */
             completion_tokens: number;
             /** Prompt Tokens */
@@ -563,7 +587,7 @@ export interface operations {
             };
         };
     };
-    sing_up_auth_singup_post: {
+    sign_up_auth_signup_post: {
         parameters: {
             query?: never;
             header?: never;

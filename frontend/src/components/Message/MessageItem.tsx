@@ -72,9 +72,9 @@ export function MessageItem({ message, chatId }: MessageItemProps) {
             </ReactMarkdown>
           </div>
 
-          {!isPending && (message.model || message.route === "rag") && (
+          {!isPending && (message.model || message.route_retrieval_scope !== "none") && (
             <div className="flex items-center gap-2 mt-2.5 flex-wrap">
-              {message.route === "rag" && chatId && (
+              {message.route_retrieval_scope !== "none" && chatId && (
                 <SourcesButton chatId={chatId} messageId={message.message_id} />
               )}
               {message.model && (

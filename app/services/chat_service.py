@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.concurrency import run_in_threadpool
 from typing import TYPE_CHECKING
 
 from app.api.schemas.chats import AskResponse
 from app.api.schemas.mappers import construct_ask_response, sources_from_answer
 from app.db.crud.chats import create_message, create_message_source
+from app.domain.enums.llm_route import RetrievalScope
 from app.domain.enums.message_role import MessageRole
 from app.domain.chats import MessageCreateData
 
@@ -61,13 +61,12 @@ async def answer_chat_message(
         total_tokens=answer["usage"]["total_tokens"],
     )
 
-    # RAG-based, for now we always do RAG
-    if True:
-        # Rag-only fields
+    # If RAG was used, add embedding and reranker model names
+    if route_plan.retrieval_scope != RetrievalScope.NONE:
         message_create.retrieval_embedding_model = answer_svc.retriever.embedding_svc.model_name
         message_create.retrieval_reranking_model = answer_svc.retriever.reranker.model_name
 
-    answer_message = await create_message(db, chat=chat, message_create=message_create)
+    answer_message = await create_message(db, chat=chat, message_create=message_create, route_plan=route_plan)
 
     sources = sources_from_answer(answer["sources"])
     for source in sources:

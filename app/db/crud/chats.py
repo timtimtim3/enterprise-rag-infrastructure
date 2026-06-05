@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TYPE_CHECKING, Optional
 
 from app.db.models.chats import Chat, Message, MessageSource
+from app.domain.routing import RoutePlan
 
 if TYPE_CHECKING:
     from app.db.models.users import User
@@ -20,11 +21,24 @@ async def create_chat(db: AsyncSession, title: str, user: User) -> Chat:
     return chat
 
 
-async def create_message(db: AsyncSession, chat: Chat, message_create: MessageCreateData) -> Message:
+async def create_message(
+    db: AsyncSession,
+    chat: Chat,
+    message_create: MessageCreateData,
+    route_plan: Optional[RoutePlan] = None
+) -> Message:
     message = Message(
         chat=chat,
         **message_create.model_dump(),
     )
+    if route_plan is not None:
+        message.route_intent = route_plan.intent
+        message.route_retrieval_scope = route_plan.retrieval_scope
+        message.route_tool_action = route_plan.tool_action
+        message.route_response_mode = route_plan.response_mode
+        message.route_confidence = route_plan.confidence
+        message.route_plan = route_plan.model_dump()
+
     db.add(message)
     chat.updated_at = datetime.now(timezone.utc)
     await db.commit()
