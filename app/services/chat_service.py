@@ -71,6 +71,7 @@ async def answer_chat_message(
             retrieval_scope=route_plan.retrieval_scope,
             response_mode=route_plan.response_mode,
             reason=route_plan.reason,
+            retrieval_query=route_plan.retrieval_query,
             history_messages=answer_history_messages,
         )
     except Exception as e:

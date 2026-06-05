@@ -97,6 +97,7 @@ class AnswerService:
         retrieval_scope: RetrievalScope,
         response_mode: ResponseMode,
         reason: str,
+        retrieval_query: Optional[str] = None,
         history_messages: Optional[list[dict]] = None,
     ):
         # Get system prompt
@@ -108,7 +109,8 @@ class AnswerService:
         # Do retrieval
         app_context_messages, sources = [], []
         if retrieval_scope != RetrievalScope.NONE:
-            formatted_context, sources = await self.retrieve_and_format(query)
+            retrieval_query = retrieval_query or query
+            formatted_context, sources = await self.retrieve_and_format(retrieval_query)
             app_context_messages.append(formatted_context)
 
         if response_mode == ResponseMode.ASK_CLARIFYING_QUESTION:

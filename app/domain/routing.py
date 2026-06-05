@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from app.domain.enums.llm_route import IntentRoute, RetrievalScope, ToolAction, ResponseMode
 
@@ -14,6 +16,7 @@ class RoutePlan(BaseModel):
     retrieval_scope: RetrievalScope
     tool_action: ToolAction
     response_mode: ResponseMode
+    retrieval_query: Optional[str] = None
     confidence: float
     reason: str
     search_hints: SearchHints

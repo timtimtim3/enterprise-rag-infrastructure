@@ -41,6 +41,10 @@ response_mode:
 - tool_only: perform or draft an action without retrieval
 - ask_clarifying_question
 
+retrieval_query:
+- null if retrieval_scope is "none"
+- otherwise, a standalone optimized search query for retrieval
+
 Rules:
 - Intent means the user’s desired final outcome, not internal steps.
 - If the user asks to “find/show/list docs”, intent is search.
@@ -59,6 +63,17 @@ Rules:
 - If the request lacks the object to act on, choose clarify.
 - Do not invent tool names. If no clear supported tool applies, use other.
 
+Retrieval query rules:
+- The retrieval_query should be optimized for vector/document retrieval, not written as a conversational response.
+- Resolve pronouns and follow-up references using recent conversation history when available.
+- Remove conversational phrases like “can you”, “repeat that”, “no I mean”, “please”, “summarize it”.
+- Include the core subject, relevant entity, document type, system, vendor, and task.
+- For follow-up questions, include the topic from earlier context.
+- For comparison, include both sides of the comparison.
+- For action with retrieval, include the facts needed to perform the action.
+- Do not include private reasoning.
+- Do not invent entities not present in the user message or conversation context.
+
 Return this exact JSON shape:
 
 {
@@ -66,6 +81,7 @@ Return this exact JSON shape:
   "retrieval_scope": "none" | "internal" | "public" | "mixed",
   "tool_action": "none" | "create_ticket" | "send_email" | "schedule_event" | "upload_document" | "run_job" | "call_api" | "modify_database" | "other",
   "response_mode": "direct_answer" | "rag_answer" | "search_results" | "comparison" | "tool_with_context" | "tool_only" | "ask_clarifying_question",
+  "retrieval_query": null | "standalone optimized retrieval query",
   "confidence": 0.0,
   "reason": "brief reason",
   "search_hints": {
