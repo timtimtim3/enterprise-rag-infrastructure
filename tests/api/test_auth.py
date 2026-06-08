@@ -3,15 +3,6 @@ import pytest
 from app.db.crud.auth import get_session_by_id, get_user_by_email
 
 
-@pytest.fixture
-def register_payload():
-    return {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "password",
-    }
-
-
 @pytest.mark.asyncio
 async def test_signup_creates_user(client, db_session, register_payload):
     response = await client.post(
@@ -124,28 +115,12 @@ async def test_signin_fails_on_incorrect_password(client, register_payload):
 
 
 @pytest.mark.asyncio
-async def test_get_me_returns_current_user(client, register_payload):
-    response = await client.post(
-        '/auth/signup',
-        json=register_payload,
-    )
-    assert response.status_code == 201
-
-    signin_payload = {
-        "username": register_payload["username"],
-        "password": register_payload["password"],
-    }
-    response = await client.post(
-        '/auth/signin',
-        json=signin_payload,
-    )
-    assert response.status_code == 200
-
-    response = await client.get("/auth/me")
+async def test_get_me_returns_current_user(authenticated_client):
+    response = await authenticated_client["client"].get("/auth/me")
     assert response.status_code == 200
 
     body = response.json()
-    assert body["username"] == register_payload["username"]
+    assert body["username"] == authenticated_client["user"]["username"]
 
 
 @pytest.mark.asyncio
