@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request, HTTPException
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from app.api.dependencies.auth import get_current_user, get_db
 from app.api.schemas.chats import AskRequest, AskResponse, ChatInfo, ListChatsResponse, ListMessageSourcesResponse, ListMessagesResponse, MessageInfo, MessageSourceInfo
@@ -80,6 +80,18 @@ async def list_chats(user: User = Depends(get_current_user), db: AsyncSession = 
     return ListChatsResponse(
         chats=[ChatInfo.model_validate(chat) for chat in chats]
     )
+
+
+@router.get("/{chat_id}", response_model=ChatInfo)
+async def get_chat(
+    chat_id: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+) -> ChatInfo:
+    chat = await get_user_chat(db, user, chat_id)
+    if chat is None:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    return ChatInfo.model_validate(chat)
 
 
 @router.get("/{chat_id}/messages", response_model=ListMessagesResponse)
