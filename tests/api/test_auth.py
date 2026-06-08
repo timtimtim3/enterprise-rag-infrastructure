@@ -1,37 +1,34 @@
 import pytest
 
-from app.db.crud.auth import get_user_by_email
+from app.db.crud.auth import get_session_by_id, get_user_by_email
+
+
+@pytest.fixture
+def register_payload():
+    return {
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "password",
+    }
 
 
 @pytest.mark.asyncio
-async def test_signup_creates_user(client, db_session):
-    email = "test@example.com"
-    username = "testuser"
-    register_payload = {
-        "username": username,
-        "email": email,
-        "password": "password",
-    }
+async def test_signup_creates_user(client, db_session, register_payload):
     response = await client.post(
         '/auth/signup',
         json=register_payload,
     )
     assert response.status_code == 201
 
-    user = await get_user_by_email(db_session, email)
+    user = await get_user_by_email(db_session, register_payload["email"])
 
     assert user is not None
-    assert user.email == email
-    assert user.username == username
+    assert user.email == register_payload["email"]
+    assert user.username == register_payload["username"]
 
 
 @pytest.mark.asyncio
-async def test_signup_fails_on_existing_email(client, db_session):
-    register_payload = {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "password",
-    }
+async def test_signup_fails_on_existing_email(client, register_payload):
     response = await client.post(
         '/auth/signup',
         json=register_payload,
@@ -48,12 +45,7 @@ async def test_signup_fails_on_existing_email(client, db_session):
 
 
 @pytest.mark.asyncio
-async def test_signup_fails_on_existing_username(client, db_session):
-    register_payload = {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "password",
-    }
+async def test_signup_fails_on_existing_username(client, register_payload):
     response = await client.post(
         '/auth/signup',
         json=register_payload,
@@ -67,3 +59,33 @@ async def test_signup_fails_on_existing_username(client, db_session):
     )
 
     assert response.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_signin_creates_session(client, db_session, register_payload):
+    response = await client.post(
+        '/auth/signup',
+        json=register_payload,
+    )
+    assert response.status_code == 201
+
+    email = register_payload["email"]
+    user = await get_user_by_email(db_session, email)
+    assert user is not None
+
+    signin_payload = {
+        "username": register_payload["username"],
+        "password": register_payload["password"],
+    }
+    response = await client.post(
+        '/auth/signin',
+        json=signin_payload,
+    )
+    assert response.status_code == 200
+
+    session_cookie = response.cookies.get("session_id")
+    assert session_cookie is not None
+
+    session = await get_session_by_id(db_session, session_cookie)
+    assert session is not None
+    assert session.user_fk == user.id
