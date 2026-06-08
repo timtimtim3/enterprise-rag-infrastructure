@@ -43,6 +43,7 @@ ANSWER_HISTORY_TOKEN_BUDGET = 3_000
 # DB
 DATABASE_URL = os.getenv("DATABASE_URL", "default")
 ALEMBIC_DATABASE_URL = os.getenv("ALEMBIC_DATABASE_URL", "default")
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "default")
 
 # Security
 DUMMY_PASSWORD = os.getenv("DUMMY_PASSWORD")
