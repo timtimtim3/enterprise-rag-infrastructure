@@ -121,3 +121,35 @@ async def test_signin_fails_on_incorrect_password(client, register_payload):
         json=signin_payload,
     )
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_me_returns_current_user(client, register_payload):
+    response = await client.post(
+        '/auth/signup',
+        json=register_payload,
+    )
+    assert response.status_code == 201
+
+    signin_payload = {
+        "username": register_payload["username"],
+        "password": register_payload["password"],
+    }
+    response = await client.post(
+        '/auth/signin',
+        json=signin_payload,
+    )
+    assert response.status_code == 200
+
+    response = await client.get("/auth/me")
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["username"] == register_payload["username"]
+
+
+@pytest.mark.asyncio
+async def test_get_me_requires_authentication(client):
+    response = await client.get("/auth/me")
+
+    assert response.status_code == 401
