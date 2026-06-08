@@ -10,7 +10,7 @@ from app.db.session import get_db
 from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserInfo
 from app.db.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
 from app.core.security import hash_password, verify_password
-from app.core.config import DUMMY_PASSWORD, SESSION_EXPIRE_SECONDS
+from app.core.config import DUMMY_PASSWORD_HASH, SESSION_EXPIRE_SECONDS
 
 if TYPE_CHECKING:
     from app.db.models.users import User
@@ -60,7 +60,7 @@ async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSess
     )
 
     if not existing_user:
-        verify_password(login_request.password, DUMMY_PASSWORD)
+        verify_password(login_request.password, DUMMY_PASSWORD_HASH)
         raise HTTPException(
             status_code=401,
             detail="Invalid username or password",

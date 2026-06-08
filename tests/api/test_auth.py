@@ -89,3 +89,35 @@ async def test_signin_creates_session(client, db_session, register_payload):
     session = await get_session_by_id(db_session, session_cookie)
     assert session is not None
     assert session.user_fk == user.id
+
+
+@pytest.mark.asyncio
+async def test_signin_fails_on_non_existing_user(client, register_payload):
+    signin_payload = {
+        "username": register_payload["username"],
+        "password": register_payload["password"],
+    }
+    response = await client.post(
+        '/auth/signin',
+        json=signin_payload,
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_signin_fails_on_incorrect_password(client, register_payload):
+    response = await client.post(
+        '/auth/signup',
+        json=register_payload,
+    )
+    assert response.status_code == 201
+
+    signin_payload = {
+        "username": register_payload["username"],
+        "password": register_payload["password"] + "passwordmutation",
+    }
+    response = await client.post(
+        '/auth/signin',
+        json=signin_payload,
+    )
+    assert response.status_code == 401
