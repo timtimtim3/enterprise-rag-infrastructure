@@ -57,7 +57,10 @@ async def test_delete_chat_raises_404_on_non_existing_chat(authenticated_client)
 
 
 @pytest.mark.asyncio
-async def test_create_chat_returns_answer(authenticated_client, monkeypatch, app_state):
+async def test_create_chat_returns_answer(authenticated_client, db_session, monkeypatch, app_state):
+    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
+    assert user is not None
+
     monkeypatch.setattr(
         chats_route,
         "answer_chat_message",
@@ -76,6 +79,9 @@ async def test_create_chat_returns_answer(authenticated_client, monkeypatch, app
     assert body["answer"] == "Fake answer"
     assert body["model"] == "fake-model"
     assert body["sources"] == []
+
+    chat = await get_user_chat(db_session, user, body["chat_id"])
+    assert chat is not None
 
 
 @pytest.mark.asyncio
