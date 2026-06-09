@@ -53,6 +53,23 @@ async def test_signup_fails_on_existing_username(client, register_payload):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"username": "", "email": "test@test.com", "password": "pass"},
+        {"username": "user", "email": "", "password": "pass"},
+        {"username": "user", "email": "invalid", "password": "pass"},
+    ],
+)
+async def test_signup_rejects_invalid_input(client, payload):
+    response = await client.post(
+        "/auth/signup",
+        json=payload,
+    )
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
 async def test_signin_creates_session(client, db_session, register_payload):
     response = await client.post(
         '/auth/signup',

@@ -1,5 +1,13 @@
 import pytest
 
+from app.main import app
+
+
+@pytest.fixture
+def app_state(monkeypatch):
+    monkeypatch.setattr(app.state, "query_router", object(), raising=False)
+    monkeypatch.setattr(app.state, "answer_svc", object(), raising=False)
+
 
 @pytest.fixture
 def register_payload():
