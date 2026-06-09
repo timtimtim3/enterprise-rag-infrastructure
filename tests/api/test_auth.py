@@ -19,34 +19,40 @@ async def test_signup_creates_user(client, db_session, register_payload):
 
 
 @pytest.mark.asyncio
-async def test_signup_fails_on_existing_email(client, register_payload):
+async def test_signup_returns_409_on_existing_email(client, register_payload):
     response = await client.post(
         '/auth/signup',
         json=register_payload,
     )
     assert response.status_code == 201
 
-    register_payload["username"] = "testuser2"
+    duplicate_payload = {
+        **register_payload,
+        "username": "testuser2",
+    }
     response = await client.post(
         '/auth/signup',
-        json=register_payload,
+        json=duplicate_payload,
     )
 
     assert response.status_code == 409
 
 
 @pytest.mark.asyncio
-async def test_signup_fails_on_existing_username(client, register_payload):
+async def test_signup_returns_409_on_existing_username(client, register_payload):
     response = await client.post(
         '/auth/signup',
         json=register_payload,
     )
     assert response.status_code == 201
 
-    register_payload["email"] = "test2@example.com"
+    duplicate_payload = {
+        **register_payload,
+        "email": "test2@example.com",
+    }
     response = await client.post(
         '/auth/signup',
-        json=register_payload,
+        json=duplicate_payload,
     )
 
     assert response.status_code == 409
@@ -100,7 +106,7 @@ async def test_signin_creates_session(client, db_session, register_payload):
 
 
 @pytest.mark.asyncio
-async def test_signin_fails_on_non_existing_user(client, register_payload):
+async def test_signin_returns_401_on_non_existing_user(client, register_payload):
     signin_payload = {
         "username": register_payload["username"],
         "password": register_payload["password"],
@@ -113,7 +119,7 @@ async def test_signin_fails_on_non_existing_user(client, register_payload):
 
 
 @pytest.mark.asyncio
-async def test_signin_fails_on_incorrect_password(client, register_payload):
+async def test_signin_returns_401_on_incorrect_password(client, register_payload):
     response = await client.post(
         '/auth/signup',
         json=register_payload,
@@ -132,16 +138,16 @@ async def test_signin_fails_on_incorrect_password(client, register_payload):
 
 
 @pytest.mark.asyncio
-async def test_get_me_returns_current_user(authenticated_client):
-    response = await authenticated_client["client"].get("/auth/me")
+async def test_get_me_returns_current_user(authenticated_client, register_payload):
+    response = await authenticated_client.get("/auth/me")
     assert response.status_code == 200
 
     body = response.json()
-    assert body["username"] == authenticated_client["user"]["username"]
+    assert body["username"] == register_payload["username"]
 
 
 @pytest.mark.asyncio
-async def test_get_me_requires_authentication(client):
+async def test_get_me_requires_authentication(client, register_payload):
     response = await client.get("/auth/me")
 
     assert response.status_code == 401

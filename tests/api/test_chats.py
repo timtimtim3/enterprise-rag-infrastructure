@@ -1,6 +1,5 @@
 import pytest
 
-from app.db.crud.auth import get_user_by_username
 from app.db.crud.chats import create_chat, create_message, create_message_source, get_user_chat
 from app.api.schemas.chats import AskResponse, UsageInfo
 from app.api.routes import chats as chats_route
@@ -30,46 +29,35 @@ async def fake_answer_chat_message_gen_fail(**kwargs):
 
 
 @pytest.mark.asyncio
-async def test_delete_chat(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, "Some chat title", user)
-    assert chat is not None
-
-    chat_id = chat.chat_id
-
-    response = await authenticated_client["client"].delete(
-        f"/chats/{chat.chat_id}", 
+async def test_delete_chat(authenticated_client, authenticated_user, test_chat, db_session):
+    response = await authenticated_client.delete(
+        f"/chats/{test_chat.chat_id}", 
     )
     assert response.status_code == 204
 
-    chat = await get_user_chat(db_session, user, chat_id)
+    chat = await get_user_chat(db_session, authenticated_user, test_chat.chat_id)
     assert chat is None
 
 
 @pytest.mark.asyncio
-async def test_delete_chat_raises_404_on_non_existing_chat(authenticated_client):
+async def test_delete_chat_returns_404_on_non_existing_chat(authenticated_client):
     non_existing_chat_id = "some-non-existing-chatid"
-    response = await authenticated_client["client"].delete(
+    response = await authenticated_client.delete(
         f"/chats/{non_existing_chat_id}", 
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "Chat not found"
-    
+
 
 @pytest.mark.asyncio
-async def test_create_chat_returns_answer(authenticated_client, db_session, monkeypatch, app_state):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
+async def test_create_chat_returns_answer(authenticated_client, authenticated_user, db_session, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
         "answer_chat_message",
         fake_answer_chat_message,
     )
 
-    response = await authenticated_client["client"].post(
+    response = await authenticated_client.post(
         "/chats",
         json={
             "query": "What is Northstar?",
@@ -82,19 +70,19 @@ async def test_create_chat_returns_answer(authenticated_client, db_session, monk
     assert body["model"] == "fake-model"
     assert body["sources"] == []
 
-    chat = await get_user_chat(db_session, user, body["chat_id"])
+    chat = await get_user_chat(db_session, authenticated_user, body["chat_id"])
     assert chat is not None
 
 
 @pytest.mark.asyncio
-async def test_create_chat_raises_500_when_answer_generation_fails(authenticated_client, monkeypatch, app_state):
+async def test_create_chat_returns_500_when_answer_generation_fails(authenticated_client, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
         "answer_chat_message",
         fake_answer_chat_message_gen_fail,
     )
 
-    response = await authenticated_client["client"].post(
+    response = await authenticated_client.post(
         "/chats", 
         json={
             "query": "What is Northstar?",
@@ -105,21 +93,15 @@ async def test_create_chat_raises_500_when_answer_generation_fails(authenticated
 
 
 @pytest.mark.asyncio
-async def test_add_message_returns_answer(authenticated_client, db_session, monkeypatch, app_state):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="What is Northstar?", user=user)
-    assert chat is not None
-
+async def test_add_message_returns_answer(authenticated_client, test_chat, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
         "answer_chat_message",
         fake_answer_chat_message,
     )
 
-    response = await authenticated_client["client"].post(
-        f"/chats/{chat.chat_id}/messages",
+    response = await authenticated_client.post(
+        f"/chats/{test_chat.chat_id}/messages",
         json={
             "query": "Thanks for answering my question!",
         }
@@ -128,11 +110,11 @@ async def test_add_message_returns_answer(authenticated_client, db_session, monk
 
     body = response.json()
     assert body["answer"] == "Fake answer"
-    assert body["chat_id"] == chat.chat_id
+    assert body["chat_id"] == test_chat.chat_id
 
 
 @pytest.mark.asyncio
-async def test_add_message_raises_404_on_non_existing_chat(authenticated_client, monkeypatch, app_state):
+async def test_add_message_returns_404_on_non_existing_chat(authenticated_client, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
         "answer_chat_message",
@@ -140,7 +122,7 @@ async def test_add_message_raises_404_on_non_existing_chat(authenticated_client,
     )
 
     non_existing_chat_id = "some-non-existing-chatid"
-    response = await authenticated_client["client"].post(
+    response = await authenticated_client.post(
         f"/chats/{non_existing_chat_id}/messages",
         json={
             "query": "Thanks for answering my question!",
@@ -151,21 +133,15 @@ async def test_add_message_raises_404_on_non_existing_chat(authenticated_client,
 
 
 @pytest.mark.asyncio
-async def test_add_message_raises_500_when_answer_generation_fails(authenticated_client, db_session, monkeypatch, app_state):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="What is Northstar?", user=user)
-    assert chat is not None
-
+async def test_add_message_returns_500_when_answer_generation_fails(authenticated_client, test_chat, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
         "answer_chat_message",
         fake_answer_chat_message_gen_fail,
     )
 
-    response = await authenticated_client["client"].post(
-        f"/chats/{chat.chat_id}/messages",
+    response = await authenticated_client.post(
+        f"/chats/{test_chat.chat_id}/messages",
         json={
             "query": "Thanks for answering my question!",
         }
@@ -175,17 +151,14 @@ async def test_add_message_raises_500_when_answer_generation_fails(authenticated
 
 
 @pytest.mark.asyncio
-async def test_list_chats_returns_chats(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat1 = await create_chat(db_session, title="Chat1", user=user)
+async def test_list_chats_returns_chats(authenticated_client, authenticated_user, db_session):
+    chat1 = await create_chat(db_session, title="Chat1", user=authenticated_user)
     assert chat1 is not None
 
-    chat2 = await create_chat(db_session, title="Chat2", user=user)
+    chat2 = await create_chat(db_session, title="Chat2", user=authenticated_user)
     assert chat2 is not None
 
-    response = await authenticated_client["client"].get("/chats")
+    response = await authenticated_client.get("/chats")
     assert response.status_code == 200
 
     body = response.json()
@@ -196,7 +169,7 @@ async def test_list_chats_returns_chats(authenticated_client, db_session):
 
 @pytest.mark.asyncio
 async def test_list_chats_returns_empty_list_on_no_chats(authenticated_client):
-    response = await authenticated_client["client"].get("/chats")
+    response = await authenticated_client.get("/chats")
     assert response.status_code == 200
 
     body = response.json()
@@ -204,51 +177,39 @@ async def test_list_chats_returns_empty_list_on_no_chats(authenticated_client):
 
 
 @pytest.mark.asyncio
-async def test_get_chat_returns_chat(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="Chat1", user=user)
-    assert chat is not None
-
-    response = await authenticated_client["client"].get(f"/chats/{chat.chat_id}")
+async def test_get_chat_returns_chat(authenticated_client, test_chat):
+    response = await authenticated_client.get(f"/chats/{test_chat.chat_id}")
     assert response.status_code == 200
 
     body = response.json()
-    assert body["chat_id"] == chat.chat_id
+    assert body["chat_id"] == test_chat.chat_id
 
 
 @pytest.mark.asyncio
-async def test_get_chat_raises_404_on_no_such_chat(authenticated_client):
+async def test_get_chat_returns_404_on_no_such_chat(authenticated_client):
     non_existing_chat_id = "some-non-existing-chatid"
-    response = await authenticated_client["client"].get(f"/chats/{non_existing_chat_id}")
+    response = await authenticated_client.get(f"/chats/{non_existing_chat_id}")
     assert response.status_code == 404
     assert response.json()["detail"] == "Chat not found"
 
 
 @pytest.mark.asyncio
-async def test_list_messages_returns_messages(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="Chat1", user=user)
-    assert chat is not None
-
+async def test_list_messages_returns_messages(authenticated_client, test_chat, db_session):
     message_create1 = MessageCreateData(
         role="user",
         content="What is Northstar?",    
         content_tokens=3,
     )
-    message1 = await create_message(db_session, chat, message_create1)
+    message1 = await create_message(db_session, test_chat, message_create1)
 
     message_create2 = MessageCreateData(
         role="system",
         content="Northstar is a company.",  
         content_tokens=4,
     )
-    message2 = await create_message(db_session, chat, message_create2)
+    message2 = await create_message(db_session, test_chat, message_create2)
 
-    response = await authenticated_client["client"].get(f"/chats/{chat.chat_id}/messages")
+    response = await authenticated_client.get(f"/chats/{test_chat.chat_id}/messages")
     assert response.status_code == 200
 
     body = response.json()
@@ -258,27 +219,21 @@ async def test_list_messages_returns_messages(authenticated_client, db_session):
 
 
 @pytest.mark.asyncio
-async def test_list_messages_raises_404_on_no_such_chat(authenticated_client):
+async def test_list_messages_returns_404_on_no_such_chat(authenticated_client):
     non_existing_chat_id = "some-non-existing-chatid"
-    response = await authenticated_client["client"].get(f"/chats/{non_existing_chat_id}/messages")
+    response = await authenticated_client.get(f"/chats/{non_existing_chat_id}/messages")
     assert response.status_code == 404
     assert response.json()["detail"] == "Chat not found"
 
 
 @pytest.mark.asyncio
-async def test_list_message_sources_returns_message_sources(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="Chat", user=user)
-    assert chat is not None
-
+async def test_list_message_sources_returns_message_sources(authenticated_client, test_chat, db_session):
     message_create = MessageCreateData(
         role="system",
         content="Northstar is a company.",  
         content_tokens=4,
     )
-    message = await create_message(db_session, chat, message_create)
+    message = await create_message(db_session, test_chat, message_create)
 
     source_create = SourceCreateData(
         doc_id="some-docid",
@@ -291,7 +246,7 @@ async def test_list_message_sources_returns_message_sources(authenticated_client
     )
     source = await create_message_source(db_session, message, source_create)
 
-    response = await authenticated_client["client"].get(f"/chats/{chat.chat_id}/messages/{message.message_id}/sources")
+    response = await authenticated_client.get(f"/chats/{test_chat.chat_id}/messages/{message.message_id}/sources")
     assert response.status_code == 200
 
     body = response.json()
@@ -301,21 +256,14 @@ async def test_list_message_sources_returns_message_sources(authenticated_client
 
 
 @pytest.mark.asyncio
-async def test_list_message_sources_raises_404_on_no_such_chat(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="Chat", user=user)
-    assert chat is not None
-
+async def test_list_message_sources_returns_404_on_no_such_chat(authenticated_client, test_chat, db_session):
     non_existing_chat_id = "some-non-existing-chatid"
-
     message_create = MessageCreateData(
         role="system",
         content="Northstar is a company.",  
         content_tokens=4,
     )
-    message = await create_message(db_session, chat, message_create)
+    message = await create_message(db_session, test_chat, message_create)
 
     source_create = SourceCreateData(
         doc_id="some-docid",
@@ -328,25 +276,19 @@ async def test_list_message_sources_raises_404_on_no_such_chat(authenticated_cli
     )
     await create_message_source(db_session, message, source_create)
 
-    response = await authenticated_client["client"].get(f"/chats/{non_existing_chat_id}/messages/{message.message_id}/sources")
+    response = await authenticated_client.get(f"/chats/{non_existing_chat_id}/messages/{message.message_id}/sources")
     assert response.status_code == 404
     assert response.json()["detail"] == "Chat not found"
 
 
 @pytest.mark.asyncio
-async def test_list_message_sources_raises_404_on_no_such_message(authenticated_client, db_session):
-    user = await get_user_by_username(db_session, authenticated_client["user"]["username"])
-    assert user is not None
-
-    chat = await create_chat(db_session, title="Chat", user=user)
-    assert chat is not None
-
+async def test_list_message_sources_returns_404_on_no_such_message(authenticated_client, test_chat, db_session):
     message_create = MessageCreateData(
         role="system",
         content="Northstar is a company.",  
         content_tokens=4,
     )
-    message = await create_message(db_session, chat, message_create)
+    message = await create_message(db_session, test_chat, message_create)
     non_existing_message_id = "some-non-existing-messageid"
 
     source_create = SourceCreateData(
@@ -360,6 +302,6 @@ async def test_list_message_sources_raises_404_on_no_such_message(authenticated_
     )
     await create_message_source(db_session, message, source_create)
 
-    response = await authenticated_client["client"].get(f"/chats/{chat.chat_id}/messages/{non_existing_message_id}/sources")
+    response = await authenticated_client.get(f"/chats/{test_chat.chat_id}/messages/{non_existing_message_id}/sources")
     assert response.status_code == 404
     assert response.json()["detail"] == "Message not found"
