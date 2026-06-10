@@ -22,6 +22,10 @@ class LoginResponse(BaseModel):
     username: str
 
 
+class LoginJWTResponse(LoginResponse):
+    access_token: str
+
+
 class UserInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

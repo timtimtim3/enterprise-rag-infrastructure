@@ -4,6 +4,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+def get_required_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise ValueError(f"{key} environment variable is required")
+    return value
+
+
 load_dotenv()
 
 
@@ -47,4 +54,10 @@ TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "default")
 
 # Security
 DUMMY_PASSWORD_HASH = os.getenv("DUMMY_PASSWORD_HASH")
-SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", 60 * 60 * 24))
+SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", 60 * 60 * 24))  # 24 hours
+
+# JWT
+REFRESH_TOKEN_EXPIRE_SECONDS = int(os.getenv("REFRESH_TOKEN_EXPIRE_SECONDS", 60 * 60 * 24 * 7))  # 7 days
+ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv("ACCESS_TOKEN_EXPIRE_SECONDS", 60 * 15))  # 15 minutes
+JWT_SECRET_KEY = get_required_env("JWT_SECRET_KEY")
+JWT_ALGORITHM = "HS256"
