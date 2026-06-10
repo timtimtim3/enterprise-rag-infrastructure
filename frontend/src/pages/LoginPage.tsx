@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { authApi } from "../api/auth";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/useAuth";
 import { ApiError } from "../api/client";
 
 export function LoginPage() {

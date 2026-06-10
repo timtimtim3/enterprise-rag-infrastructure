@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TYPE_CHECKING
 
 from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.api.schemas.auth import RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserInfo
-from app.db.crud.auth import create_user, get_user_by_email, get_user_by_username, create_session
+from app.db.crud.auth import create_user, delete_session_by_id, get_user_by_email, get_user_by_username, create_session
 from app.core.security import hash_password, verify_password
 from app.core.config import DUMMY_PASSWORD_HASH, SESSION_EXPIRE_SECONDS
 
@@ -93,3 +93,22 @@ async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSess
 @router.get("/me", response_model=UserInfo)
 async def get_me(user: User = Depends(get_current_user)) -> UserInfo:
     return UserInfo.model_validate(user)
+
+
+@router.post("/signout", status_code=204)
+async def sign_out(
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user)
+) -> None:
+    session_id = request.cookies.get("session_id")
+    if session_id is not None:
+        await delete_session_by_id(db, session_id)
+
+    response.delete_cookie(
+        key="session_id",
+        httponly=True,
+        secure=False,
+        samesite="lax",
+    )

@@ -44,4 +44,14 @@ export const authApi = {
     
     return response;
   },
+
+  async signOut() {
+    const { error } = await apiClient.POST(
+      "/auth/signout",
+    );
+
+    if (error) {
+      throwApiError(error);
+    }    
+  },
 };

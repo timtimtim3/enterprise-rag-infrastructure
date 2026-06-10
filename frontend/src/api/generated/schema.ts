@@ -47,6 +47,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/chats/{chat_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Chat */
+        get: operations["get_chat_chats__chat_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Chat */
+        delete: operations["delete_chat_chats__chat_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/chats/{chat_id}/messages/{message_id}/sources": {
         parameters: {
             query?: never;
@@ -59,23 +77,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/chats/{chat_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete Chat */
-        delete: operations["delete_chat_chats__chat_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -126,6 +127,23 @@ export interface paths {
         get: operations["get_me_auth_me_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/signout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign Out */
+        post: operations["sign_out_auth_signout_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -524,13 +542,12 @@ export interface operations {
             };
         };
     };
-    list_message_sources_chats__chat_id__messages__message_id__sources_get: {
+    get_chat_chats__chat_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 chat_id: string;
-                message_id: string;
             };
             cookie?: {
                 session_id?: string | null;
@@ -544,7 +561,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ListMessageSourcesResponse"];
+                    "application/json": components["schemas"]["ChatInfo"];
                 };
             };
             /** @description Validation Error */
@@ -577,6 +594,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_message_sources_chats__chat_id__messages__message_id__sources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chat_id: string;
+                message_id: string;
+            };
+            cookie?: {
+                session_id?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListMessageSourcesResponse"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -674,6 +725,35 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserInfo"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sign_out_auth_signout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                session_id?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SquarePen, Star, LogOut } from "lucide-react";
 import { useChatList, useDeleteChat } from "../../hooks/useChats";
 import { ChatListItem } from "./ChatListItem";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/useAuth";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -79,7 +79,10 @@ export function Sidebar() {
             {user?.username}
           </span>
           <button
-            onClick={logout}
+            onClick={async () => {
+              await logout();
+              navigate("/login");
+            }}
             className="w-6 h-6 rounded flex items-center justify-center hover:bg-bg-hover transition-colors"
             aria-label="Sign out"
             title="Sign out"
