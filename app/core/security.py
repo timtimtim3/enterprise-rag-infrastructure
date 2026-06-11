@@ -32,7 +32,7 @@ def create_access_token(
     algorithm: str,
     expires_in_seconds: int,
 ) -> str:
-    now = datetime.now(timezone=timezone.utc)
+    now = datetime.now(timezone.utc)
     expires_at = now + timedelta(seconds=expires_in_seconds)
 
     payload = {

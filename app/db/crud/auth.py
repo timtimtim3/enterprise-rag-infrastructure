@@ -130,7 +130,7 @@ async def revoke_refresh_token_by_hash(db: AsyncSession, token_hash: str) -> boo
     if refresh_token is None:
         return False
     
-    refresh_token.revoked_at = datetime.now(timezone=timezone.utc)
+    refresh_token.revoked_at = datetime.now(timezone.utc)
     
     await db.commit()
     return True
@@ -138,6 +138,6 @@ async def revoke_refresh_token_by_hash(db: AsyncSession, token_hash: str) -> boo
 
 async def get_refresh_token_by_hash(db: AsyncSession, token_hash: str) -> RefreshToken | None:
     result = await db.execute(
-        select(RefreshToken).where(RefreshToken.token_hash == token_hash)
+        select(RefreshToken).options(selectinload(RefreshToken.user)).where(RefreshToken.token_hash == token_hash)
     )
     return result.scalar_one_or_none()
