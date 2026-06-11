@@ -32,6 +32,7 @@ jobs:
       OPENAI_API_KEY: dummy
       USE_LOCAL_LLM: "False"
       DUMMY_PASSWORD_HASH: "$argon2id$v=19$m=65536,t=3,p=4$Dl6O1U7CFD0xxEtSyGcWnA$Ak+8peIXDOF1VZn++BfzIncyN4W2Xm0Imje40Q1P2fw"
+      JWT_SECRET_KEY: "38xpfVTjlWmDpBgv7HoSl-JkGP-c8z7q-hxEZtmIiJf7UjGNo_1uU7TLiIXRblYf359E8rRbLNxgTWuK-HC1yQ"
 
     steps:
       - name: Checkout code
