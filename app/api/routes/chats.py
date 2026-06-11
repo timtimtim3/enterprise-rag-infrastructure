@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request, HTTPException
 from typing import TYPE_CHECKING, Optional
 
-from app.api.dependencies.auth import get_current_user, get_db
+from app.api.dependencies.auth import get_current_user, get_current_user_jwt, get_db
 from app.api.schemas.chats import AskRequest, AskResponse, ChatInfo, ListChatsResponse, ListMessageSourcesResponse, ListMessagesResponse, MessageInfo, MessageSourceInfo
 from app.db.crud.chats import create_chat as crud_create_chat, delete_chat as crud_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
 from app.services.chat_service import answer_chat_message, AnswerGenerationError
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/chats", tags=["chats"])
 async def create_chat(
     request: Request,
     ask_request: AskRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_jwt),
     db: AsyncSession = Depends(get_db)
 ) -> AskResponse:
     """
@@ -48,7 +48,7 @@ async def add_message(
     request: Request,
     ask_request: AskRequest,
     chat_id: str,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_jwt),
     db: AsyncSession = Depends(get_db),
 ) -> AskResponse:
     """
@@ -75,7 +75,7 @@ async def add_message(
 
 
 @router.get("", response_model=ListChatsResponse)
-async def list_chats(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> ListChatsResponse:
+async def list_chats(user: User = Depends(get_current_user_jwt), db: AsyncSession = Depends(get_db)) -> ListChatsResponse:
     chats = await get_user_chats(db, user)
     return ListChatsResponse(
         chats=[ChatInfo.model_validate(chat) for chat in chats]
@@ -85,7 +85,7 @@ async def list_chats(user: User = Depends(get_current_user), db: AsyncSession = 
 @router.get("/{chat_id}", response_model=ChatInfo)
 async def get_chat(
     chat_id: str,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_jwt),
     db: AsyncSession = Depends(get_db)
 ) -> ChatInfo:
     chat = await get_user_chat(db, user, chat_id)
@@ -97,7 +97,7 @@ async def get_chat(
 @router.get("/{chat_id}/messages", response_model=ListMessagesResponse)
 async def list_messages(
     chat_id: str,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_jwt),
     db: AsyncSession = Depends(get_db)
 ) -> ListMessagesResponse:
     chat = await get_user_chat(db, user, chat_id)
@@ -114,7 +114,7 @@ async def list_messages(
 async def list_message_sources(
     chat_id: str,
     message_id: str,
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user_jwt),
     db: AsyncSession = Depends(get_db)
 ) -> ListMessageSourcesResponse:
     chat = await get_user_chat(db, user, chat_id)
@@ -132,7 +132,7 @@ async def list_message_sources(
 
 
 @router.delete("/{chat_id}", status_code=204)
-async def delete_chat(chat_id: str, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> None:
+async def delete_chat(chat_id: str, user: User = Depends(get_current_user_jwt), db: AsyncSession = Depends(get_db)) -> None:
     chat = await get_user_chat(db, user, chat_id)
     if chat is None:
         raise HTTPException(status_code=404, detail="Chat not found")

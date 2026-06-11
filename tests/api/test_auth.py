@@ -138,8 +138,8 @@ async def test_signin_returns_401_on_incorrect_password(client, register_payload
 
 
 @pytest.mark.asyncio
-async def test_get_me_returns_current_user(authenticated_client, register_payload):
-    response = await authenticated_client.get("/auth/me")
+async def test_get_me_returns_current_user(session_authenticated_client, register_payload):
+    response = await session_authenticated_client.get("/auth/me")
     assert response.status_code == 200
 
     body = response.json()
@@ -147,7 +147,7 @@ async def test_get_me_returns_current_user(authenticated_client, register_payloa
 
 
 @pytest.mark.asyncio
-async def test_get_me_requires_authentication(client, register_payload):
+async def test_get_me_requires_authentication(client):
     response = await client.get("/auth/me")
 
     assert response.status_code == 401

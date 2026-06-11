@@ -79,7 +79,7 @@ def register_payload():
 
 
 @pytest.fixture
-async def authenticated_client(client, register_payload):
+async def session_authenticated_client(client, register_payload):
     signup_response = await client.post(
         '/auth/signup',
         json=register_payload,
@@ -97,6 +97,38 @@ async def authenticated_client(client, register_payload):
     assert signin_response.status_code == 200
 
     return client
+
+
+@pytest.fixture
+async def jwt_authenticated_client(client, register_payload):
+    signup_response = await client.post(
+        '/auth/signup',
+        json=register_payload,
+    )
+    assert signup_response.status_code == 201
+
+    signin_payload = {
+        "username": register_payload["username"],
+        "password": register_payload["password"],
+    }
+    signin_response = await client.post(
+        '/auth/signin-jwt',
+        json=signin_payload,
+    )
+    assert signin_response.status_code == 200
+
+    access_token = signin_response.json()["access_token"]
+
+    client.headers.update({
+        "Authorization": f"Bearer {access_token}",
+    })
+
+    return client
+
+
+@pytest.fixture
+async def authenticated_client(jwt_authenticated_client):
+    return jwt_authenticated_client
 
 
 @pytest.fixture
