@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request, HTTPException
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from app.api.dependencies.auth import get_current_user, get_current_user_jwt, get_db
+from app.api.dependencies.auth import get_current_user_jwt, get_db
 from app.api.schemas.chats import AskRequest, AskResponse, ChatInfo, ListChatsResponse, ListMessageSourcesResponse, ListMessagesResponse, MessageInfo, MessageSourceInfo
 from app.db.crud.chats import create_chat as crud_create_chat, delete_chat as crud_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
 from app.services.chat_service import answer_chat_message, AnswerGenerationError

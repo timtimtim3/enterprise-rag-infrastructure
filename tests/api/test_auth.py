@@ -151,3 +151,20 @@ async def test_get_me_requires_authentication(client):
     response = await client.get("/auth/me")
 
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_signout_deletes_session_and_auth_returns_401(session_authenticated_client, db_session):
+    session_id = session_authenticated_client.cookies.get("session_id")
+    assert session_id is not None
+
+    response = await session_authenticated_client.post('/auth/signout')
+    assert response.status_code == 204
+
+    assert session_authenticated_client.cookies.get("session_id") is None
+
+    session = await get_session_by_id(db_session, session_id)
+    assert session is None
+
+    response = await session_authenticated_client.get('/auth/me')
+    assert response.status_code == 401

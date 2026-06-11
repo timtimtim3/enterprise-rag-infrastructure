@@ -89,7 +89,6 @@ async def test_me_jwt_returns_current_user(jwt_authenticated_client, register_pa
 @pytest.mark.asyncio
 async def test_me_jwt_requires_authentication(client):
     response = await client.get("/auth/me-jwt")
-
     assert response.status_code == 401
 
 
@@ -118,4 +117,23 @@ async def test_refresh_returns_new_access_token(jwt_authenticated_client):
 @pytest.mark.asyncio
 async def test_refresh_requires_refresh_token(client):
     response = await client.post("/auth/refresh-jwt")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_signout_revokes_refresh_token_and_refresh_returns_401(jwt_authenticated_client, db_session):
+    refresh_token = jwt_authenticated_client.cookies.get("refresh_token")
+    assert refresh_token is not None
+    refresh_token_hash = hash_refresh_token(refresh_token)
+
+    response = await jwt_authenticated_client.post('/auth/signout-jwt')
+    assert response.status_code == 204
+
+    assert jwt_authenticated_client.cookies.get("refresh_token") is None
+
+    refresh_token_db = await get_refresh_token_by_hash(db_session, refresh_token_hash)
+    assert refresh_token_db is not None
+    assert refresh_token_db.revoked_at is not None
+
+    response = await jwt_authenticated_client.post('/auth/refresh-jwt')
     assert response.status_code == 401
