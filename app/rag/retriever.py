@@ -16,15 +16,15 @@ from app.rag.vectorstores.qdrant_store import get_all_qdrant_points_by_doc_id
 
 if TYPE_CHECKING:
     from qdrant_client import AsyncQdrantClient
-    from app.rag.embeddings import EmbeddingService
-    from app.rag.reranking import Reranker
+    from app.rag.embeddings import LocalEmbeddingProvider
+    from app.rag.reranking import LocalRerankerProvider
 
 
 class Retriever:
     def __init__(
         self, 
-        embedding_svc: EmbeddingService,
-        reranker: Reranker,
+        embedding_svc: LocalEmbeddingProvider,
+        reranker: LocalRerankerProvider,
         qdrant_client: AsyncQdrantClient,
         collection_name: str = COLLECTION_NAME,
         initial_top_k: int = INITIAL_TOP_K,
@@ -165,7 +165,7 @@ class Retriever:
     
     async def rerank_context_dicts(self, query: str, context_dicts: List[dict]) -> List[dict]:
         batch_input = [[query, context_dict['text']] for context_dict in context_dicts]
-        scores = await self.reranker.rerank_scores(batch_input)
+        scores = await self.reranker.rerank(batch_input)
         for i, score in enumerate(scores):
             context_dicts[i]["reranker_score"] = float(score)
         sorted_context_dicts = sorted(context_dicts, key=lambda x: x["reranker_score"], reverse=True)

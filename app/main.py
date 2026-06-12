@@ -18,8 +18,8 @@ from app.core.config import (
 )
 
 from app.llm.client import LLM
-from app.rag.embeddings import EmbeddingService
-from app.rag.reranking import Reranker
+from app.rag.embeddings import LocalEmbeddingProvider
+from app.rag.reranking import LocalRerankerProvider
 from app.rag.retriever import Retriever
 from app.rag.vectorstores.qdrant_store import init_qdrant
 from app.services.answer_service import AnswerService
@@ -31,9 +31,9 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    embedding_svc = EmbeddingService(EMBEDDING_MODEL)
+    embedding_svc = LocalEmbeddingProvider(EMBEDDING_MODEL)
     qdrant_client = await init_qdrant()
-    reranker = Reranker(RERANKER_MODEL)
+    reranker = LocalRerankerProvider(RERANKER_MODEL)
     retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
     llm = LLM(USING_LLM)
 

@@ -1,8 +1,8 @@
 import asyncio
 
 from app.llm.client import LLM
-from app.rag.embeddings import EmbeddingService
-from app.rag.reranking import Reranker
+from app.rag.embeddings import LocalEmbeddingProvider
+from app.rag.reranking import LocalRerankerProvider
 from app.rag.retriever import Retriever
 from app.services.answer_service import AnswerService
 from app.rag.helpers import format_context_dict_for_llm
@@ -19,9 +19,9 @@ QUERY = "How does Northstar deploy LangGraph services to ECS?"
 
 
 async def main() -> None:
-    embedding_svc = EmbeddingService(EMBEDDING_MODEL)
+    embedding_svc = LocalEmbeddingProvider(EMBEDDING_MODEL)
     qdrant_client = await init_qdrant()
-    reranker = Reranker(RERANKER_MODEL)
+    reranker = LocalRerankerProvider(RERANKER_MODEL)
     retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
     llm = LLM(USING_LLM)
     answer_svc = AnswerService(retriever, llm)
