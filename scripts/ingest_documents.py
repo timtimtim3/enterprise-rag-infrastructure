@@ -18,7 +18,7 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 from qdrant_client.models import PointStruct
 
 from scripts.helpers import content_hash
-from app.rag.embeddings import LocalEmbeddingProvider
+from app.rag.embeddings.local import LocalEmbeddingProvider
 from app.rag.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, init_qdrant, update_qdrant_points_metadata
 from app.core.config import (
     DOC_EXTENSIONS,
@@ -164,7 +164,7 @@ async def main() -> None:
     if len(chunk_texts) > 0:
         # Embed chunks
         embedding_svc = LocalEmbeddingProvider(EMBEDDING_MODEL)
-        chunk_embeddings = await embedding_svc.embed(chunk_texts)
+        chunk_embeddings = await embedding_svc.embed_documents(chunk_texts)
         for chunk_obj, embedding in zip(all_chunks, chunk_embeddings):
             chunk_obj["vector"] = embedding
         EMBEDDING_DIM = len(chunk_embeddings[0])

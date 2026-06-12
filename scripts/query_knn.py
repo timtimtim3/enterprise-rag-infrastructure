@@ -1,8 +1,8 @@
 import asyncio
 
 from app.llm.client import LLM
-from app.rag.embeddings import LocalEmbeddingProvider
-from app.rag.reranking import LocalRerankerProvider
+from app.rag.embeddings.local import LocalEmbeddingProvider
+from app.rag.reranking.local import LocalRerankerProvider
 from app.rag.retriever import Retriever
 from app.services.answer_service import AnswerService
 from app.rag.helpers import format_context_dict_for_llm
@@ -26,7 +26,7 @@ async def main() -> None:
     llm = LLM(USING_LLM)
     answer_svc = AnswerService(retriever, llm)
 
-    # query_embedding = embedding_svc.embed([QUERY])[0]
+    # query_embedding = embedding_svc.embed_query(QUERY)
     # print(query_embedding)
 
     # resp = qdrant_client.query_points(collection_name=COLLECTION_NAME, query=query_embedding)

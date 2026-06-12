@@ -16,8 +16,8 @@ from app.rag.vectorstores.qdrant_store import get_all_qdrant_points_by_doc_id
 
 if TYPE_CHECKING:
     from qdrant_client import AsyncQdrantClient
-    from app.rag.embeddings import LocalEmbeddingProvider
-    from app.rag.reranking import LocalRerankerProvider
+    from app.rag.embeddings.local import LocalEmbeddingProvider
+    from app.rag.reranking.local import LocalRerankerProvider
 
 
 class Retriever:
@@ -68,8 +68,7 @@ class Retriever:
         if relative_threshold is None:
             relative_threshold = self.relative_threshold   
 
-        query_embeddings = await self.embedding_svc.embed([query])
-        query_embedding = query_embeddings[0]
+        query_embedding = await self.embedding_svc.embed_query(query)
         resp = await self.qdrant_client.query_points(collection_name=self.collection_name, query=query_embedding, limit=initial_top_k)
         points = resp.points
 

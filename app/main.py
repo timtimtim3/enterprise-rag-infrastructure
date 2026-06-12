@@ -18,8 +18,8 @@ from app.core.config import (
 )
 
 from app.llm.client import LLM
-from app.rag.embeddings import LocalEmbeddingProvider
-from app.rag.reranking import LocalRerankerProvider
+from app.rag.embeddings.local import LocalEmbeddingProvider
+from app.rag.reranking.local import LocalRerankerProvider
 from app.rag.retriever import Retriever
 from app.rag.vectorstores.qdrant_store import init_qdrant
 from app.services.answer_service import AnswerService
