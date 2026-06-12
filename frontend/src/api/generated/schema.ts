@@ -150,6 +150,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/signin-jwt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign In Jwt */
+        post: operations["sign_in_jwt_auth_signin_jwt_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me-jwt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Me Jwt */
+        get: operations["get_me_jwt_auth_me_jwt_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/signout-jwt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign Out Jwt */
+        post: operations["sign_out_jwt_auth_signout_jwt_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/refresh-jwt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh Jwt */
+        post: operations["refresh_jwt_auth_refresh_jwt_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -242,6 +310,20 @@ export interface components {
         ListMessagesResponse: {
             /** Messages */
             messages: components["schemas"]["MessageInfo"][];
+        };
+        /** LoginJWTResponse */
+        LoginJWTResponse: {
+            /** User Id */
+            user_id: string;
+            /** Username */
+            username: string;
+            /** Access Token */
+            access_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -411,9 +493,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -426,15 +506,6 @@ export interface operations {
                     "application/json": components["schemas"]["ListChatsResponse"];
                 };
             };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
         };
     };
     create_chat_chats_post: {
@@ -442,9 +513,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -479,9 +548,7 @@ export interface operations {
             path: {
                 chat_id: string;
             };
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -512,9 +579,7 @@ export interface operations {
             path: {
                 chat_id: string;
             };
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -549,9 +614,7 @@ export interface operations {
             path: {
                 chat_id: string;
             };
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -582,9 +645,7 @@ export interface operations {
             path: {
                 chat_id: string;
             };
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -614,9 +675,7 @@ export interface operations {
                 chat_id: string;
                 message_id: string;
             };
-            cookie?: {
-                session_id?: string | null;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -754,6 +813,108 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sign_in_jwt_auth_signin_jwt_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginJWTResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_me_jwt_auth_me_jwt_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+        };
+    };
+    sign_out_jwt_auth_signout_jwt_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    refresh_jwt_auth_refresh_jwt_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                refresh_token?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginJWTResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

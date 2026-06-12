@@ -6,6 +6,22 @@ export const apiClient = createClient<paths>({
   credentials: "include",
 });
 
+let accessToken: string | null = null;
+
+export function setAccessToken(token: string | null) {
+  accessToken = token;
+}
+
+export function getAccessToken() {
+  return accessToken;
+}
+
+export function authHeaders() {
+  return accessToken
+    ? { Authorization: `Bearer ${accessToken}` }
+    : {};
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -43,4 +59,113 @@ export function throwApiError(error: unknown): never {
     undefined,
     error
   );
+}
+
+async function refreshAccessToken(): Promise<boolean> {
+  const { data, error } = await apiClient.POST("/auth/refresh-jwt");
+
+  if (error || !data?.access_token) {
+    setAccessToken(null);
+    return false;
+  }
+
+  setAccessToken(data.access_token);
+  return true;
+}
+
+export async function initializeAuth(): Promise<boolean> {
+  return refreshAccessToken();
+}
+
+export async function authGet<Path extends keyof paths>(
+  path: Path,
+  options: any = {}
+) {
+  let result = await apiClient.GET(path as any, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...authHeaders(),
+    },
+  });
+
+  if (result.response.status !== 401) {
+    return result;
+  }
+
+  const refreshed = await refreshAccessToken();
+
+  if (!refreshed) {
+    return result;
+  }
+
+  return apiClient.GET(path as any, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...authHeaders(),
+    },
+  });
+}
+
+export async function authPost<Path extends keyof paths>(
+  path: Path,
+  options: any = {}
+) {
+  let result = await apiClient.POST(path as any, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...authHeaders(),
+    },
+  });
+
+  if (result.response.status !== 401) {
+    return result;
+  }
+
+  const refreshed = await refreshAccessToken();
+
+  if (!refreshed) {
+    return result;
+  }
+
+  return apiClient.POST(path as any, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...authHeaders(),
+    },
+  });
+}
+
+export async function authDelete<Path extends keyof paths>(
+  path: Path,
+  options: any = {}
+) {
+  let result = await apiClient.DELETE(path as any, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...authHeaders(),
+    },
+  });
+
+  if (result.response.status !== 401) {
+    return result;
+  }
+
+  const refreshed = await refreshAccessToken();
+
+  if (!refreshed) {
+    return result;
+  }
+
+  return apiClient.DELETE(path as any, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...authHeaders(),
+    },
+  });
 }

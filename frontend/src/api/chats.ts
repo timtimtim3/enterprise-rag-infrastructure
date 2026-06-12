@@ -1,21 +1,21 @@
-import { apiClient, throwApiError } from "./client";
+import { authGet, authPost, authDelete, throwApiError } from "./client";
 import type {
   AskRequest,
 } from "../types/api";
 
 export const chatsApi = {
   async list() {
-    const { data, error } = await apiClient.GET("/chats");
+    const { data, error } = await authGet("/chats");
 
     if (error) {
       throwApiError(error);
     }
-    
+
     return data;
   },
 
   async create(data: AskRequest) {
-    const { data: response, error } = await apiClient.POST(
+    const { data: response, error } = await authPost(
       "/chats",
       {
         body: data,
@@ -30,7 +30,7 @@ export const chatsApi = {
   },
 
   async delete(chatId: string) {
-    const { error } = await apiClient.DELETE(
+    const { error } = await authDelete(
       "/chats/{chat_id}",
       {
         params: {
@@ -47,7 +47,7 @@ export const chatsApi = {
   },
 
   async listMessages(chatId: string) {
-    const { data, error } = await apiClient.GET(
+    const { data, error } = await authGet(
       "/chats/{chat_id}/messages",
       {
         params: {
@@ -66,7 +66,7 @@ export const chatsApi = {
   },
 
   async addMessage(chatId: string, data: AskRequest) {
-    const { data: response, error } = await apiClient.POST(
+    const { data: response, error } = await authPost(
       "/chats/{chat_id}/messages",
       {
         params: {
@@ -86,7 +86,7 @@ export const chatsApi = {
   },
 
   async listMessageSources(chatId: string, messageId: string) {
-    const { data, error } = await apiClient.GET(
+    const { data, error } = await authGet(
       "/chats/{chat_id}/messages/{message_id}/sources",
       {
         params: {

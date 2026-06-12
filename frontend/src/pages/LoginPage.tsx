@@ -18,7 +18,7 @@ export function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const response = await authApi.signIn({ username, password });
+      const response = await authApi.signInJwt({ username, password });
       login(response);
       navigate("/chats");
     } catch (err) {

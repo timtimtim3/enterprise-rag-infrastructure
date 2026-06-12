@@ -1,8 +1,15 @@
-import { apiClient, throwApiError } from "./client";
+import {
+  apiClient,
+  setAccessToken,
+  throwApiError,
+  authGet,
+  authHeaders,
+} from "./client";
 import type {
   LoginRequest,
   RegisterRequest,
 } from "../types/api";
+
 
 export const authApi = {
   async me() {
@@ -53,5 +60,42 @@ export const authApi = {
     if (error) {
       throwApiError(error);
     }    
+  },
+
+  async signInJwt(data: LoginRequest) {
+    const { data: response, error } = await apiClient.POST(
+      "/auth/signin-jwt",
+      { body: data }
+    );
+
+    if (error) {
+      throwApiError(error);
+    }
+
+    setAccessToken(response.access_token);
+
+    return response;
+  },
+
+  async meJwt() {
+    const { data, error } = await authGet("/auth/me-jwt");
+
+    if (error) {
+      throwApiError(error);
+    }
+
+    return data;
+  },
+
+  async signOutJwt() {
+    const { error } = await apiClient.POST("/auth/signout-jwt", {
+      headers: authHeaders(),
+    });
+
+    setAccessToken(null);
+
+    if (error) {
+      throwApiError(error);
+    }
   },
 };

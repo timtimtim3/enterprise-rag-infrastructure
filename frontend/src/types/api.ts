@@ -11,6 +11,7 @@ export type ListMessagesResponse = components["schemas"]["ListMessagesResponse"]
 export type ListMessageSourcesResponse = components["schemas"]["ListMessageSourcesResponse"];
 export type LoginRequest = components["schemas"]["LoginRequest"];
 export type LoginResponse = components["schemas"]["LoginResponse"];
+export type LoginJWTResponse = components["schemas"]["LoginJWTResponse"];
 export type RegisterRequest = components["schemas"]["RegisterRequest"];
 export type RegisterResponse = components["schemas"]["RegisterResponse"];
 export type UserInfo = components["schemas"]["UserInfo"];
