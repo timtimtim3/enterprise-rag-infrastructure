@@ -4,6 +4,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.core.config import TEST_DATABASE_URL
+from app.core.redis import get_redis
 from app.db.base import Base
 from app.db.session import get_db
 from app.db.crud.auth import get_user_by_username
@@ -12,6 +13,20 @@ from app.main import app
 
 
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+
+
+class FakeRedis:
+    def __init__(self):
+        self.store = {}
+
+    async def exists(self, key: str) -> int:
+        return int(key in self.store)
+
+    async def setex(self, key: str, ttl: int, value: str) -> None:
+        self.store[key] = value
+
+    async def delete(self, key: str) -> None:
+        self.store.pop(key, None)
 
 
 @pytest.fixture(scope="session")
@@ -48,11 +63,20 @@ async def db_session(setup_test_db):
 
 
 @pytest.fixture
-async def client(db_session):
+def fake_redis():
+    return FakeRedis()
+
+
+@pytest.fixture
+async def client(db_session, fake_redis):
     async def override_get_db():
         yield db_session
 
+    async def override_get_redis():
+        yield fake_redis
+
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_redis] = override_get_redis
 
     async with AsyncClient(
         transport=ASGITransport(app=app),
