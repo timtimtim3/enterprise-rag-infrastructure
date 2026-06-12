@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from fastapi import Cookie, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from app.core.config import JWT_ALGORITHM, JWT_SECRET_KEY
+from app.core.redis import get_redis
 from app.core.security import hash_refresh_token, verify_access_token
 from app.db.session import get_db
 from app.db.crud.auth import get_refresh_token_by_hash, get_session_by_id, delete_session, get_user_by_user_id
@@ -43,18 +45,23 @@ async def get_current_user(
 async def get_current_user_jwt(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: AsyncSession = Depends(get_db),
+    redis: Redis = Depends(get_redis),
 ) -> User:
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     try:
+        # Verify type, sub, jti, exp, iat
         payload = verify_access_token(credentials.credentials, secret_key=JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
     except ValueError:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
+    jti = payload["jti"]
+    if await redis.exists(f"revoked_access_token:{jti}"):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
     user_id = payload["sub"]
     user = await get_user_by_user_id(db, user_id)
-
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
 

@@ -52,6 +52,9 @@ DATABASE_URL = os.getenv("DATABASE_URL", "default")
 ALEMBIC_DATABASE_URL = os.getenv("ALEMBIC_DATABASE_URL", "default")
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "default")
 
+# Redis
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
 # Security
 DUMMY_PASSWORD_HASH = os.getenv("DUMMY_PASSWORD_HASH")
 SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", 60 * 60 * 24))  # 24 hours

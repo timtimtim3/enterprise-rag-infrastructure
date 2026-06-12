@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.security import HTTPAuthorizationCredentials
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TYPE_CHECKING
 
-from app.api.dependencies.auth import get_current_user, get_current_user_jwt, get_current_user_refresh
+from app.api.dependencies.auth import get_current_user, get_current_user_jwt, get_current_user_refresh, bearer_scheme
+from app.core.redis import get_redis
 from app.db.session import get_db
 from app.api.schemas.auth import LoginJWTResponse, RegisterRequest, RegisterResponse, LoginRequest, LoginResponse, UserInfo
 from app.db.crud.auth import create_refresh_token, create_user, delete_session_by_id, get_user_by_email, get_user_by_username, create_session, revoke_refresh_token_by_hash
-from app.core.security import create_access_token, gen_refresh_token, hash_password, hash_refresh_token, verify_password
+from app.core.security import create_access_token, gen_refresh_token, hash_password, hash_refresh_token, verify_access_token, verify_password
 from app.core.config import (
     ACCESS_TOKEN_EXPIRE_SECONDS,
     DUMMY_PASSWORD_HASH,
@@ -180,13 +184,31 @@ async def get_me_jwt(user: User = Depends(get_current_user_jwt)) -> UserInfo:
 async def sign_out_jwt(
     request: Request,
     response: Response,
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: AsyncSession = Depends(get_db),
+    redis: Redis = Depends(get_redis),
 ) -> None:
+    # Revoke refresh token in db if exists
     refresh_token = request.cookies.get("refresh_token")
     if refresh_token is not None:
         refresh_token_hash = hash_refresh_token(refresh_token)
         await revoke_refresh_token_by_hash(db, refresh_token_hash)
 
+    # Revoke access token by storing in Redis with ttl if passed and valid access token
+    if credentials is not None and credentials.scheme.lower() == "bearer":
+        try:
+            # Verify type, sub, jti, exp, iat
+            payload = verify_access_token(credentials.credentials, secret_key=JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+            jti = payload["jti"]
+            exp = payload["exp"]
+            ttl = exp - int(datetime.now(timezone.utc).timestamp())
+            if ttl > 0:
+                await redis.setex(f"revoked_access_token:{jti}", ttl, "1")
+        except ValueError:
+            pass
+
+    # Delete cookie
     response.delete_cookie(
         key="refresh_token",
         httponly=True,

@@ -1,3 +1,5 @@
+import uuid
+
 from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
@@ -40,7 +42,8 @@ def create_access_token(
         "username": username,
         "exp": expires_at,
         "iat": now,
-        "type": "access"
+        "jti": str(uuid.uuid4()),
+        "type": "access",
     }
     return jwt.encode(payload, secret_key, algorithm=algorithm)
 
@@ -60,10 +63,24 @@ def verify_access_token(
     except JWTError as exc:
         raise ValueError("Invalid access token") from exc
 
-    if payload.get("type") != "access":
-        raise ValueError("Invalid token type")
+    sub = payload.get("sub")
+    exp = payload.get("exp")
+    iat = payload.get("iat")
+    jti = payload.get("jti")
 
-    if not payload.get("sub"):
-        raise ValueError("Token subject is missing")
+    if not isinstance(sub, str) or not sub:
+        raise ValueError("Token subject is missing or invalid")
+
+    if not isinstance(jti, str) or not jti:
+        raise ValueError("Token JTI is missing or invalid")
+
+    if not isinstance(exp, int):
+        raise ValueError("Token expiration is missing or invalid")
+
+    if not isinstance(iat, int):
+        raise ValueError("Token issued-at is missing or invalid")
+
+    if iat > exp:
+        raise ValueError("Token issued-at is after expiration")
 
     return payload

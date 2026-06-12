@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from redis.asyncio import Redis
+
 import app.db.models
 from app.db.base import Base
 from app.db.session import engine
@@ -17,6 +19,7 @@ from app.services.answer_service import AnswerService
 from app.core.config import (
     COLLECTION_NAME,
     EMBEDDING_MODEL,
+    REDIS_URL,
     RERANKER_MODEL,
     USING_LLM,
 )
@@ -39,11 +42,15 @@ async def lifespan(app: FastAPI):
     answer_svc = AnswerService(retriever, llm)
     app.state.query_router = query_router
     app.state.answer_svc = answer_svc
-
+    app.state.redis = Redis.from_url(REDIS_URL, decode_responses=True)
+    
     yield
 
-    # shutdown logic here...
-
+    # shutdown logic
+    await app.state.redis.aclose()
+    await engine.dispose()
+    await qdrant_client.close()
+    
 
 app = FastAPI(lifespan=lifespan)
 
