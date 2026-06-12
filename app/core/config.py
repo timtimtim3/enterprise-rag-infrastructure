@@ -64,3 +64,6 @@ REFRESH_TOKEN_EXPIRE_SECONDS = int(os.getenv("REFRESH_TOKEN_EXPIRE_SECONDS", 60 
 ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv("ACCESS_TOKEN_EXPIRE_SECONDS", 60 * 15))  # 15 minutes
 JWT_SECRET_KEY = get_required_env("JWT_SECRET_KEY")
 JWT_ALGORITHM = "HS256"
+
+# Cookie settings
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"

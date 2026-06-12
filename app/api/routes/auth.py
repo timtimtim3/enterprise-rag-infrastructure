@@ -16,6 +16,7 @@ from app.db.crud.auth import create_refresh_token, create_user, delete_session_b
 from app.core.security import create_access_token, gen_refresh_token, hash_password, hash_refresh_token, verify_access_token, verify_password
 from app.core.config import (
     ACCESS_TOKEN_EXPIRE_SECONDS,
+    COOKIE_SECURE,
     DUMMY_PASSWORD_HASH,
     JWT_ALGORITHM,
     JWT_SECRET_KEY,
@@ -89,7 +90,7 @@ async def sign_in(response: Response, login_request: LoginRequest, db: AsyncSess
         key="session_id",
         value=session_id,
         httponly=True,
-        secure=False,
+        secure=COOKIE_SECURE,
         samesite="lax",
         max_age=SESSION_EXPIRE_SECONDS,
     )
@@ -119,7 +120,7 @@ async def sign_out(
     response.delete_cookie(
         key="session_id",
         httponly=True,
-        secure=False,
+        secure=COOKIE_SECURE,
         samesite="lax",
     )
 
@@ -154,7 +155,7 @@ async def sign_in_jwt(response: Response, login_request: LoginRequest, db: Async
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False,
+        secure=COOKIE_SECURE,
         samesite="lax",
         max_age=REFRESH_TOKEN_EXPIRE_SECONDS,
         path="/auth",
@@ -212,7 +213,7 @@ async def sign_out_jwt(
     response.delete_cookie(
         key="refresh_token",
         httponly=True,
-        secure=False,
+        secure=COOKIE_SECURE,
         samesite="lax",
         path="/auth",
     )
