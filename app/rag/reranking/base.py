@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 
 class RerankerProvider(ABC):
     @abstractmethod
+    def __init__(self, model_name: str, *args, **kwargs) -> None:
+        pass
+
+    @abstractmethod
     async def rerank(self, query_passage_pairs: List[List[str]]) -> List[float]:
         pass
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Set
 
 from app.core.config import (
-    COLLECTION_NAME, 
+    COLLECTION_NAME_PREFIX, 
     FINAL_TOP_K, 
     INITIAL_TOP_K, 
     MIN_REQUIRED, 
@@ -26,7 +26,7 @@ class Retriever:
         embedding_svc: LocalEmbeddingProvider,
         reranker: LocalRerankerProvider,
         qdrant_client: AsyncQdrantClient,
-        collection_name: str = COLLECTION_NAME,
+        collection_name: str = COLLECTION_NAME_PREFIX,
         initial_top_k: int = INITIAL_TOP_K,
         min_required: int = MIN_REQUIRED,
         final_top_k: int = FINAL_TOP_K,

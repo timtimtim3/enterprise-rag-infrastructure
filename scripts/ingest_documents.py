@@ -23,8 +23,8 @@ from app.rag.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, in
 from app.core.config import (
     DOC_EXTENSIONS,
     DATA_DIR_PATH,
-    COLLECTION_NAME,
-    EMBEDDING_MODEL,
+    COLLECTION_NAME_PREFIX,
+    LOCAL_EMBEDDING_MODEL,
     INGESTION_STATE_PATH
 )
 
@@ -156,14 +156,14 @@ async def main() -> None:
             "last_metadata_updated_at": now,
             "chunk_count": len(chunks),
             "chunk_hashes": [chunk["payload"]["chunk_hash"] for chunk in doc_chunks],
-            "embedding_model": EMBEDDING_MODEL,
-            "collection_name": COLLECTION_NAME,
+            "embedding_model": LOCAL_EMBEDDING_MODEL,
+            "collection_name": COLLECTION_NAME_PREFIX,
             "status": "indexed",
         }
 	
     if len(chunk_texts) > 0:
         # Embed chunks
-        embedding_svc = LocalEmbeddingProvider(EMBEDDING_MODEL)
+        embedding_svc = LocalEmbeddingProvider(LOCAL_EMBEDDING_MODEL)
         chunk_embeddings = await embedding_svc.embed_documents(chunk_texts)
         for chunk_obj, embedding in zip(all_chunks, chunk_embeddings):
             chunk_obj["vector"] = embedding
@@ -186,7 +186,7 @@ async def main() -> None:
         for i in range(0, len(points), BATCH_SIZE):
             batch = points[i:i + BATCH_SIZE]
             await qdrant_client.upsert(
-                collection_name=COLLECTION_NAME,
+                collection_name=COLLECTION_NAME_PREFIX,
                 points=batch,
                 wait=True,
             )

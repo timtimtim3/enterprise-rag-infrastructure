@@ -10,10 +10,10 @@ from app.api.routes.chats import router as chat_router
 from app.api.routes.health import router as health_router
 from app.api.routes.auth import router as auth_router
 from app.core.config import (
-    COLLECTION_NAME,
-    EMBEDDING_MODEL,
+    COLLECTION_NAME_PREFIX,
+    LOCAL_EMBEDDING_MODEL,
     REDIS_URL,
-    RERANKER_MODEL,
+    LOCAL_RERANKER_MODEL,
     USING_LLM,
 )
 
@@ -31,10 +31,10 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    embedding_svc = LocalEmbeddingProvider(EMBEDDING_MODEL)
+    embedding_svc = LocalEmbeddingProvider(LOCAL_EMBEDDING_MODEL)
     qdrant_client = await init_qdrant()
-    reranker = LocalRerankerProvider(RERANKER_MODEL)
-    retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME)
+    reranker = LocalRerankerProvider(LOCAL_RERANKER_MODEL)
+    retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME_PREFIX)
     llm = LLM(USING_LLM)
 
     query_router = QueryRouter(llm)

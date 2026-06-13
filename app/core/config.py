@@ -3,6 +3,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+from app.rag.embeddings.providers import EmbeddingProviders
+from app.rag.reranking.providers import RerankerProviders
+
 
 def get_required_env(key: str) -> str:
     value = os.getenv(key)
@@ -21,11 +24,18 @@ DATA_DIR_PATH = BASE_DIR / "data/curated"
 INGESTION_STATE_PATH = BASE_DIR / "data/processed/ingestion_state.json"
 
 # RAG (Embedding and reranking models)
-EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
-RERANKER_MODEL = "BAAI/bge-reranker-v2-m3"
+EMBEDDING_PROVIDER: EmbeddingProviders = os.getenv("EMBEDDING_PROVIDER", None)
+LOCAL_EMBEDDING_MODEL: str = os.getenv("LOCAL_EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
+VOYAGE_EMBEDDING_MODEL: str = os.getenv("VOYAGE_EMBEDDING_MODEL", None)
+VOYAGE_API_KEY: str = os.getenv("VOYAGE_API_KEY", None)
+
+RERANKER_PROVIDER: RerankerProviders = os.getenv("RERANKER_PROVIDER", None)
+LOCAL_RERANKER_MODEL: str = os.getenv("LOCAL_RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
+COHERE_RERANKER_MODEL: str = os.getenv("COHERE_RERANKER_MODEL", None)
+COHERE_API_KEY: str = os.getenv("COHERE_API_KEY", None)
 
 # Qdrant
-COLLECTION_NAME = "northstar_knowledge_chunks"
+COLLECTION_NAME_PREFIX = "northstar_knowledge_chunks"
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 
