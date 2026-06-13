@@ -163,8 +163,8 @@ class Retriever:
         return to_keep
     
     async def rerank_context_dicts(self, query: str, context_dicts: List[dict]) -> List[dict]:
-        batch_input = [[query, context_dict['text']] for context_dict in context_dicts]
-        scores = await self.reranker.rerank(batch_input)
+        chunks = [context_dict['text'] for context_dict in context_dicts]
+        scores = await self.reranker.rerank(query, chunks)
         for i, score in enumerate(scores):
             context_dicts[i]["reranker_score"] = float(score)
         sorted_context_dicts = sorted(context_dicts, key=lambda x: x["reranker_score"], reverse=True)

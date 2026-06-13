@@ -10,5 +10,6 @@ class LocalRerankerProvider(RerankerProvider):
         self.model = CrossEncoder(model_name)
         self.model_name = model_name
 
-    async def rerank(self, query_passage_pairs: List[List[str]]) -> List[float]:
+    async def rerank(self, query: str, chunks: List[str]) -> List[float]:
+        query_passage_pairs = self.prepare_input(query, chunks)
         return await run_in_threadpool(self.model.predict, query_passage_pairs)

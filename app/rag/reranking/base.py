@@ -8,8 +8,8 @@ class RerankerProvider(ABC):
         pass
 
     @abstractmethod
-    async def rerank(self, query_passage_pairs: List[List[str]]) -> List[float]:
+    async def rerank(self, query: str, chunks: List[str], *args, **kwargs) -> List[float]:
         pass
 
-    def prepare_input(self, query: str, passages: List[str]):
-        return [[query, passage] for passage in passages]
+    def prepare_input(self, query: str, chunks: List[str]):
+        return [[query, chunk] for chunk in chunks]
