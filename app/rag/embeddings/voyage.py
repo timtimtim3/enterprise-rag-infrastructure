@@ -4,6 +4,7 @@ import voyageai
 from typing import List
 
 from app.rag.embeddings.base import EmbeddingProvider
+from app.rag.embeddings.providers import EmbeddingProviders
 
 
 class VoyageEmbeddingProvider(EmbeddingProvider):
@@ -14,6 +15,7 @@ class VoyageEmbeddingProvider(EmbeddingProvider):
         batch_size: int = 8,
         sleep_seconds: float = 25,
     ):
+        self.provider = EmbeddingProviders.VOYAGE
         self.vo = voyageai.AsyncClient(api_key=api_key)
         self.model_name = model_name
         self.batch_size = batch_size

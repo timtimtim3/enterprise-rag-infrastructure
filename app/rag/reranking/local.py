@@ -3,10 +3,12 @@ from sentence_transformers import CrossEncoder
 from fastapi.concurrency import run_in_threadpool
 
 from app.rag.reranking.base import RerankerProvider
+from app.rag.reranking.providers import RerankerProviders
 
 
 class LocalRerankerProvider(RerankerProvider):
     def __init__(self, model_name: str):
+        self.provider = RerankerProviders.LOCAL
         self.model = CrossEncoder(model_name)
         self.model_name = model_name
 

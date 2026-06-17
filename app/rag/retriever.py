@@ -15,15 +15,15 @@ from app.rag.vectorstores.qdrant_store import get_all_qdrant_points_by_doc_id
 
 if TYPE_CHECKING:
     from qdrant_client import AsyncQdrantClient
-    from app.rag.embeddings.local import LocalEmbeddingProvider
-    from app.rag.reranking.local import LocalRerankerProvider
+    from app.rag.embeddings.base import EmbeddingProvider
+    from app.rag.reranking.base import RerankerProvider
 
 
 class Retriever:
     def __init__(
         self, 
-        embedding_svc: LocalEmbeddingProvider,
-        reranker: LocalRerankerProvider,
+        embedding_svc: EmbeddingProvider,
+        reranker: RerankerProvider,
         qdrant_client: AsyncQdrantClient,
         collection_name: str,
         initial_top_k: int = INITIAL_TOP_K,

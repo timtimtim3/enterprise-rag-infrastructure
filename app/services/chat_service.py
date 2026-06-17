@@ -88,10 +88,12 @@ async def answer_chat_message(
         total_tokens=answer["usage"]["total_tokens"],
     )
 
-    # If RAG was used, add embedding and reranker model names
+    # If RAG was used, add embedding and reranker model and provider names
     if route_plan.retrieval_scope != RetrievalScope.NONE:
         message_create.retrieval_embedding_model = answer_svc.retriever.embedding_svc.model_name
+        message_create.retrieval_embedding_provider = answer_svc.retriever.embedding_svc.provider.value
         message_create.retrieval_reranking_model = answer_svc.retriever.reranker.model_name
+        message_create.retrieval_reranking_provider = answer_svc.retriever.reranker.provider.value
 
     answer_message = await create_message(db, chat=chat, message_create=message_create, route_plan=route_plan)
 

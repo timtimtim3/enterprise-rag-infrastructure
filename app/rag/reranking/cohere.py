@@ -2,10 +2,12 @@ import cohere
 from typing import List
 
 from app.rag.reranking.base import RerankerProvider
+from app.rag.reranking.providers import RerankerProviders
 
 
 class CohereRerankerProvider(RerankerProvider):
     def __init__(self, model_name: str, api_key: str):
+        self.provider = RerankerProviders.COHERE
         self.model_name = model_name
         self.co = cohere.AsyncClientV2(api_key=api_key)
 

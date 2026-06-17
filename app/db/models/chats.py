@@ -56,7 +56,9 @@ class Message(TimestampMixin, Base):
     
     # Rag-only fields
     retrieval_embedding_model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    retrieval_embedding_provider: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     retrieval_reranking_model: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    retrieval_reranking_provider: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")
     chat_fk: Mapped[int] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)

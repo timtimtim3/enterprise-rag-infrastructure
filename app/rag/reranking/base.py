@@ -1,8 +1,13 @@
 from typing import List
 from abc import ABC, abstractmethod
 
+from app.rag.reranking.providers import RerankerProviders
+
 
 class RerankerProvider(ABC):
+    provider: RerankerProviders
+    model_name: str
+
     @abstractmethod
     def __init__(self, model_name: str, *args, **kwargs) -> None:
         pass

@@ -368,8 +368,12 @@ export interface components {
             } | null;
             /** Retrieval Embedding Model */
             retrieval_embedding_model?: string | null;
+            /** Retrieval Embedding Provider */
+            retrieval_embedding_provider?: string | null;
             /** Retrieval Reranking Model */
             retrieval_reranking_model?: string | null;
+            /** Retrieval Reranking Provider */
+            retrieval_reranking_provider?: string | null;
             /** Message Id */
             message_id: string;
         };

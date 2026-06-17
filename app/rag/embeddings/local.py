@@ -3,10 +3,12 @@ from sentence_transformers import SentenceTransformer
 from fastapi.concurrency import run_in_threadpool
 
 from app.rag.embeddings.base import EmbeddingProvider
+from app.rag.embeddings.providers import EmbeddingProviders
 
 
 class LocalEmbeddingProvider(EmbeddingProvider):
     def __init__(self, model_name: str):
+        self.provider = EmbeddingProviders.LOCAL
         self.model = SentenceTransformer(model_name)
         self.model_name = model_name
 

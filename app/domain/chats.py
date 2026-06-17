@@ -41,7 +41,9 @@ class MessageBase(BaseModel):
 
     # Rag-only fields
     retrieval_embedding_model: Optional[str] = None
+    retrieval_embedding_provider: Optional[str] = None
     retrieval_reranking_model: Optional[str] = None
+    retrieval_reranking_provider: Optional[str] = None
 
 
 class MessageCreateData(MessageBase):
