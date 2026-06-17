@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING, Set
 
 from app.core.config import (
-    COLLECTION_NAME_PREFIX, 
     FINAL_TOP_K, 
     INITIAL_TOP_K, 
     MIN_REQUIRED, 
@@ -26,7 +25,7 @@ class Retriever:
         embedding_svc: LocalEmbeddingProvider,
         reranker: LocalRerankerProvider,
         qdrant_client: AsyncQdrantClient,
-        collection_name: str = COLLECTION_NAME_PREFIX,
+        collection_name: str,
         initial_top_k: int = INITIAL_TOP_K,
         min_required: int = MIN_REQUIRED,
         final_top_k: int = FINAL_TOP_K,
@@ -106,7 +105,7 @@ class Retriever:
 
             for context_dict in to_keep:
                 doc_id = context_dict["doc_id"]
-                all_doc_chunks = await get_all_qdrant_points_by_doc_id(self.qdrant_client, doc_id)
+                all_doc_chunks = await get_all_qdrant_points_by_doc_id(self.qdrant_client, doc_id, self.collection_name)
                 doc_chunk_count = len(all_doc_chunks)
 
                 if context_dict["source_type"] == "internal" and doc_chunk_count <= self.keep_entire_doc_chunk_thresh:

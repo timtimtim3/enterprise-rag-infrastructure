@@ -8,9 +8,14 @@ def embedding_provider_factory(provider: EmbeddingProviders):
         return LocalEmbeddingProvider(model_name=LOCAL_EMBEDDING_MODEL)
     elif provider == EmbeddingProviders.VOYAGE:
         from app.rag.embeddings.voyage import VoyageEmbeddingProvider
-        from app.core.config import VOYAGE_API_KEY, VOYAGE_EMBEDDING_MODEL
+        from app.core.config import VOYAGE_API_KEY, VOYAGE_EMBEDDING_MODEL, VOYAGE_EMBEDDING_BATCH_SIZE, VOYAGE_EMBEDDING_SLEEP_SECONDS
         if VOYAGE_API_KEY is None:
             raise ValueError("VOYAGE_API_KEY should be set in .env when using VoyageEmbeddingProvider")
         if VOYAGE_EMBEDDING_MODEL is None:
             raise ValueError("VOYAGE_EMBEDDING_MODEL should be set in .env when using VoyageEmbeddingProvider")
-        return VoyageEmbeddingProvider(model_name=VOYAGE_EMBEDDING_MODEL, api_key=VOYAGE_API_KEY)
+        return VoyageEmbeddingProvider(
+            model_name=VOYAGE_EMBEDDING_MODEL,
+            api_key=VOYAGE_API_KEY,
+            batch_size=VOYAGE_EMBEDDING_BATCH_SIZE,
+            sleep_seconds=VOYAGE_EMBEDDING_SLEEP_SECONDS,
+        )

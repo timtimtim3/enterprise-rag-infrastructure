@@ -3,12 +3,18 @@ from typing import List, Optional
 from qdrant_client.models import Distance, FieldCondition, Filter, FilterSelector, MatchValue, VectorParams, PayloadSchemaType
 from qdrant_client import AsyncQdrantClient
 
-from app.core.config import COLLECTION_NAME_PREFIX, QDRANT_API_KEY, QDRANT_URL
+from app.core.config import QDRANT_API_KEY, QDRANT_URL
 from app.rag.embeddings.providers import EmbeddingProviders
 
 
+def get_provider_model_name_identifier(provider: EmbeddingProviders, model_name: str):
+    model_name = model_name.replace("/", "-")
+    return f"{provider.value.upper()}_{model_name}"
+
+
 def name_qdrant_collection(shared_name_prefix: str, provider: EmbeddingProviders, model_name: str):
-    return f"{shared_name_prefix}-{provider}-{model_name}"
+    provider_model_name_identifier = get_provider_model_name_identifier(provider, model_name)
+    return f"{shared_name_prefix}_{provider_model_name_identifier}"
 
 
 async def ensure_payload_index(
@@ -22,29 +28,29 @@ async def ensure_payload_index(
         return
 
     await qdrant_client.create_payload_index(
-        collection_name=COLLECTION_NAME_PREFIX,
+        collection_name=collection_name,
         field_name=field_name,
         field_schema=field_schema,
     )
 
 
-async def init_qdrant(embedding_dim: Optional[int] = None) -> AsyncQdrantClient:
+async def init_qdrant(collection_name: str, embedding_dim: Optional[int] = None) -> AsyncQdrantClient:
     qdrant_client = AsyncQdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
-    if not await qdrant_client.collection_exists(COLLECTION_NAME_PREFIX):
+    if not await qdrant_client.collection_exists(collection_name):
         if embedding_dim is None:
             raise ValueError(
                 "embedding_dim must be provided when creating a new Qdrant collection"
             )
         await qdrant_client.create_collection(
-            collection_name=COLLECTION_NAME_PREFIX,
+            collection_name=collection_name,
             vectors_config=VectorParams(size=embedding_dim, distance=Distance.COSINE),
         )
 
-    collection_info = await qdrant_client.get_collection(COLLECTION_NAME_PREFIX)
+    collection_info = await qdrant_client.get_collection(collection_name)
     
-    await ensure_payload_index(qdrant_client, COLLECTION_NAME_PREFIX, collection_info, "doc_id", PayloadSchemaType.KEYWORD)
-    await ensure_payload_index(qdrant_client, COLLECTION_NAME_PREFIX, collection_info, "chunk_index", PayloadSchemaType.INTEGER)
+    await ensure_payload_index(qdrant_client, collection_name, collection_info, "doc_id", PayloadSchemaType.KEYWORD)
+    await ensure_payload_index(qdrant_client, collection_name, collection_info, "chunk_index", PayloadSchemaType.INTEGER)
     return qdrant_client
 
 
@@ -52,7 +58,7 @@ async def update_qdrant_points_metadata(
     qdrant_client: AsyncQdrantClient,
     new_doc_metadata_fields: dict,
     doc_id: str,
-    collection_name: str = COLLECTION_NAME_PREFIX
+    collection_name: str,
 ) -> None:
     # This merges the existing payload with this one, overriding fields with the same key, and adding new ones (this doesn't handle removal of fiellds)
     await qdrant_client.set_payload(
@@ -74,7 +80,7 @@ async def update_qdrant_points_metadata(
 async def delete_qdrant_points_by_doc_id(
     qdrant_client: AsyncQdrantClient,
     doc_id: str,
-    collection_name: str = COLLECTION_NAME_PREFIX,
+    collection_name: str,
 ) -> None:
     await qdrant_client.delete(
         collection_name=collection_name,
@@ -94,7 +100,7 @@ async def delete_qdrant_points_by_doc_id(
 async def get_all_qdrant_points_by_doc_id(
     qdrant_client: AsyncQdrantClient,
     doc_id: str,
-    collection_name: str = COLLECTION_NAME_PREFIX,
+    collection_name: str,
     limit: int = 100
 ) -> List:
     all_doc_chunks = []
@@ -102,7 +108,7 @@ async def get_all_qdrant_points_by_doc_id(
 
     while True:
         points, offset = await qdrant_client.scroll(
-            collection_name=COLLECTION_NAME_PREFIX,
+            collection_name=collection_name,
             scroll_filter=Filter(
                 must=[
                     FieldCondition(

@@ -11,17 +11,17 @@ from app.api.routes.health import router as health_router
 from app.api.routes.auth import router as auth_router
 from app.core.config import (
     COLLECTION_NAME_PREFIX,
-    LOCAL_EMBEDDING_MODEL,
+    EMBEDDING_PROVIDER,
     REDIS_URL,
-    LOCAL_RERANKER_MODEL,
+    RERANKER_PROVIDER,
     USING_LLM,
 )
 
 from app.llm.client import LLM
-from app.rag.embeddings.local import LocalEmbeddingProvider
-from app.rag.reranking.local import LocalRerankerProvider
+from app.rag.embeddings.factory import embedding_provider_factory
+from app.rag.reranking.factory import reranker_provider_factory
 from app.rag.retriever import Retriever
-from app.rag.vectorstores.qdrant_store import init_qdrant
+from app.rag.vectorstores.qdrant_store import init_qdrant, name_qdrant_collection
 from app.services.answer_service import AnswerService
 from app.services.query_router import QueryRouter
 
@@ -31,14 +31,16 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    embedding_svc = LocalEmbeddingProvider(LOCAL_EMBEDDING_MODEL)
-    qdrant_client = await init_qdrant()
-    reranker = LocalRerankerProvider(LOCAL_RERANKER_MODEL)
-    retriever = Retriever(embedding_svc, reranker, qdrant_client, COLLECTION_NAME_PREFIX)
-    llm = LLM(USING_LLM)
+    embedding_provider = embedding_provider_factory(EMBEDDING_PROVIDER)
+    reranker_provider = reranker_provider_factory(RERANKER_PROVIDER)
+    qdrant_collection_name = name_qdrant_collection(COLLECTION_NAME_PREFIX, EMBEDDING_PROVIDER, embedding_provider.model_name)
+    qdrant_client = await init_qdrant(qdrant_collection_name)
 
+    retriever = Retriever(embedding_provider, reranker_provider, qdrant_client, qdrant_collection_name)
+    llm = LLM(USING_LLM)
     query_router = QueryRouter(llm)
     answer_svc = AnswerService(retriever, llm)
+
     app.state.query_router = query_router
     app.state.answer_svc = answer_svc
     app.state.redis = Redis.from_url(REDIS_URL, decode_responses=True)

@@ -17,14 +17,14 @@ import frontmatter
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 from qdrant_client.models import PointStruct
 
+from app.rag.embeddings.factory import embedding_provider_factory
 from scripts.helpers import content_hash
-from app.rag.embeddings.local import LocalEmbeddingProvider
-from app.rag.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, init_qdrant, update_qdrant_points_metadata
+from app.rag.vectorstores.qdrant_store import delete_qdrant_points_by_doc_id, get_provider_model_name_identifier, init_qdrant, name_qdrant_collection, update_qdrant_points_metadata
 from app.core.config import (
     DOC_EXTENSIONS,
     DATA_DIR_PATH,
     COLLECTION_NAME_PREFIX,
-    LOCAL_EMBEDDING_MODEL,
+    EMBEDDING_PROVIDER,
     INGESTION_STATE_PATH
 )
 
@@ -47,12 +47,23 @@ def get_qdrant_uuid(chunk_id: str) -> str:
 
 
 async def main() -> None:
-    qdrant_client = await init_qdrant()
+    embedding_provider = embedding_provider_factory(EMBEDDING_PROVIDER)
+    provider_model_name_identifier = get_provider_model_name_identifier(EMBEDDING_PROVIDER, embedding_provider.model_name)
+    ingestion_file = INGESTION_STATE_PATH / f"ingestion-state_{provider_model_name_identifier}.json"
+    qdrant_collection_name = name_qdrant_collection(COLLECTION_NAME_PREFIX, EMBEDDING_PROVIDER, embedding_provider.model_name)
+
+    try:
+        # Init qdrant_client here when the collection already exists and we need it to re-embed / re-store / update meta
+        # early for when content has changed 
+        qdrant_client = await init_qdrant(qdrant_collection_name)
+    except Exception:
+        # If collection doesn't exist yet, we assume we don't call qdrant_client yet since we don't have an ingestion_state yet
+        qdrant_client = None
 
     # Read ingestion state
-    INGESTION_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    ingestion_file.parent.mkdir(parents=True, exist_ok=True)
     try:
-        with open(INGESTION_STATE_PATH, 'r') as file:
+        with open(ingestion_file, 'r') as file:
             ingestion_state = json.load(file)
     except FileNotFoundError as e:
         ingestion_state = {}
@@ -83,10 +94,10 @@ async def main() -> None:
 
             if norm_content_hash != state["normalized_content_hash"]:
                 # Content changed, requires deleting (then re-embedding and re-storing)
-                await delete_qdrant_points_by_doc_id(qdrant_client, doc_id)
+                await delete_qdrant_points_by_doc_id(qdrant_client, doc_id, qdrant_collection_name)
             elif "meta_hash" not in state or meta_hash != state["meta_hash"]:
                 # Requires meta update only
-                await update_qdrant_points_metadata(qdrant_client, meta, doc_id)
+                await update_qdrant_points_metadata(qdrant_client, meta, doc_id, qdrant_collection_name)
                 pending_ingestion_state[doc_id]["meta_hash"] = meta_hash
                 pending_ingestion_state[doc_id]["last_metadata_updated_at"] = now
                 continue
@@ -156,21 +167,21 @@ async def main() -> None:
             "last_metadata_updated_at": now,
             "chunk_count": len(chunks),
             "chunk_hashes": [chunk["payload"]["chunk_hash"] for chunk in doc_chunks],
-            "embedding_model": LOCAL_EMBEDDING_MODEL,
-            "collection_name": COLLECTION_NAME_PREFIX,
+            "embedding_model": embedding_provider.model_name,
+            "embedding_provider": EMBEDDING_PROVIDER.value,
+            "collection_name": qdrant_collection_name,
             "status": "indexed",
         }
 	
     if len(chunk_texts) > 0:
         # Embed chunks
-        embedding_svc = LocalEmbeddingProvider(LOCAL_EMBEDDING_MODEL)
-        chunk_embeddings = await embedding_svc.embed_documents(chunk_texts)
+        chunk_embeddings = await embedding_provider.embed_documents(chunk_texts)
         for chunk_obj, embedding in zip(all_chunks, chunk_embeddings):
             chunk_obj["vector"] = embedding
         EMBEDDING_DIM = len(chunk_embeddings[0])
         # We need to call this again here in case this is the first time running this script
         # and we don't have the collection initialized yet
-        qdrant_client = await init_qdrant(EMBEDDING_DIM)
+        qdrant_client = await init_qdrant(qdrant_collection_name, EMBEDDING_DIM)
 
         # Store each chunk_obj (and its embedding) in Qdrant
         points = [
@@ -186,14 +197,14 @@ async def main() -> None:
         for i in range(0, len(points), BATCH_SIZE):
             batch = points[i:i + BATCH_SIZE]
             await qdrant_client.upsert(
-                collection_name=COLLECTION_NAME_PREFIX,
+                collection_name=qdrant_collection_name,
                 points=batch,
                 wait=True,
             )
             print(f"Uploaded batch {i // BATCH_SIZE + 1}")
 
     # Once sucessfully stored, write the ingestion state, for now keep local simple store file, later write to postgresql db service
-    INGESTION_STATE_PATH.write_text(
+    ingestion_file.write_text(
         json.dumps(pending_ingestion_state, indent=2),
         encoding="utf-8"
     )
