@@ -12,6 +12,8 @@ Retrieval-Augmented Generation (RAG) knowledge assistant built with FastAPI, Pos
 * Query routing
 * Document retrieval and reranking
 * Multi-provider and local LLM support
+* Pluggable embedding providers (currently: local, Voyage AI)
+* Pluggable reranking providers (currently: local, Cohere)
 * React/Vite frontend
 * Automated testing with pytest
 * GitHub Actions CI/CD
