@@ -11,7 +11,13 @@ from app.core.config import REFRESH_TOKEN_EXPIRE_SECONDS, SESSION_EXPIRE_SECONDS
 async def create_user(db: AsyncSession, username: str, email: str, password_hash: str) -> User:
     user = User(username=username, email=email, password_hash=password_hash)
     db.add(user)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(user)  # updates the Python user object
     return user
 
@@ -56,7 +62,13 @@ async def create_session(db: AsyncSession, session_id: str, user_fk: int) -> Ses
     )
     
     db.add(session)
-    await db.commit()
+    
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(session)
     return session
 
@@ -71,7 +83,13 @@ async def delete_session_by_id(db: AsyncSession, session_id: str) -> bool:
         return False
     
     await db.delete(session)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     return True
 
 
@@ -80,7 +98,13 @@ async def delete_session(db: AsyncSession, session: Session) -> bool:
         return False
     
     await db.delete(session)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     return True
 
 
@@ -97,7 +121,13 @@ async def create_refresh_token(db: AsyncSession, token_id: str, token_hash: str,
     )
     
     db.add(refresh_token)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(refresh_token)
     return refresh_token
 
@@ -114,7 +144,13 @@ async def delete_refresh_token_by_hash(db: AsyncSession, token_hash: str) -> boo
         return False
     
     await db.delete(refresh_token)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     return True
 
 
@@ -132,7 +168,12 @@ async def revoke_refresh_token_by_hash(db: AsyncSession, token_hash: str) -> boo
     
     refresh_token.revoked_at = datetime.now(timezone.utc)
     
-    await db.commit()
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+    
     return True
 
 

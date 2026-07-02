@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.security import HTTPAuthorizationCredentials
 from redis.asyncio import Redis
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TYPE_CHECKING
 
@@ -35,27 +36,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def sign_up(register_request: RegisterRequest, db: AsyncSession = Depends(get_db)) -> RegisterResponse:
     hashed_password = hash_password(register_request.password)
 
-    existing_user = await get_user_by_email(
-        db,
-        register_request.email,
-    )
-    if existing_user:
-        raise HTTPException(
-            status_code=409,
-            detail="Could not register with details",
-        )
+    try:
+        user = await create_user(db, register_request.username, register_request.email, hashed_password)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Could not register with details")
 
-    existing_user = await get_user_by_username(
-        db,
-        register_request.username,
-    )
-    if existing_user:
-        raise HTTPException(
-            status_code=409,
-            detail="Could not register with details",
-        )
-
-    user = await create_user(db, register_request.username, register_request.email, hashed_password)
     return RegisterResponse(
         user_id=user.user_id,
         username=user.username,

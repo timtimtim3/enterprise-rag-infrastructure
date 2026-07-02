@@ -16,7 +16,13 @@ if TYPE_CHECKING:
 async def create_chat(db: AsyncSession, title: str, user: User) -> Chat:
     chat = Chat(title=title, user=user)
     db.add(chat)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(chat)
     return chat
 
@@ -41,7 +47,13 @@ async def create_message(
 
     db.add(message)
     chat.updated_at = datetime.now(timezone.utc)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(message)
     await db.refresh(chat)
     return message
@@ -57,7 +69,13 @@ async def create_message_source(
         **source.model_dump(),
     )
     db.add(message_source)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     await db.refresh(message_source)
     return message_source
 
@@ -102,11 +120,21 @@ async def delete_chat(db: AsyncSession, chat: Chat) -> bool:
         return False
     
     await db.delete(chat)
-    await db.commit()
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+
     return True
 
 
 async def touch_chat(db: AsyncSession, chat: Chat) -> None:
     chat.updated_at = datetime.now(timezone.utc)
-    await db.commit()
-    
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise
+        
