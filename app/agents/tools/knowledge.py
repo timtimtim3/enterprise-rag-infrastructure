@@ -1,46 +1,42 @@
 from langchain_core.tools import tool
 
+from app.rag.helpers import format_sources
+
 
 def build_knowledge_tools(retriever):
 
-    @tool
-    async def search_company_knowledge(query: str) -> dict:
+    @tool(response_format="content_and_artifact")
+    async def search_company_knowledge(query: str):
         """
         Search Northstar's internal knowledge base.
 
-        Use this for Northstar-specific policies, procedures, project
-        documentation, architecture, runbooks, technical documentation,
-        internal processes, and other company knowledge.
-
-        The query should be a concise standalone semantic search query.
+        Use this for company-specific policies, procedures, project
+        documentation, architecture, runbooks, and internal knowledge.
         """
 
         context_dicts = await retriever.retrieve_context(query)
 
         if not context_dicts:
-            return {
-                "status": "not_found",
-                "query": query,
-                "sources": [],
-            }
+            return (
+                "No relevant internal sources were found.",
+                {
+                    "status": "not_found",
+                    "query": query,
+                    "sources": [],
+                },
+            )
 
-        # Starting point. We can improve formatting next.
-        sources = [
+        formatted_context, sources = format_sources(
+            context_dicts
+        )
+
+        return (
+            formatted_context,
             {
-                "source_index": i,
-                "title": item["title"],
-                "text": item.get("text"),
-                "source_path": item["source_path"],
-                "doc_id": item["doc_id"],
-                "chunk_index": item["chunk_index"],
-            }
-            for i, item in enumerate(context_dicts)
-        ]
-
-        return {
-            "status": "found",
-            "query": query,
-            "sources": sources,
-        }
+                "status": "found",
+                "query": query,
+                "sources": sources,
+            },
+        )
 
     return [search_company_knowledge]

@@ -84,21 +84,26 @@ async def main():
         retriever=retriever,
     )
 
+    # test_queries = [
+    #     # Direct answer — should use no tools
+    #     "Explain what dependency injection is in Python.",
+
+    #     # Single tool
+    #     "Which Northstar employee knows LangGraph?",
+
+    #     # Sequential tools
+    #     "What projects do we have with ACME?",
+
+    #     # Ambiguity
+    #     "What project is John currently working on?",
+
+    #     # RAG
+    #     "What is Northstar's remote working policy?",
+    # ]
+
     test_queries = [
-        # Direct answer — should use no tools
-        "Explain what dependency injection is in Python.",
-
-        # Single tool
-        "Which Northstar employee knows LangGraph?",
-
-        # Sequential tools
-        "What projects do we have with ACME?",
-
-        # Ambiguity
-        "What project is John currently working on?",
-
         # RAG
-        "What is Northstar's remote working policy?",
+        "Why did we migrate from Pinecone if pgvector was also evaluated?",
     ]
 
     for query in test_queries:

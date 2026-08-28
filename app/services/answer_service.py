@@ -4,10 +4,8 @@ from textwrap import dedent
 from typing import TYPE_CHECKING, Optional
 
 from app.api.schemas.chats import SourceInfo
-from app.domain.enums.llm_route import LLMRoute, ResponseMode, RetrievalScope, ToolAction
-from app.domain.routing import RoutePlan
-from app.prompts.helpers import format_message_dict, format_retrieved_context_message
-from app.rag.helpers import format_context_dict_for_llm, format_context_dict_for_llm_doc_chunks
+from app.domain.enums.llm_route import LLMRoute, ResponseMode, RetrievalScope
+from app.rag.helpers import format_sources
 from app.prompts.assistant.rag import RAG_SYSTEM_MESSAGE, format_rag_user_query_message
 from app.prompts import ANSWER_SYSTEM_PROMPTS_BY_MODE, RAG_SYSTEM_PROMPTS_BY_SCOPE
 from app.services.helpers import build_messages
@@ -37,37 +35,8 @@ class AnswerService:
     
     async def retrieve_and_format(self, query: str):
         context_dicts = await self.retriever.retrieve_context(query)
-        formatted_sources = []
-        last_doc_id = None
-        source_index = 0
-        sources = []
-        for context_dict in context_dicts:
-            doc_id = context_dict["doc_id"]
-
-            # If not the same, it's the first chunk of doc, we display full context / meta
-            if doc_id != last_doc_id:
-                formatted_sources.append(format_context_dict_for_llm(context_dict, source_index))
-                sources.append(
-                    {
-                        "source_index": source_index,
-                        "title": context_dict["title"],
-                        "source_path": context_dict["source_path"],
-                        "doc_id": doc_id,
-                        "chunk_indices": [context_dict["chunk_index"]],
-                        "source_type": context_dict["source_type"],
-                        "doc_type": context_dict["doc_type"],
-                    }
-                )
-
-                last_doc_id = doc_id
-                source_index += 1
-            else:
-                # Otherwise we only display the text and chunk_i
-                formatted_sources.append(format_context_dict_for_llm_doc_chunks(context_dict))
-                sources[source_index - 1]["chunk_indices"].append(context_dict["chunk_index"])
-
-        formatted_context = "\n\n".join(formatted_sources)
-        return format_retrieved_context_message(formatted_context), sources
+        llm_formatted_sources_message, original_sources = format_sources(context_dicts)
+        return llm_formatted_sources_message, original_sources
 
     async def answer_question(self, query: str):
         formatted_context, sources = await self.retrieve_and_format(query)
