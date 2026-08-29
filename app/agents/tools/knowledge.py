@@ -14,9 +14,9 @@ def build_knowledge_tools(retriever):
         documentation, architecture, runbooks, and internal knowledge.
         """
 
-        context_dicts = await retriever.retrieve_context(query)
+        all_docs = await retriever.retrieve_context(query)
 
-        if not context_dicts:
+        if not all_docs:
             return (
                 "No relevant internal sources were found.",
                 {
@@ -27,7 +27,7 @@ def build_knowledge_tools(retriever):
             )
 
         formatted_context, sources = format_sources(
-            context_dicts
+            all_docs
         )
 
         return (

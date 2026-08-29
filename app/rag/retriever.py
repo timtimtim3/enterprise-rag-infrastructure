@@ -73,7 +73,7 @@ class Retriever:
 
         context_dicts = [self._to_context_dict(point) for point in points]
         if len(context_dicts) == 0:
-            return context_dicts
+            return {}
 
         # Rerank
         context_dicts = await self.rerank_context_dicts(query, context_dicts)
@@ -153,13 +153,26 @@ class Retriever:
                     expanded_doc_dicts[doc_id].append(deduplicate_chunks_to_keep)
 
             # Sort inner lists in expanded_doc_dicts and combine into one large list
-            big_lst = []
+            all_docs = {}
             for doc_id, list_of_doc_lists in expanded_doc_dicts.items():
+                all_chunks = []
                 list_of_doc_lists.sort(key=lambda lst: lst[0]["chunk_index"])
                 for lst in list_of_doc_lists:
-                    big_lst.extend(lst)
-            return big_lst
-        return to_keep
+                    all_chunks.extend(lst)
+                all_docs[doc_id] = all_chunks
+        else:
+            all_docs = {}
+            for context_dict in to_keep:
+                doc_id = context_dict["doc_id"]
+                if doc_id not in all_docs:
+                    all_docs[doc_id] = [context_dict]
+                else:
+                    all_docs[doc_id].append(context_dict)
+
+            for doc_id, context_dicts in all_docs.items():
+                context_dicts.sort(key=lambda context_dict: context_dict["chunk_index"])
+            
+        return all_docs
     
     async def rerank_context_dicts(self, query: str, context_dicts: List[dict]) -> List[dict]:
         chunks = [context_dict['text'] for context_dict in context_dicts]

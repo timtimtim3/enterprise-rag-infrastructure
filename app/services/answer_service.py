@@ -34,8 +34,8 @@ class AnswerService:
         }
     
     async def retrieve_and_format(self, query: str):
-        context_dicts = await self.retriever.retrieve_context(query)
-        llm_formatted_sources_message, original_sources = format_sources(context_dicts)
+        all_docs = await self.retriever.retrieve_context(query)
+        llm_formatted_sources_message, original_sources = format_sources(all_docs)
         return llm_formatted_sources_message, original_sources
 
     async def answer_question(self, query: str):

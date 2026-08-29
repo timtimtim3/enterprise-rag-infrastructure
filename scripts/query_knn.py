@@ -35,14 +35,16 @@ async def main() -> None:
     # for scored_point in resp.points:
     #     print(scored_point.payload['text'])
 
-    # context_dicts = retriever.retrieve_context(QUERY)
-    # print(context_dicts)
-    # print(retriever.rerank_context_dicts(QUERY, context_dicts))
-    # for i, context_dict in enumerate(context_dicts):
-    #     print(format_context_dict_for_llm(context_dict, i))
+    all_docs = await retriever.retrieve_context(QUERY, expand=False)
 
-    answer = await answer_svc.answer_question(QUERY)
-    print(answer)
+    for doc_id, chunks in all_docs.items():
+        print(doc_id)
+        for chunk in chunks:
+            print(chunk["id"], chunk["chunk_index"])
+        print()
+
+    # answer = await answer_svc.answer_question(QUERY)
+    # print(answer)
 
 
 if __name__ == "__main__":
