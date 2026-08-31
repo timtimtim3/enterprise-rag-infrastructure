@@ -3,7 +3,9 @@ from typing import Literal
 from langchain_core.messages import AIMessage
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
+from langchain_core.messages import ToolMessage
 
+from app.rag.helpers import format_sources_with_registry
 from app.agents.agent_node import AgentNode
 from app.agents.state import AgentState
 from app.agents.tools import build_agent_tools
@@ -28,7 +30,6 @@ def build_agent_graph(llm, retriever):
     async def execute_tools(state: AgentState):
         last_message = state["messages"][-1]
 
-        # Keep some simple observability/history ourselves
         history = [
             {
                 "tool": tool_call["name"],
@@ -39,10 +40,61 @@ def build_agent_graph(llm, retriever):
 
         result = await tool_node.ainvoke(state)
 
+        source_registry = state.get(
+            "source_registry",
+            {},
+        )
+
+        processed_messages = []
+
+        for message in result["messages"]:
+
+            # Leave normal tools alone
+            if (
+                not isinstance(message, ToolMessage)
+                or message.name != "search_company_knowledge"
+            ):
+                processed_messages.append(message)
+                continue
+
+            artifact = message.artifact or {}
+
+            # Nothing retrieved
+            if artifact.get("status") != "found":
+                processed_messages.append(message)
+                continue
+
+            all_docs = artifact.get("all_docs", {})
+
+            (
+                formatted_context,
+                source_registry,
+                sources_this_call,
+            ) = format_sources_with_registry(
+                all_docs=all_docs,
+                source_registry=source_registry,
+            )
+
+            processed_message = message.model_copy(
+                update={
+                    # What the LLM sees
+                    "content": formatted_context,
+
+                    # Structured data your backend keeps
+                    "artifact": {
+                        **artifact,
+                        "sources": sources_this_call,
+                    },
+                }
+            )
+
+            processed_messages.append(processed_message)
+
         return {
-            "messages": result["messages"],
+            "messages": processed_messages,
             "tool_iterations": 1,
             "tool_history": history,
+            "source_registry": source_registry,
         }
 
     def route_after_agent(

@@ -56,6 +56,7 @@ async def run_case(graph, query: str):
             "tool_iterations": 0,
             "tool_history": [],
             "user_id": "test_user",
+            "source_registry": {},
         }
     )
 
@@ -68,6 +69,11 @@ async def run_case(graph, query: str):
     pprint(result.get("tool_history", []))
 
     print("\nTool iterations:", result.get("tool_iterations", 0))
+
+    sources = sorted(
+        result["source_registry"].values(),
+        key=lambda source: source["source_index"],
+    )
 
 
 async def main():

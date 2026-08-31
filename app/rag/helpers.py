@@ -60,3 +60,91 @@ def format_sources(all_docs: dict[str, list]):
 
     formatted_context = "\n\n".join(formatted_sources)
     return format_retrieved_context_message(formatted_context), sources
+
+
+def format_sources_with_registry(
+    all_docs: dict[str, list[dict]],
+    source_registry: dict[str, dict],
+):
+    """
+    Format retrieved documents while keeping SOURCE numbers stable
+    across multiple retrieval calls in the same agent run.
+    """
+
+    # Copy so we don't mutate LangGraph state directly
+    registry = {
+        doc_id: {
+            **source,
+            "chunk_indices": list(source["chunk_indices"]),
+        }
+        for doc_id, source in source_registry.items()
+    }
+
+    formatted_sources = []
+    sources_this_call = []
+
+    next_source_index = (
+        max(
+            (
+                source["source_index"]
+                for source in registry.values()
+            ),
+            default=-1,
+        )
+        + 1
+    )
+
+    for doc_id, context_dicts in all_docs.items():
+        if not context_dicts:
+            continue
+
+        first_chunk = context_dicts[0]
+
+        # New document → assign a new SOURCE number
+        if doc_id not in registry:
+            registry[doc_id] = {
+                "source_index": next_source_index,
+                "title": first_chunk["title"],
+                "source_path": first_chunk["source_path"],
+                "doc_id": doc_id,
+                "chunk_indices": [],
+                "source_type": first_chunk["source_type"],
+                "doc_type": first_chunk["doc_type"],
+            }
+
+            next_source_index += 1
+
+        source = registry[doc_id]
+        source_index = source["source_index"]
+
+        for i, context_dict in enumerate(context_dicts):
+            chunk_index = context_dict["chunk_index"]
+
+            if chunk_index not in source["chunk_indices"]:
+                source["chunk_indices"].append(chunk_index)
+
+            # First retrieved chunk for this doc in THIS tool call:
+            # show SOURCE label + metadata
+            if i == 0:
+                formatted_sources.append(
+                    format_context_dict_for_llm(
+                        context_dict,
+                        source_index,
+                    )
+                )
+            else:
+                formatted_sources.append(
+                    format_context_dict_for_llm_doc_chunks(
+                        context_dict
+                    )
+                )
+
+        sources_this_call.append(source)
+
+    formatted_context = "\n\n".join(formatted_sources)
+
+    return (
+        format_retrieved_context_message(formatted_context),
+        registry,
+        sources_this_call,
+    )

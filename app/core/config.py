@@ -77,7 +77,7 @@ KEEP_ENTIRE_DOC_CHUNK_THRESH = 6
 # LLM settings
 USE_LOCAL_LLM = os.getenv("USE_LOCAL_LLM", "true").lower() == "true"
 LOCAL_LLM = "ollama/qwen3:0.6b"
-CLOUD_LLM = "openai/gpt-4.1-mini"
+CLOUD_LLM = os.getenv("CLOUD_LLM", "openai/gpt-4.1-mini")
 USING_LLM = LOCAL_LLM if USE_LOCAL_LLM else CLOUD_LLM
 ROUTER_HISTORY_TOKEN_BUDGET = 2_000
 ANSWER_HISTORY_TOKEN_BUDGET = 3_000

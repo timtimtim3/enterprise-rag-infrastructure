@@ -1,7 +1,5 @@
 from langchain_core.tools import tool
 
-from app.rag.helpers import format_sources
-
 
 def build_knowledge_tools(retriever):
 
@@ -10,8 +8,11 @@ def build_knowledge_tools(retriever):
         """
         Search Northstar's internal knowledge base.
 
-        Use this for company-specific policies, procedures, project
-        documentation, architecture, runbooks, and internal knowledge.
+        Use this for Northstar-specific policies, procedures, project
+        documentation, architecture, runbooks, technical documentation,
+        internal processes, and other company knowledge.
+
+        The query should be a concise standalone semantic search query.
         """
 
         all_docs = await retriever.retrieve_context(query)
@@ -22,20 +23,16 @@ def build_knowledge_tools(retriever):
                 {
                     "status": "not_found",
                     "query": query,
-                    "sources": [],
+                    "all_docs": {},
                 },
             )
 
-        formatted_context, sources = format_sources(
-            all_docs
-        )
-
         return (
-            formatted_context,
+            "Internal knowledge sources were retrieved.",
             {
                 "status": "found",
                 "query": query,
-                "sources": sources,
+                "all_docs": all_docs,
             },
         )
 

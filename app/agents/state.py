@@ -16,4 +16,7 @@ class AgentState(TypedDict):
     tool_history: Annotated[list[dict], operator.add]
 
     user_id: NotRequired[str | None]
+
+    # doc_id -> persisted citation metadata for this answer
+    source_registry: dict[str, dict]
     
