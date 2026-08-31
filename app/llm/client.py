@@ -13,12 +13,15 @@ class LLM:
         temperature: float | None = None,
         tools: list[dict[str, Any]] | None = None,
     ):
-        response = await acompletion(
-            model=self.model_name,
-            messages=messages,
-            temperature=temperature,
-            tools=tools,
-        )
+        kwargs = {
+            "model": self.model_name,
+            "messages": messages,
+            "temperature": temperature,
+            "tools": tools,
+        }
 
-        return response
+        if self.model_name.startswith("openai/gpt-5.6"):
+            kwargs["reasoning_effort"] = "none"
+
+        return await acompletion(**kwargs)
     
