@@ -19,4 +19,13 @@ class AgentState(TypedDict):
 
     # doc_id -> persisted citation metadata for this answer
     source_registry: dict[str, dict]
+
+    # Aggregated across ALL agent LLM calls
+    prompt_tokens: Annotated[int, operator.add]
+    completion_tokens: Annotated[int, operator.add]
+    total_tokens: Annotated[int, operator.add]
+
+    # Last agent call wins, which will normally be the final answer call
+    model: NotRequired[str | None]
+    finish_reason: NotRequired[str | None]
     

@@ -91,6 +91,8 @@ async def client(db_session, fake_redis):
 def app_state(monkeypatch):
     monkeypatch.setattr(app.state, "query_router", object(), raising=False)
     monkeypatch.setattr(app.state, "answer_svc", object(), raising=False)
+    monkeypatch.setattr(app.state, "agent_graph", object(), raising=False)
+    monkeypatch.setattr(app.state, "retriever", object(), raising=False)
 
 
 @pytest.fixture

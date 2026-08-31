@@ -10,7 +10,7 @@ from tests.api.helpers import fake_answer_chat_message, fake_answer_chat_message
 async def test_add_message_returns_answer(authenticated_client, test_chat, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
-        "answer_chat_message",
+        "answer_chat_message_with_agent",
         fake_answer_chat_message,
     )
 
@@ -29,12 +29,6 @@ async def test_add_message_returns_answer(authenticated_client, test_chat, monke
 
 @pytest.mark.asyncio
 async def test_add_message_returns_404_on_non_existing_chat(authenticated_client, monkeypatch, app_state):
-    monkeypatch.setattr(
-        chats_route,
-        "answer_chat_message",
-        fake_answer_chat_message,
-    )
-
     non_existing_chat_id = "some-non-existing-chatid"
     response = await authenticated_client.post(
         f"/chats/{non_existing_chat_id}/messages",
@@ -50,7 +44,7 @@ async def test_add_message_returns_404_on_non_existing_chat(authenticated_client
 async def test_add_message_returns_500_when_answer_generation_fails(authenticated_client, test_chat, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
-        "answer_chat_message",
+        "answer_chat_message_with_agent",
         fake_answer_chat_message_gen_fail,
     )
 

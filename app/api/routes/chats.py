@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from app.api.dependencies.auth import get_current_user_jwt, get_db
 from app.api.schemas.chats import AskRequest, AskResponse, ChatInfo, ListChatsResponse, ListMessageSourcesResponse, ListMessagesResponse, MessageInfo, MessageSourceInfo
 from app.db.crud.chats import create_chat as crud_create_chat, delete_chat as crud_delete_chat, get_chat_message, get_chat_messages, get_message_sources, get_user_chat, get_user_chats
-from app.services.chat_service import answer_chat_message, AnswerGenerationError
+from app.services.chat_service import answer_chat_message, AnswerGenerationError, answer_chat_message_with_agent
 
 if TYPE_CHECKING:
     from app.db.models.users import User
@@ -29,12 +29,13 @@ async def create_chat(
     chat = await crud_create_chat(db, title=ask_request.query, user=user)
 
     try:
-        return await answer_chat_message(
+        return await answer_chat_message_with_agent(
             db=db,
-            query_router=request.app.state.query_router,
-            answer_svc=request.app.state.answer_svc,
+            graph=request.app.state.agent_graph,
+            retriever=request.app.state.retriever,
             chat=chat,
             query=ask_request.query,
+            user_id=str(user.user_id),
         )
     except AnswerGenerationError:
         raise HTTPException(
@@ -60,12 +61,13 @@ async def add_message(
         raise HTTPException(status_code=404, detail="Chat not found")
 
     try:
-        return await answer_chat_message(
+        return await answer_chat_message_with_agent(
             db=db,
-            query_router=request.app.state.query_router,
-            answer_svc=request.app.state.answer_svc,
+            graph=request.app.state.agent_graph,
+            retriever=request.app.state.retriever,
             chat=chat,
             query=ask_request.query,
+            user_id=str(user.user_id),
         )
     except AnswerGenerationError:
         raise HTTPException(

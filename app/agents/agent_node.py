@@ -60,7 +60,14 @@ class AgentNode:
             tool_calls=tool_calls,
         )
 
+        usage = response.usage
+
         return {
             "messages": [message],
+            "prompt_tokens": usage.prompt_tokens if usage else 0,
+            "completion_tokens": usage.completion_tokens if usage else 0,
+            "total_tokens": usage.total_tokens if usage else 0,
+            "model": response.model,
+            "finish_reason": response.choices[0].finish_reason,
         }
     

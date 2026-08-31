@@ -30,7 +30,7 @@ async def test_delete_chat_returns_404_on_non_existing_chat(authenticated_client
 async def test_create_chat_returns_answer(authenticated_client, authenticated_user, db_session, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
-        "answer_chat_message",
+        "answer_chat_message_with_agent",
         fake_answer_chat_message,
     )
 
@@ -55,7 +55,7 @@ async def test_create_chat_returns_answer(authenticated_client, authenticated_us
 async def test_create_chat_returns_500_when_answer_generation_fails(authenticated_client, monkeypatch, app_state):
     monkeypatch.setattr(
         chats_route,
-        "answer_chat_message",
+        "answer_chat_message_with_agent",
         fake_answer_chat_message_gen_fail,
     )
 

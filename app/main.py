@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from redis.asyncio import Redis
 
+from app.agents.graph import build_agent_graph
 import app.db.models
 from app.db.base import Base
 from app.db.session import engine
@@ -38,8 +39,18 @@ async def lifespan(app: FastAPI):
 
     retriever = Retriever(embedding_provider, reranker_provider, qdrant_client, qdrant_collection_name)
     llm = LLM(USING_LLM)
+
+    # Keep these while migrating
     query_router = QueryRouter(llm)
     answer_svc = AnswerService(retriever, llm)
+
+    # New agent flow
+    agent_graph = build_agent_graph(
+        llm=llm,
+        retriever=retriever,
+    )
+    app.state.agent_graph = agent_graph
+    app.state.retriever = retriever
 
     app.state.query_router = query_router
     app.state.answer_svc = answer_svc
