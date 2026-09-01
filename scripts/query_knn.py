@@ -3,6 +3,8 @@ import asyncio
 from langchain_core.messages import HumanMessage
 
 from app.agents.graph import build_agent_graph
+from app.agents.state import AgentContext
+from app.db.session import SessionLocal
 from app.llm.client import LLM
 from app.rag.embeddings.factory import embedding_provider_factory
 from app.rag.reranking.factory import reranker_provider_factory
@@ -65,7 +67,11 @@ async def main() -> None:
             "prompt_tokens": 0,
             "completion_tokens": 0,
             "total_tokens": 0,
-        }
+        },
+        context=AgentContext(
+            user_id="test-user",
+            db_session_factory=SessionLocal,
+        ),
     )
     final_message = result["messages"][-1]
     answer_text = final_message.content

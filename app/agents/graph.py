@@ -7,7 +7,7 @@ from langchain_core.messages import ToolMessage
 
 from app.rag.helpers import format_sources_with_registry
 from app.agents.agent_node import AgentNode
-from app.agents.state import AgentState
+from app.agents.state import AgentContext, AgentState
 from app.agents.tools import build_agent_tools
 
 
@@ -115,8 +115,11 @@ def build_agent_graph(llm, retriever):
 
         return "tools"
 
-    graph = StateGraph(AgentState)
-
+    graph = StateGraph(
+        state_schema=AgentState,
+        context_schema=AgentContext,
+    )
+    
     graph.add_node("agent", agent_node)
     graph.add_node("tools", execute_tools)
 

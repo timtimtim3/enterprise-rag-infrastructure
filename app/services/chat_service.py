@@ -4,11 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TYPE_CHECKING
 from langchain_core.messages import AIMessage, HumanMessage
 
+from app.agents.state import AgentContext
 from app.api.schemas.chats import AskResponse
 from app.api.schemas.mappers import construct_ask_response, sources_from_answer
 from app.core.config import ROUTER_HISTORY_TOKEN_BUDGET, ANSWER_HISTORY_TOKEN_BUDGET
 from app.db.crud.chats import create_message, create_message_source, get_chat_messages
 from app.db.models.chats import Message
+from app.db.session import SessionLocal
 from app.domain.enums.llm_route import RetrievalScope
 from app.domain.enums.message_role import MessageRole
 from app.domain.chats import MessageCreateData
@@ -225,8 +227,11 @@ async def answer_chat_message_with_agent(
                 "prompt_tokens": 0,
                 "completion_tokens": 0,
                 "total_tokens": 0,
-                "user_id": user_id,
-            }
+            },
+            context=AgentContext(
+                user_id=user_id,
+                db_session_factory=SessionLocal,
+            ),
         )
 
     except Exception as e:

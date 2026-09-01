@@ -1,4 +1,8 @@
 from langchain_core.tools import tool
+from langgraph.prebuilt import ToolRuntime
+
+from app.agents.state import AgentContext
+from app.db.crud.employees import get_employees_by_name
 
 
 EMPLOYEES = [
@@ -27,19 +31,19 @@ EMPLOYEES = [
 
 
 @tool
-async def lookup_employee(name: str) -> dict:
+async def lookup_employee(name: str, runtime: ToolRuntime[AgentContext]) -> dict:
     """
-    Search the Northstar employee directory by name.
+    Search the Northstar employee directory by first name, last name,
+    or full name.
 
-    Use this to resolve an employee's identity or retrieve basic
-    directory information. Multiple employees may have the same first name.
+    Multiple employees may have the same first or last name.
     """
 
-    matches = [
-        employee
-        for employee in EMPLOYEES
-        if name.lower() in employee["name"].lower()
-    ]
+    async with runtime.context.db_session_factory() as db:
+        matches = await get_employees_by_name(
+            db=db,
+            name=name
+        )
 
     if not matches:
         return {
@@ -47,15 +51,24 @@ async def lookup_employee(name: str) -> dict:
             "matches": [],
         }
 
-    if len(matches) > 1:
+    employees = [
+        {
+            "employee_id": employee.employee_id,
+            "first_name": employee.first_name,
+            "last_name": employee.last_name,
+        }
+        for employee in matches
+    ]
+
+    if len(employees) > 1:
         return {
             "status": "ambiguous",
-            "matches": matches,
+            "matches": employees,
         }
 
     return {
         "status": "found",
-        "employee": matches[0],
+        "employee": employees[0],
     }
 
 

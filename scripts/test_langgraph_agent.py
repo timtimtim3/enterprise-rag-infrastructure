@@ -4,6 +4,8 @@ from pprint import pprint
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from app.agents.graph import build_agent_graph
+from app.agents.state import AgentContext
+from app.db.session import SessionLocal
 from app.llm.client import LLM
 from app.rag.embeddings.factory import embedding_provider_factory
 from app.rag.reranking.factory import reranker_provider_factory
@@ -57,7 +59,11 @@ async def run_case(graph, query: str):
             "tool_history": [],
             "user_id": "test_user",
             "source_registry": {},
-        }
+        },
+        context=AgentContext(
+            user_id="test-user",
+            db_session_factory=SessionLocal,
+        ),
     )
 
     print_trajectory(result["messages"])

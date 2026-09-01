@@ -1,6 +1,11 @@
 import operator
 from typing import Annotated
+from dataclasses import dataclass
 
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+)
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 from typing_extensions import NotRequired, TypedDict
@@ -15,8 +20,6 @@ class AgentState(TypedDict):
     # Append new tool-call records
     tool_history: Annotated[list[dict], operator.add]
 
-    user_id: NotRequired[str | None]
-
     # doc_id -> persisted citation metadata for this answer
     source_registry: dict[str, dict]
 
@@ -28,4 +31,9 @@ class AgentState(TypedDict):
     # Last agent call wins, which will normally be the final answer call
     model: NotRequired[str | None]
     finish_reason: NotRequired[str | None]
-    
+
+
+@dataclass
+class AgentContext:
+    user_id: str
+    db_session_factory: async_sessionmaker[AsyncSession]
