@@ -88,16 +88,28 @@ cp .env.example .env
 
 Populate the required environment variables.
 
-### Start Database
+### Start services
 
 ```bash
 docker compose up -d
 ```
 
-### Apply Database Migrations
+### Apply database Migrations
 
 ```bash
 alembic upgrade head
+```
+
+### Seed database with Northstar demo data
+
+```
+python -m scripts.seed_northstar
+```
+
+### Ingest Northstar documents and store embeddings in vector store
+
+```
+python -m scripts.ingest_documents
 ```
 
 ### Run Backend
