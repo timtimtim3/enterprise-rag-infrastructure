@@ -33,7 +33,7 @@ PROJECTS = [
 @tool
 async def lookup_customer(name: str) -> dict:
     """
-    Search Northstar's customer/CRM data by customer name.
+    Search the company's customer/CRM data by customer name.
 
     Use this when the user asks about a customer, account,
     client, or customer-specific information.
@@ -60,7 +60,7 @@ async def lookup_customer(name: str) -> dict:
 @tool
 async def get_customer_projects(customer_id: str) -> dict:
     """
-    Get Northstar projects belonging to a customer.
+    Get company projects belonging to a customer.
 
     Requires the customer's unique customer_id. Use lookup_customer
     first when only the customer name is known.

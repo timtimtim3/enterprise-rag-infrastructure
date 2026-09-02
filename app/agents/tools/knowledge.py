@@ -6,9 +6,9 @@ def build_knowledge_tools(retriever):
     @tool(response_format="content_and_artifact")
     async def search_company_knowledge(query: str):
         """
-        Search Northstar's internal knowledge base.
+        Search the company's internal knowledge base.
 
-        Use this for Northstar-specific policies, procedures, project
+        Use this for company-specific policies, procedures, project
         documentation, architecture, runbooks, technical documentation,
         internal processes, and other company knowledge.
 

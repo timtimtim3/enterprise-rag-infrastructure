@@ -119,6 +119,9 @@ async def main():
 
         # Employee lookup
         "Does John still work for us?",
+        "Who is John Smith?",
+        "What skills does Alice Jansen have?",
+        "Who is our most experienced Python expert?",
     ]
 
     for query in test_queries:

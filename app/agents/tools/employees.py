@@ -5,35 +5,10 @@ from langgraph.prebuilt import ToolRuntime
 from typing import Literal, TypedDict, TYPE_CHECKING
 
 from app.agents.state import AgentContext
-from app.db.crud.employees import get_employees_by_name
+from app.db.crud.employees import find_employees_with_skill, get_employee_with_skills, get_employees_by_name
 
 if TYPE_CHECKING:
     from app.db.models.employees import Employee
-
-
-EMPLOYEES = [
-    {
-        "employee_id": "emp_001",
-        "name": "John Smith",
-        "role": "Cloud Consultant",
-        "skills": ["AWS", "Terraform", "Kubernetes"],
-        "current_project": "ACME Cloud Migration",
-    },
-    {
-        "employee_id": "emp_002",
-        "name": "John de Vries",
-        "role": "Backend Engineer",
-        "skills": ["Python", "FastAPI", "PostgreSQL"],
-        "current_project": "Contoso API Platform",
-    },
-    {
-        "employee_id": "emp_003",
-        "name": "Alice Jansen",
-        "role": "AI Engineer",
-        "skills": ["Python", "RAG", "LangGraph", "Qdrant"],
-        "current_project": "Globex AI Assistant",
-    },
-]
 
 
 class EmployeeDirectoryInfo(TypedDict):
@@ -51,6 +26,38 @@ class EmployeeLookupResult(TypedDict):
         "not_found",
     ]
     matches: list[EmployeeDirectoryInfo]
+
+
+class EmployeeSkillInfo(TypedDict):
+    name: str
+    proficiency: str | None
+    years_experience: int | None
+
+
+class EmployeeSkillsResult(TypedDict):
+    status: Literal[
+        "found",
+        "not_found",
+        "no_skills",
+    ]
+    employee_id: str
+    skills: list[EmployeeSkillInfo]
+
+
+class ExpertInfo(TypedDict):
+    employee_id: str
+    first_name: str
+    last_name: str
+    job_title: str
+    department: str | None
+    skill: str
+    proficiency: str | None
+    years_experience: int | None
+
+
+class FindExpertResult(TypedDict):
+    status: Literal["found", "no_match"]
+    matches: list[ExpertInfo]
 
 
 def employee_to_directory_info(
@@ -71,7 +78,7 @@ async def lookup_employee(
     runtime: ToolRuntime[AgentContext],
 ) -> EmployeeLookupResult:
     """
-    Search the Northstar employee directory by first name, last name,
+    Search the employee directory by first name, last name,
     or full name.
 
     Use this to resolve an employee's identity or retrieve basic directory
@@ -103,24 +110,78 @@ async def lookup_employee(
 
 
 @tool
-async def find_expert(skill: str) -> dict:
+async def get_employee_skills(
+    employee_id: str,
+    runtime: ToolRuntime[AgentContext],
+) -> EmployeeSkillsResult:
     """
-    Find Northstar employees with expertise in a technology or skill.
+    Get the skills associated with a specific employee.
+
+    Use this after resolving the employee's identity with lookup_employee.
+    """
+
+    async with runtime.context.db_session_factory() as db:
+        employee = await get_employee_with_skills(
+            db=db,
+            employee_id=employee_id,
+        )
+
+        if employee is None:
+            return {
+                "status": "not_found",
+                "employee_id": employee_id,
+                "skills": [],
+            }
+
+        skills = [
+            {
+                "name": employee_skill.skill.name,
+                "proficiency": employee_skill.proficiency,
+                "years_experience": employee_skill.years_experience,
+            }
+            for employee_skill in employee.employee_skills
+        ]
+
+    return {
+        "status": "found" if skills else "no_skills",
+        "employee_id": employee_id,
+        "skills": skills,
+    }
+
+
+@tool
+async def find_expert(
+    skill: str,
+    runtime: ToolRuntime[AgentContext],
+) -> FindExpertResult:
+    """
+    Find employees with expertise in a technology or skill.
 
     Use this when someone needs an internal expert, consultant,
     engineer, or colleague with specific technical experience.
     """
 
-    matches = [
-        employee
-        for employee in EMPLOYEES
-        if any(
-            skill.lower() in employee_skill.lower()
-            for employee_skill in employee["skills"]
+    async with runtime.context.db_session_factory() as db:
+        results = await find_employees_with_skill(
+            db=db,
+            skill=skill,
         )
-    ]
+
+        matches = [
+            {
+                "employee_id": employee.employee_id,
+                "first_name": employee.first_name,
+                "last_name": employee.last_name,
+                "job_title": employee.job_title,
+                "department": employee.department,
+                "skill": db_skill.name,
+                "proficiency": employee_skill.proficiency,
+                "years_experience": employee_skill.years_experience,
+            }
+            for employee, employee_skill, db_skill in results
+        ]
 
     return {
-        "status": "found" if matches else "not_found",
+        "status": "found" if matches else "no_match",
         "matches": matches,
     }

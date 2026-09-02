@@ -10,7 +10,7 @@ async def create_support_ticket(
     priority: str = "normal",
 ) -> dict:
     """
-    Create an internal Northstar IT support ticket.
+    Create an internal company IT support ticket.
 
     Only use this when the user explicitly asks to create/open/file
     a support ticket. Do not call it merely because the user describes
