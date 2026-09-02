@@ -8,10 +8,14 @@ def build_knowledge_tools(retriever):
         """
         Search the company's internal knowledge base.
 
-        Use this for company-specific policies, procedures, project
-        documentation, architecture, runbooks, technical documentation,
-        internal processes, and other company knowledge.
+        Use this for information contained in documents such as policies,
+        procedures, architecture decision records, standards, runbooks,
+        technical documentation, historical decisions, and project documentation.
 
+        Do not use this as the first choice for structured operational facts about
+        employees, customers, projects, project teams, assignments, or skills when
+        a dedicated structured-data tool is available.
+        
         The query should be a concise standalone semantic search query.
         """
 
