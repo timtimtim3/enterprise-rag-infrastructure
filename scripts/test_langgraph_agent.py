@@ -115,7 +115,10 @@ async def main():
 
     test_queries = [
         # RAG
-        "Why did we migrate from Pinecone if pgvector was also evaluated?",
+        # "Why did we migrate from Pinecone if pgvector was also evaluated?",
+
+        # Employee lookup
+        "Does John still work for us?",
     ]
 
     for query in test_queries:

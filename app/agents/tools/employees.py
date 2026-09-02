@@ -1,8 +1,14 @@
+from __future__ import annotations
+
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolRuntime
+from typing import Literal, TypedDict, TYPE_CHECKING
 
 from app.agents.state import AgentContext
 from app.db.crud.employees import get_employees_by_name
+
+if TYPE_CHECKING:
+    from app.db.models.employees import Employee
 
 
 EMPLOYEES = [
@@ -30,45 +36,69 @@ EMPLOYEES = [
 ]
 
 
+class EmployeeDirectoryInfo(TypedDict):
+    employee_id: str
+    first_name: str
+    last_name: str
+    job_title: str
+    department: str | None
+
+
+class EmployeeLookupResult(TypedDict):
+    status: Literal[
+        "found",
+        "ambiguous",
+        "not_found",
+    ]
+    matches: list[EmployeeDirectoryInfo]
+
+
+def employee_to_directory_info(
+    employee: Employee,
+) -> EmployeeDirectoryInfo:
+    return {
+        "employee_id": employee.employee_id,
+        "first_name": employee.first_name,
+        "last_name": employee.last_name,
+        "job_title": employee.job_title,
+        "department": employee.department,
+    }
+
+
 @tool
-async def lookup_employee(name: str, runtime: ToolRuntime[AgentContext]) -> dict:
+async def lookup_employee(
+    name: str,
+    runtime: ToolRuntime[AgentContext],
+) -> EmployeeLookupResult:
     """
     Search the Northstar employee directory by first name, last name,
     or full name.
 
-    Multiple employees may have the same first or last name.
+    Use this to resolve an employee's identity or retrieve basic directory
+    information. Multiple employees may have the same first or last name.
     """
-
+    
     async with runtime.context.db_session_factory() as db:
         matches = await get_employees_by_name(
             db=db,
-            name=name
+            name=name,
         )
 
-    if not matches:
-        return {
-            "status": "not_found",
-            "matches": [],
-        }
+        employees = [
+            employee_to_directory_info(employee)
+            for employee in matches
+        ]
 
-    employees = [
-        {
-            "employee_id": employee.employee_id,
-            "first_name": employee.first_name,
-            "last_name": employee.last_name,
-        }
-        for employee in matches
-    ]
-
-    if len(employees) > 1:
-        return {
-            "status": "ambiguous",
-            "matches": employees,
-        }
+    if not employees:
+        status = "not_found"
+    elif len(employees) == 1:
+        status = "found"
+    else:
+        status = "ambiguous"
 
     return {
-        "status": "found",
-        "employee": employees[0],
+        "status": status,
+        "matches": employees,
     }
 
 
