@@ -5,7 +5,7 @@ from langgraph.prebuilt import ToolRuntime
 from typing import Literal, TypedDict, TYPE_CHECKING
 
 from app.agents.state import AgentContext
-from app.db.crud.employees import find_employees_with_skill, get_employee_with_skills, get_employees_by_name
+from app.db.crud.employees import find_employees_with_skill, get_employee_with_skills, get_employees_by_name, get_projects_for_employee
 
 if TYPE_CHECKING:
     from app.db.models.employees import Employee
@@ -58,6 +58,28 @@ class ExpertInfo(TypedDict):
 class FindExpertResult(TypedDict):
     status: Literal["found", "no_match"]
     matches: list[ExpertInfo]
+
+
+class EmployeeProjectInfo(TypedDict):
+    project_id: str
+    project_name: str
+    customer_id: str
+    customer_name: str
+    project_status: str
+    role: str | None
+    allocation_percentage: int | None
+    start_date: str | None
+    end_date: str | None
+
+
+class EmployeeProjectsResult(TypedDict):
+    status: Literal[
+        "found",
+        "no_projects",
+        "employee_not_found",
+    ]
+    employee_id: str
+    projects: list[EmployeeProjectInfo]
 
 
 def employee_to_directory_info(
@@ -184,4 +206,60 @@ async def find_expert(
     return {
         "status": "found" if matches else "no_match",
         "matches": matches,
+    }
+
+
+@tool
+async def get_employee_projects(
+    employee_id: str,
+    runtime: ToolRuntime[AgentContext],
+) -> EmployeeProjectsResult:
+    """
+    Get project assignments for a specific company employee.
+
+    Includes current and historical project assignments. Requires the
+    employee's unique employee_id. Use lookup_employee first when only
+    the employee's name is known.
+    """
+
+    async with runtime.context.db_session_factory() as db:
+        employee, assignments = await get_projects_for_employee(
+            db=db,
+            employee_id=employee_id,
+        )
+
+        if employee is None:
+            return {
+                "status": "employee_not_found",
+                "employee_id": employee_id,
+                "projects": [],
+            }
+
+        projects = [
+            {
+                "project_id": project.project_id,
+                "project_name": project.name,
+                "customer_id": customer.customer_id,
+                "customer_name": customer.name,
+                "project_status": project.status,
+                "role": assignment.role,
+                "allocation_percentage": assignment.allocation_percentage,
+                "start_date": (
+                    assignment.start_date.isoformat()
+                    if assignment.start_date
+                    else None
+                ),
+                "end_date": (
+                    assignment.end_date.isoformat()
+                    if assignment.end_date
+                    else None
+                ),
+            }
+            for assignment, project, customer in assignments
+        ]
+
+    return {
+        "status": "found" if projects else "no_projects",
+        "employee_id": employee_id,
+        "projects": projects,
     }

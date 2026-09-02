@@ -1,78 +1,126 @@
+# app/agents/tools/customers.py
+
+from __future__ import annotations
+
+from typing import Literal, TypedDict
+
 from langchain_core.tools import tool
+from langgraph.prebuilt import ToolRuntime
+
+from app.agents.state import AgentContext
+from app.db.crud.customers import (
+    get_customers_by_name,
+    get_projects_by_customer_id,
+)
 
 
-CUSTOMERS = [
-    {
-        "customer_id": "cus_001",
-        "name": "ACME",
-        "industry": "Financial Services",
-    },
-    {
-        "customer_id": "cus_002",
-        "name": "Globex",
-        "industry": "Logistics",
-    },
-]
+class CustomerInfo(TypedDict):
+    customer_id: str
+    name: str
+    industry: str | None
 
-PROJECTS = [
-    {
-        "project_id": "proj_001",
-        "customer_id": "cus_001",
-        "name": "ACME Cloud Migration",
-        "status": "active",
-    },
-    {
-        "project_id": "proj_002",
-        "customer_id": "cus_001",
-        "name": "ACME Data Platform",
-        "status": "completed",
-    },
-]
+
+class CustomerLookupResult(TypedDict):
+    status: Literal[
+        "found",
+        "ambiguous",
+        "not_found",
+    ]
+    matches: list[CustomerInfo]
+
+
+class CustomerProjectInfo(TypedDict):
+    project_id: str
+    name: str
+    status: str
+
+
+class CustomerProjectsResult(TypedDict):
+    status: Literal[
+        "found",
+        "no_projects",
+        "customer_not_found",
+    ]
+    customer_id: str
+    projects: list[CustomerProjectInfo]
 
 
 @tool
-async def lookup_customer(name: str) -> dict:
+async def lookup_customer(
+    name: str,
+    runtime: ToolRuntime[AgentContext],
+) -> CustomerLookupResult:
     """
-    Search the company's customer/CRM data by customer name.
+    Search the company's customer directory by customer name.
 
-    Use this when the user asks about a customer, account,
-    client, or customer-specific information.
+    Use this when the user asks about a customer, account, client,
+    or customer-specific information.
     """
 
-    matches = [
-        customer
-        for customer in CUSTOMERS
-        if name.lower() in customer["name"].lower()
-    ]
+    async with runtime.context.db_session_factory() as db:
+        customers = await get_customers_by_name(
+            db=db,
+            name=name,
+        )
+
+        matches = [
+            {
+                "customer_id": customer.customer_id,
+                "name": customer.name,
+                "industry": customer.industry,
+            }
+            for customer in customers
+        ]
 
     if not matches:
-        return {"status": "not_found", "matches": []}
-
-    if len(matches) > 1:
-        return {"status": "ambiguous", "matches": matches}
+        status = "not_found"
+    elif len(matches) == 1:
+        status = "found"
+    else:
+        status = "ambiguous"
 
     return {
-        "status": "found",
-        "customer": matches[0],
+        "status": status,
+        "matches": matches,
     }
 
 
 @tool
-async def get_customer_projects(customer_id: str) -> dict:
+async def get_customer_projects(
+    customer_id: str,
+    runtime: ToolRuntime[AgentContext],
+) -> CustomerProjectsResult:
     """
-    Get company projects belonging to a customer.
+    Get projects belonging to a specific company customer.
 
     Requires the customer's unique customer_id. Use lookup_customer
     first when only the customer name is known.
     """
 
-    projects = [
-        project
-        for project in PROJECTS
-        if project["customer_id"] == customer_id
-    ]
+    async with runtime.context.db_session_factory() as db:
+        customer, projects = await get_projects_by_customer_id(
+            db=db,
+            customer_id=customer_id,
+        )
+
+        if customer is None:
+            return {
+                "status": "customer_not_found",
+                "customer_id": customer_id,
+                "projects": [],
+            }
+
+        project_infos = [
+            {
+                "project_id": project.project_id,
+                "name": project.name,
+                "status": project.status,
+            }
+            for project in projects
+        ]
 
     return {
-        "status": "found" if projects else "not_found",
-        "projects": projects,
+        "status": "found" if project_infos else "no_projects",
+        "customer_id": customer_id,
+        "projects": project_infos,
     }

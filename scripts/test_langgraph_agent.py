@@ -113,15 +113,33 @@ async def main():
     #     "What is Northstar's remote working policy?",
     # ]
 
-    test_queries = [
-        # RAG
-        # "Why did we migrate from Pinecone if pgvector was also evaluated?",
+    # test_queries = [
+    #     # RAG
+    #     # "Why did we migrate from Pinecone if pgvector was also evaluated?",
 
-        # Employee lookup
-        "Does John still work for us?",
-        "Who is John Smith?",
-        "What skills does Alice Jansen have?",
-        "Who is our most experienced Python expert?",
+    #     # Employee lookup
+    #     "Does John still work for us?",
+    #     "Who is John Smith?",
+    #     "What skills does Alice Jansen have?",
+    #     "Who is our most experienced Python expert?",
+    # ]
+
+    test_queries = [
+        # Customer lookup
+        "Tell me about ACME.",
+        "What projects do we have with ACME Bank?",
+
+        # Employee projects
+        "What projects is John Smith currently working on?",
+
+        # Project lookup
+        "What is the ACME Cloud Migration project?",
+
+        # Project team
+        "Who is working on the ACME Cloud Migration?",
+
+        # Ambiguity handling
+        "What projects is John working on?",
     ]
 
     for query in test_queries:

@@ -5,6 +5,10 @@ from sqlalchemy.orm import selectinload
 from app.db.models.employees import Employee
 from app.db.models.employee_skills import EmployeeSkill
 from app.db.models.skills import Skill
+from app.db.models.customers import Customer
+from app.db.models.employee_projects import EmployeeProject
+from app.db.models.projects import Project
+
 
 
 async def get_employees_by_name(
@@ -84,3 +88,48 @@ async def find_employees_with_skill(
     result = await db.execute(stmt)
 
     return list(result.all())
+
+
+async def get_projects_for_employee(
+    db: AsyncSession,
+    employee_id: str,
+) -> tuple[
+    Employee | None,
+    list[tuple[EmployeeProject, Project, Customer]],
+]:
+    employee_result = await db.execute(
+        select(Employee).where(
+            Employee.employee_id == employee_id
+        )
+    )
+
+    employee = employee_result.scalar_one_or_none()
+
+    if employee is None:
+        return None, []
+
+    stmt = (
+        select(
+            EmployeeProject,
+            Project,
+            Customer,
+        )
+        .join(
+            Project,
+            Project.id == EmployeeProject.project_id,
+        )
+        .join(
+            Customer,
+            Customer.id == Project.customer_fk,
+        )
+        .where(
+            EmployeeProject.employee_id == employee.id
+        )
+        .order_by(
+            EmployeeProject.start_date.desc().nullslast()
+        )
+    )
+
+    result = await db.execute(stmt)
+
+    return employee, list(result.all())
