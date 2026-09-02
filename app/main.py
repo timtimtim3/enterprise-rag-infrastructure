@@ -29,9 +29,6 @@ from app.services.query_router import QueryRouter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
     embedding_provider = embedding_provider_factory(EMBEDDING_PROVIDER)
     reranker_provider = reranker_provider_factory(RERANKER_PROVIDER)
     qdrant_collection_name = name_qdrant_collection(COLLECTION_NAME_PREFIX, EMBEDDING_PROVIDER, embedding_provider.model_name)
