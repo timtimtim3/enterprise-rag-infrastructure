@@ -10,6 +10,7 @@ from app.db.models.timestamp import TimestampMixin
 
 if TYPE_CHECKING:
     from app.db.models.employee_skills import EmployeeSkill
+    from app.db.models.employee_projects import EmployeeProject
 
 
 class Employee(TimestampMixin, Base):
@@ -32,3 +33,5 @@ class Employee(TimestampMixin, Base):
     )
 
     employee_skills: Mapped[list["EmployeeSkill"]] = relationship(back_populates="employee", cascade="all, delete-orphan")
+    employee_projects: Mapped[list["EmployeeProject"]] = relationship(back_populates="employee", cascade="all, delete-orphan")
+    
