@@ -5,7 +5,7 @@ from langgraph.prebuilt import ToolRuntime
 
 from app.agents.state import AgentContext
 from app.db.crud.auth import get_user_by_user_id
-from app.db.crud.support import create_support_ticket_record
+from app.db.crud.support import create_support_ticket as create_support_ticket_record
 from app.domain.support import SupportTicketPriority
 
 
