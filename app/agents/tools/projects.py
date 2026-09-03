@@ -56,11 +56,9 @@ async def lookup_project(
     """
     Search company projects by project name.
 
-    Use this to resolve a project's identity when the user refers to
-    a project by name rather than by project_id.
-
-    Multiple projects may have similar names, so customer information
-    is returned to help disambiguate matches.
+    Use this whenever a user refers to a specific project by name and its
+    project_id is needed, including questions about the project's team,
+    customer, status, or assignments.
     """
 
     async with runtime.context.db_session_factory() as db:
@@ -101,7 +99,9 @@ async def get_project_team(
     """
     Get employees assigned to a specific company project.
 
-    Requires the project's unique project_id.
+    Use this for questions about who works on, is assigned to, or is part of
+    a project's team. Requires project_id; use lookup_project first when the
+    user provides only a project name.
     """
 
     async with runtime.context.db_session_factory() as db:

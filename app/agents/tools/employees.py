@@ -139,7 +139,7 @@ async def get_employee_skills(
     """
     Get the skills associated with a specific employee.
 
-    Use this after resolving the employee's identity with lookup_employee.
+    Use lookup_employee first when only the employee's name is known.
     """
 
     async with runtime.context.db_session_factory() as db:

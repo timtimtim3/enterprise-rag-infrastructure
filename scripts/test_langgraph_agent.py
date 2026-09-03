@@ -132,9 +132,6 @@ async def main():
         # Employee projects
         "What projects is John Smith currently working on?",
 
-        # Project lookup
-        "What is the ACME Cloud Migration project?",
-
         # Project team
         "Who is working on the ACME Cloud Migration?",
 
