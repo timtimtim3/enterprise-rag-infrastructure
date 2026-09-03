@@ -84,6 +84,7 @@ async def run_case(graph, query: str):
 
 async def main():
     llm = LLM(model_name=USING_LLM)
+    print(f"MODEL: {llm.model_name}")
 
     embedding_provider = embedding_provider_factory(EMBEDDING_PROVIDER)
     reranker_provider = reranker_provider_factory(RERANKER_PROVIDER)
