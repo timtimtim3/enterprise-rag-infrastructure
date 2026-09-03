@@ -11,6 +11,7 @@ from app.db.models.timestamp import TimestampMixin
 if TYPE_CHECKING:
     from app.db.models.chats import Chat
     from app.db.models.sessions import Session, RefreshToken
+    from app.db.models.support_tickets import SupportTicket
 
 
 class User(TimestampMixin, Base):
@@ -25,3 +26,5 @@ class User(TimestampMixin, Base):
     chats: Mapped[list["Chat"]] = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
     sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user", cascade="all, delete-orphan")
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+
+    support_tickets: Mapped[list["SupportTicket"]] = relationship(back_populates="requester")

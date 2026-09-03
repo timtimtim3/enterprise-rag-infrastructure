@@ -8,3 +8,4 @@ from .employee_skills import EmployeeSkill
 from .projects import Project
 from .customers import Customer
 from .employee_projects import EmployeeProject
+from .support_tickets import SupportTicket
